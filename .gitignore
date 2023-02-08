@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c++,python,waf
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,python,waf
 
+### OFSwitch13 ###
+!./ns-3.35/src/ofswitch13/lib/
+
 ### C++ ###
 # Prerequisites
 *.d
@@ -51,7 +54,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/

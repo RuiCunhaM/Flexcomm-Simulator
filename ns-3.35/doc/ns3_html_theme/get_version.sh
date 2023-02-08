@@ -195,7 +195,7 @@ else
     echo "// ns3_version.js:  automatically generated"       >  $outf
     echo "//  private urls"                                  >> $outf
     echo "var ns3_host = \"file://$PWD/\";"                  >  $outf
-    echo "var ns3_version = \"$repo @ $version$dirty\";"     >> $outf
+    echo "var ns3_version = \"ns-3.35 + OFSwitch13 5.0.1\";" >> $outf
     echo "var ns3_release = \"doc/\";"                       >> $outf
     echo "var ns3_local = \"build/\";"                       >> $outf
     echo "var ns3_doxy  = \"html/\";"                        >> $outf
