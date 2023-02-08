@@ -1,0 +1,80 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    # Create the module with the appropriate name and the list of
+    # modules it depends on.
+    module = bld.create_ns3_module('ecofen', ['network'])
+
+    # Set the C++ source files for this module.
+    module.source = [
+        # Uncomment these lines to compile these model source files.
+        'model/node-energy-model.cc',
+        'model/basic-node-energy-model.cc',
+        'model/netdevice-energy-model.cc',
+        'model/basic-netdevice-energy-model.cc',
+        'model/linear-netdevice-energy-model.cc',
+        'model/complete-netdevice-energy-model.cc',
+        'model/on-off-netdevice.cc',
+        'model/on-off-node.cc',
+
+        # Uncomment these lines to compile these helper source files.
+        'helper/node-energy-helper.cc',
+        'helper/basic-node-energy-helper.cc',
+        'helper/netdevice-energy-helper.cc',
+        'helper/basic-netdevice-energy-helper.cc',
+        'helper/linear-netdevice-energy-helper.cc',
+        'helper/complete-netdevice-energy-helper.cc',
+        'helper/consumption-logger.cc',
+        'helper/on-off-netdevice-helper.cc',
+        'helper/on-off-node-helper.cc',
+        ]
+
+    # Create the module's test library.
+    module_test = bld.create_ns3_module_test_library('ecofen')
+
+    # Set the C++ source files for the module's test library.
+    module_test.source = [
+        # Uncomment these lines to compile these test suites.
+        #'test/sample-test-suite-1.cc',
+        #'test/sample-test-suite-2.cc',
+        ]
+
+    # Make headers be installed for this module.
+    headers = bld(features='ns3header')
+    headers.module = 'ecofen'
+
+    # Set the C++ header files for this module.
+    headers.source = [
+        # Uncomment these lines to install these model header files.
+        'model/node-energy-model.h',
+        'model/basic-node-energy-model.h',
+        'model/netdevice-energy-model.h',
+        'model/basic-netdevice-energy-model.h',
+        'model/linear-netdevice-energy-model.h',
+        'model/complete-netdevice-energy-model.h',
+        'model/on-off-netdevice.h',
+        'model/on-off-node.h',
+        'model/lpi-link.h',
+        'model/agenda.h',
+
+        # Uncomment these lines to install these helper header files.
+        'helper/node-energy-helper.h',
+        'helper/basic-node-energy-helper.h',
+        'helper/netdevice-energy-helper.h',
+        'helper/basic-netdevice-energy-helper.h',
+        'helper/linear-netdevice-energy-helper.h',
+        'helper/complete-netdevice-energy-helper.h',
+        'helper/consumption-logger.h',
+        'helper/on-off-netdevice-helper.h',
+        'helper/on-off-node-helper.h',
+        'helper/agenda-helper.h',
+        ]
+
+    # Uncomment these lines if this module needs a library such as the
+    # real-time (RT) library to be linked in at build time.
+    #module     .uselib = 'RT'
+    #module_test.uselib = 'RT'
+
+    # Look for examples if they are enabled. 
+    #if (bld.env['ENABLE_EXAMPLES']):
+    #    bld.recurse('examples')
