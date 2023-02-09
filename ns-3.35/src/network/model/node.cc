@@ -31,6 +31,7 @@
 #include "ns3/assert.h"
 #include "ns3/global-value.h"
 #include "ns3/boolean.h"
+#include "ns3/core-module.h"
 
 namespace ns3 {
 
@@ -69,7 +70,10 @@ Node::GetTypeId (void)
               "SystemId",
               "The systemId of this node: a unique integer used for parallel simulations.",
               TypeId::ATTR_GET | TypeId::ATTR_SET, UintegerValue (0),
-              MakeUintegerAccessor (&Node::m_sid), MakeUintegerChecker<uint32_t> ());
+              MakeUintegerAccessor (&Node::m_sid), MakeUintegerChecker<uint32_t> ())
+          .AddAttribute ("NodeType", "The node type", EnumValue (DEFAULT),
+                         MakeEnumAccessor (&Node::m_nodeType),
+                         MakeEnumChecker (DEFAULT, "Default", SWITCH, "Switch", HOST, "Host"));
   return tid;
 }
 
@@ -356,6 +360,24 @@ Node::NotifyDeviceAdded (Ptr<NetDevice> device)
     {
       (*i) (device);
     }
+}
+
+Node::NodeType
+Node::GetNodeType ()
+{
+  return m_nodeType;
+}
+
+bool
+Node::IsSwitch ()
+{
+  return m_nodeType == SWITCH;
+}
+
+bool
+Node::IsHost ()
+{
+  return m_nodeType == HOST;
 }
 
 } // namespace ns3

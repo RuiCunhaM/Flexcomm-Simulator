@@ -287,6 +287,23 @@ private:
   std::vector<Ptr<Application>> m_applications; //!< Applications associated to this node
   ProtocolHandlerList m_handlers; //!< Protocol handlers in the node
   DeviceAdditionListenerList m_deviceAdditionListeners; //!< Device addition listeners in the node
+
+  /* 
+   * FLEXCOMM 
+   */
+public:
+  enum NodeType {
+    DEFAULT = 0,
+    SWITCH = 1,
+    HOST = 2,
+  };
+
+  NodeType GetNodeType ();
+  bool IsSwitch ();
+  bool IsHost ();
+
+private:
+  NodeType m_nodeType; //!< The node type
 };
 
 } // namespace ns3
