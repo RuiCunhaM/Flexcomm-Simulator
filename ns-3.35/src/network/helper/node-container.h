@@ -302,6 +302,7 @@ public:
    * \returns a NoceContainer which contains a list of all Nodes.
    */
   static NodeContainer GetGlobal (void);
+  static NodeContainer GetGlobalSwitches (void);
 
   /**
    * \brief Return true if container contains a Node with index id

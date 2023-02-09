@@ -141,6 +141,18 @@ NodeContainer::GetGlobal (void)
   return c;
 }
 
+NodeContainer
+NodeContainer::GetGlobalSwitches (void)
+{
+  NodeContainer c;
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
+    {
+      if ((*i)->IsSwitch ())
+        c.Add (*i);
+    }
+  return c;
+}
+
 bool
 NodeContainer::Contains (uint32_t id) const
 {
