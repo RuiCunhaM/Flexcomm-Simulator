@@ -1,0 +1,8 @@
+[H1]
+type = "host"
+
+[H2]
+type = "host"
+
+[S1]
+type = "switch"

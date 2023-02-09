@@ -1,0 +1,46 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+# def options(opt):
+#     pass
+
+# def configure(conf):
+#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+
+def build(bld):
+    module = bld.create_ns3_module('parser', ['core', 'ofswitch13'])
+    module.source = [
+        'model/parser.cc',
+        'model/parse-nodes.cc',
+        'model/parse-links.cc',
+        'model/parse-apps.cc',
+        'model/parse-configs.cc',
+        'helper/parser-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('parser')
+    module_test.source = [
+        'test/parser-test-suite.cc',
+        ]
+    # Tests encapsulating example programs should be listed here
+    if (bld.env['ENABLE_EXAMPLES']):
+        module_test.source.extend([
+        #    'test/parser-examples-test-suite.cc',
+             ])
+
+    headers = bld(features='ns3header')
+    headers.module = 'parser'
+    headers.source = [
+        'model/parser.h',
+        'model/parse-nodes.h',
+        'model/parse-links.h',
+        'model/parse-apps.h',
+        'model/parse-configs.h',
+        'model/toml.hpp',
+        'helper/parser-helper.h',
+        ]
+
+    if bld.env.ENABLE_EXAMPLES:
+        bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+
