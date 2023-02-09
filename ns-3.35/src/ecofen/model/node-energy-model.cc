@@ -24,6 +24,7 @@
 #include "ns3/simulator.h"
 #include "ns3/node-container.h"
 #include "ns3/loopback-net-device.h"
+#include "ns3/core-module.h"
 
 namespace ns3 {
 
@@ -108,7 +109,7 @@ NodeEnergyModel::GetPowerConsumption (void)
 }
 
 //TODO à modifier pour obtenir un fichier de traces avec les consos
-void
+double
 NodeEnergyModel::GetTotalPowerConsumption (Ptr<Node> node)
 {
   double conso = 0;
@@ -135,11 +136,17 @@ NodeEnergyModel::GetTotalPowerConsumption (Ptr<Node> node)
             }
         }
     }
-  NodeContainer nodes = NodeContainer::GetGlobal ();
-  uint32_t nodenb = node->GetId ();
-  NS_LOG_UNCOND ("Time " << Simulator::Now ().GetSeconds () << " Node " << nodenb << " Conso "
-                         << conso);
-  //return conso;
+  return conso;
+}
+
+void
+NodeEnergyModel::LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper)
+{
+  std::string nodeName = Names::FindName (node);
+
+  std::ostream *stream = streamWrapper->GetStream ();
+  *stream << Simulator::Now ().GetSeconds () << " " << nodeName << " "
+          << GetTotalPowerConsumption (node) << "\n";
 }
 
 void
@@ -149,6 +156,19 @@ NodeEnergyModel::GetConso (Time interval, Time stop, Ptr<Node> node)
   while (i <= stop)
     {
       Simulator::Schedule (i, &NodeEnergyModel::GetTotalPowerConsumption, this, node);
+      i += interval;
+    }
+}
+
+void
+NodeEnergyModel::GetConso (Time interval, Time stop, Ptr<Node> node,
+                           Ptr<OutputStreamWrapper> streamWrapper)
+{
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &NodeEnergyModel::LogTotalPowerConsumption, this, node,
+                           streamWrapper);
       i += interval;
     }
 }

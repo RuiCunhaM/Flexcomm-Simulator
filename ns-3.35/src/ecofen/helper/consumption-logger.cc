@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("ConsumptionLogger");
 
 namespace ns3 {
 
-ConsumptionLogger::ConsumptionLogger ()
+ConsumptionLogger::ConsumptionLogger () : m_streamWrapper (0)
 {
 }
 
@@ -40,12 +40,14 @@ void
 ConsumptionLogger::NodeConso (Time interval, Time stop, Ptr<Node> node)
 {
   Ptr<NodeEnergyModel> noem = node->GetObject<NodeEnergyModel> ();
-  Ptr<NodeEnergyModel> nem;
-  if (noem->GetInstanceTypeId ().GetName () == "ns3::BasicNodeEnergyModel")
+
+  if (noem)
     {
-      nem = node->GetObject<BasicNodeEnergyModel> ();
-    } // Warning: add the others NodeEnergyModels when they will appear
-  nem->GetConso (interval, stop, node);
+      if (m_streamWrapper)
+        noem->GetConso (interval, stop, node, m_streamWrapper);
+      else
+        noem->GetConso (interval, stop, node);
+    }
 }
 
 void
@@ -68,6 +70,12 @@ void
 ConsumptionLogger::NodeConsoAll (Time interval, Time stop)
 {
   NodeConso (interval, stop, NodeContainer::GetGlobal ());
+}
+
+void
+ConsumptionLogger::EnableLogFile (std::string path)
+{
+  m_streamWrapper = Create<OutputStreamWrapper> (path, std::ios::out);
 }
 
 } // namespace ns3

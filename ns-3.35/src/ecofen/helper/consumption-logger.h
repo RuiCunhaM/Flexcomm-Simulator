@@ -24,6 +24,7 @@
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "ns3/node-container.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 
@@ -79,6 +80,11 @@ public:
    * This function gets the power consumption of all nodes in the simulation. 
    */
   void NodeConsoAll (Time interval, Time stop);
+
+  void EnableLogFile (std::string path);
+
+private:
+  Ptr<OutputStreamWrapper> m_streamWrapper;
 };
 
 } // namespace ns3

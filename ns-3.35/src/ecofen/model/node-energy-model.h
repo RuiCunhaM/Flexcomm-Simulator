@@ -27,6 +27,7 @@
 #include "ns3/node.h"
 #include "netdevice-energy-model.h"
 #include "ns3/simulator.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 
@@ -59,7 +60,8 @@ public:
    *
    * \param node Pointer to the desired node.
    */
-  void GetTotalPowerConsumption (Ptr<Node> node);
+  double GetTotalPowerConsumption (Ptr<Node> node);
+  void LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper);
 
   /**
   * To log the energy consumption each time interval up to stop.
@@ -69,6 +71,7 @@ public:
   * \param node Pointer to the desired node.
   */
   void GetConso (Time interval, Time stop, Ptr<Node> node);
+  void GetConso (Time interval, Time stop, Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper);
 
   /**
   * Getter for node state.
