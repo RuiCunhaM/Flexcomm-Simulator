@@ -16,3 +16,6 @@ optimize:
 
 debug:
 	./ns-3.35/waf -t ns-3.35 configure --disable-python --disable-gtk 
+
+format:
+	./formatter.sh ns-3.35
