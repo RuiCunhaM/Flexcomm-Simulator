@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/core-config.h"
+#include "ns3/nstime.h"
 #include "simulator.h"
 #include "simulator-impl.h"
 #include "scheduler.h"
@@ -63,6 +64,9 @@ NS_LOG_COMPONENT_DEFINE ("Simulator");
 static GlobalValue g_simTypeImpl = GlobalValue (
     "SimulatorImplementationType", "The object class to use as the simulator implementation",
     StringValue ("ns3::DefaultSimulatorImpl"), MakeStringChecker ());
+
+static GlobalValue g_simStopTime = GlobalValue ("SimStopTime", "The simulation stop time",
+                                                TimeValue (Seconds (60)), MakeTimeChecker ());
 
 /**
  * \ingroup scheduler
