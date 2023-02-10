@@ -6,3 +6,8 @@ type = "host"
 
 [S1]
 type = "switch"
+
+[S1.chassis]
+model = "basic"
+onConso = 50.0
+offConso = 20.0

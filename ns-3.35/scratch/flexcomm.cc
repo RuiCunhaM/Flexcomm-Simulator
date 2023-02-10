@@ -37,6 +37,10 @@ main (int argc, char *argv[])
 
   Parser::ParseTopology (topo);
 
+  TimeValue stopTime;
+  GlobalValue::GetValueByName ("SimStopTime", stopTime);
+  Simulator::Stop (stopTime.Get ());
+
   Simulator::Run ();
   Simulator::Destroy ();
 }

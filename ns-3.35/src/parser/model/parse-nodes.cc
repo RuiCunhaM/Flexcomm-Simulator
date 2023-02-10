@@ -25,10 +25,42 @@
 #include "ns3/internet-stack-helper.h"
 #include "toml.hpp"
 #include "ns3/node.h"
+#include "ns3/ecofen-module.h"
 
 namespace ns3 {
 
 using namespace std;
+
+Ptr<NodeEnergyHelper>
+parseChassisEnergyModel (toml::table chassis)
+{
+  string chassisModel = chassis["model"].ref<string> ();
+
+  if (!chassisModel.compare ("basic"))
+    {
+      Ptr<BasicNodeEnergyHelper> helper = CreateObject<BasicNodeEnergyHelper> ();
+      helper->Set ("OnConso", DoubleValue (chassis["onConso"].value_or (0.0)));
+      helper->Set ("OffConso", DoubleValue (chassis["offConso"].value_or (0.0)));
+      return helper;
+    }
+  else
+    {
+      NS_ABORT_MSG ("Unknown " << chassisModel << " chassis model");
+    }
+}
+
+void
+parseEnergyModels (toml::table configs, Ptr<Node> sw)
+{
+  if (!configs.contains ("chassis"))
+    return;
+
+  toml::table chassis = *configs["chassis"].as_table ();
+  Ptr<NodeEnergyHelper> chassisHelper = parseChassisEnergyModel (chassis);
+  chassisHelper->Install (sw);
+
+  // TODO: Add interface models
+}
 
 void
 parseNodes (string topoName)
@@ -61,6 +93,7 @@ parseNodes (string topoName)
       if (!nodeType.compare ("switch"))
         {
           node->SetAttribute ("NodeType", StringValue ("Switch"));
+          parseEnergyModels (configs, node);
         }
       else if (!nodeType.compare ("host"))
         {

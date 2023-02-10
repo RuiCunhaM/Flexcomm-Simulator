@@ -22,10 +22,30 @@
 
 #include "parse-configs.h"
 #include "toml.hpp"
+#include "ns3/ecofen-module.h"
 
 namespace ns3 {
 
 using namespace std;
+
+void
+parseSimConfigs (toml::table simConfigs)
+{
+  GlobalValue::Bind ("SimStopTime", StringValue (simConfigs["stopTime"].value_or ("60s")));
+}
+
+void
+parseEcofenConfigs (toml::table ecofenConfigs)
+{
+  ConsumptionLogger consoLogger;
+
+  if (ecofenConfigs["logFile"].value_or (false))
+    consoLogger.EnableLogFile ("ecofen-trace");
+
+  TimeValue stopTime;
+  GlobalValue::GetValueByName ("SimStopTime", stopTime);
+  consoLogger.NodeConsoAll (Time (ecofenConfigs["interval"].value_or ("5s")), stopTime.Get ());
+}
 
 void
 parseConfigs (std::string topoName)
@@ -44,8 +64,8 @@ parseConfigs (std::string topoName)
       NS_ABORT_MSG ("Error parsing configs.toml" << err.description ());
     }
 
-  toml::table simConfigs = *tbl["simulator"].as_table ();
-  Simulator::Stop (Time (simConfigs["stopTime"].ref<string> ()));
+  parseSimConfigs (*tbl["simulator"].as_table ());
+  parseEcofenConfigs (*tbl["ecofen"].as_table ());
 }
 
 } // namespace ns3
