@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-void parseConfigs (std::string topoName);
+void parseConfigs (std::string topoName, std::string outPath);
 
 } // namespace ns3
 

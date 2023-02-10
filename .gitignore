@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c++,python,waf
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,python,waf
 
+
+### OUTPUTS ###
+outputs
+
 ### OFSwitch13 ###
 !./ns-3.35/src/ofswitch13/lib/
 

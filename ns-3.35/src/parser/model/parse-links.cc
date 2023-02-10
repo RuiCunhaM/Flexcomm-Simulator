@@ -32,7 +32,7 @@ namespace ns3 {
 using namespace std;
 
 void
-installLinks (toml::table tbl)
+installLinks (toml::table tbl, string outPath)
 {
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
@@ -53,7 +53,7 @@ installLinks (toml::table tbl)
       NetDeviceContainer csmaDevices = csmaHelper.Install (NodeContainer (n0, n1));
 
       if (configs["pcap"].value_or (false))
-        csmaHelper.EnablePcap ("capture", csmaDevices, true);
+        csmaHelper.EnablePcap (SystemPath::Append (outPath, "capture"), csmaDevices, true);
 
       if (n0->IsHost ())
         address.Assign (csmaDevices.Get (0));
@@ -87,7 +87,7 @@ installController ()
 }
 
 void
-parseLinks (string topoName)
+parseLinks (string topoName, string outPath)
 {
   string linksFile = SystemPath::Append (topoName, "links.toml");
 
@@ -103,7 +103,7 @@ parseLinks (string topoName)
       NS_ABORT_MSG ("Error parsing links.toml" << err.description ());
     }
 
-  installLinks (tbl);
+  installLinks (tbl, outPath);
   installController ();
 }
 

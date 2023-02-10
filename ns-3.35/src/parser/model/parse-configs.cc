@@ -35,12 +35,12 @@ parseSimConfigs (toml::table simConfigs)
 }
 
 void
-parseEcofenConfigs (toml::table ecofenConfigs)
+parseEcofenConfigs (toml::table ecofenConfigs, string outPath)
 {
   ConsumptionLogger consoLogger;
 
   if (ecofenConfigs["logFile"].value_or (false))
-    consoLogger.EnableLogFile ("ecofen-trace");
+    consoLogger.EnableLogFile (SystemPath::Append (outPath, "ecofen-trace"));
 
   TimeValue stopTime;
   GlobalValue::GetValueByName ("SimStopTime", stopTime);
@@ -48,7 +48,7 @@ parseEcofenConfigs (toml::table ecofenConfigs)
 }
 
 void
-parseConfigs (std::string topoName)
+parseConfigs (std::string topoName, std::string outPath)
 {
   string configsFile = SystemPath::Append (topoName, "configs.toml");
 
@@ -65,7 +65,7 @@ parseConfigs (std::string topoName)
     }
 
   parseSimConfigs (*tbl["simulator"].as_table ());
-  parseEcofenConfigs (*tbl["ecofen"].as_table ());
+  parseEcofenConfigs (*tbl["ecofen"].as_table (), outPath);
 }
 
 } // namespace ns3

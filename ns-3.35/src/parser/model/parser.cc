@@ -33,14 +33,15 @@ using namespace std;
 void
 Parser::ParseTopology (string topoName)
 {
+  string outPath = topoName;
   string topoPath = SystemPath::Append ("../topologies", topoName);
 
   NS_ABORT_MSG_IF (!SystemPath::Exists (topoPath), "Topology " << topoName << " not found");
 
   parseNodes (topoPath);
-  parseLinks (topoPath);
+  parseLinks (topoPath, outPath);
   parseApps (topoPath);
-  parseConfigs (topoPath);
+  parseConfigs (topoPath, outPath);
 }
 
 } // namespace ns3
