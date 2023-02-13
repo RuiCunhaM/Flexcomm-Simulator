@@ -24,19 +24,73 @@
 #include "toml.hpp"
 #include "ns3/v4ping-helper.h"
 #include "ns3/internet-module.h"
+#include "ns3/applications-module.h"
+#include "boost/algorithm/string.hpp"
 
 namespace ns3 {
 
 using namespace std;
 
+#define getAddress(h) (h->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ())
+
+uint64_t portCounter = 10000;
+
+std::string
+protocol2factory (std::string proto)
+{
+  if (!proto.compare ("UDP"))
+    return "ns3::UdpSocketFactory";
+  else if (!proto.compare ("TCP"))
+    return "ns3::TcpSocketFactory";
+  else
+    NS_ABORT_MSG ("Unknown " << proto << " protocol");
+}
+
+void
+installSinker (Ptr<Node> host, string protocol, uint64_t port)
+{
+  PacketSinkHelper sinkHelper (protocol, InetSocketAddress (Ipv4Address::GetAny (), port));
+  sinkHelper.Install (host);
+}
+
 void
 parseV4ping (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
-  V4PingHelper v4helper =
-      V4PingHelper (remoteHost->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ());
+  V4PingHelper v4helper = V4PingHelper (getAddress (remoteHost));
   v4helper.SetAttribute ("Verbose", BooleanValue (configs["verbose"].value_or (true)));
   v4helper.SetAttribute ("Interval", StringValue (configs["interval"].value_or ("1s")));
   v4helper.Install (host);
+}
+
+void
+parseBulkSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
+{
+  Ipv4Address remoteAddress = getAddress (remoteHost);
+  uint64_t port = configs["port"].value_or (portCounter++);
+  string protocol = protocol2factory (configs["protocol"].value_or ("TCP"));
+
+  BulkSendHelper bulkHelper = BulkSendHelper (protocol, InetSocketAddress (remoteAddress, port));
+  bulkHelper.SetAttribute ("SendSize", UintegerValue (configs["sendSize"].value_or (512)));
+  bulkHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
+  bulkHelper.Install (host);
+
+  installSinker (remoteHost, protocol, port);
+}
+
+void
+parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
+{
+  Ipv4Address remoteAddress = getAddress (remoteHost);
+  uint64_t port = configs["port"].value_or (portCounter++);
+  string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
+
+  OnOffHelper onOffHelper = OnOffHelper (protocol, InetSocketAddress (remoteAddress, port));
+  onOffHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (512)));
+  onOffHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
+  onOffHelper.SetConstantRate (DataRate (configs["dataRate"].value_or ("500kb/s")));
+  onOffHelper.Install (host);
+
+  installSinker (remoteHost, protocol, port);
 }
 
 void
@@ -67,6 +121,14 @@ parseApps (std::string topoName)
       if (!appType.compare ("v4ping"))
         {
           parseV4ping (configs, host, remoteHost);
+        }
+      else if (!appType.compare ("bulkSend"))
+        {
+          parseBulkSend (configs, host, remoteHost);
+        }
+      else if (!appType.compare ("constSend"))
+        {
+          parseConstSend (configs, host, remoteHost);
         }
       else
         {
