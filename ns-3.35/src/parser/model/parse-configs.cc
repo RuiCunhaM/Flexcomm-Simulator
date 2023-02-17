@@ -48,6 +48,13 @@ parseEcofenConfigs (toml::table ecofenConfigs, string outPath)
 }
 
 void
+parseFlowMonitorConfigs (toml::table flowMonitorConfigs)
+{
+  GlobalValue::Bind ("FlowMonitorEnabled",
+                     BooleanValue (flowMonitorConfigs["enable"].value_or (false)));
+}
+
+void
 parseConfigs (std::string topoName, std::string outPath)
 {
   string configsFile = SystemPath::Append (topoName, "configs.toml");
@@ -66,6 +73,7 @@ parseConfigs (std::string topoName, std::string outPath)
 
   parseSimConfigs (*tbl["simulator"].as_table ());
   parseEcofenConfigs (*tbl["ecofen"].as_table (), outPath);
+  parseFlowMonitorConfigs (*tbl["flowMonitor"].as_table ());
 }
 
 } // namespace ns3

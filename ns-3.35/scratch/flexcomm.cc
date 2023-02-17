@@ -22,6 +22,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/parser-module.h"
+#include "ns3/flow-monitor-module.h"
 
 using namespace ns3;
 
@@ -37,10 +38,17 @@ main (int argc, char *argv[])
 
   Parser::ParseTopology (topo);
 
+  FlowMonitorHelper flowHelper;
+  if (FlowMonitor::IsEnabled ())
+    flowHelper.InstallAll ();
+
   TimeValue stopTime;
   GlobalValue::GetValueByName ("SimStopTime", stopTime);
   Simulator::Stop (stopTime.Get ());
 
   Simulator::Run ();
+
+  flowHelper.SerializeToXmlFile (SystemPath::Append (topo, "flow-monitor.xml"), true, true);
+
   Simulator::Destroy ();
 }

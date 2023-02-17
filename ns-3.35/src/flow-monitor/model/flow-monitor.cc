@@ -22,12 +22,16 @@
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/double.h"
+#include "ns3/core-module.h"
 #include <fstream>
 #include <sstream>
 
 #define PERIODIC_CHECK_INTERVAL (Seconds (1))
 
 namespace ns3 {
+
+static GlobalValue g_FlowMonitorEnabled = GlobalValue ("FlowMonitorEnabled", "FlowMonitor Enbaled",
+                                                       BooleanValue (false), MakeBooleanChecker ());
 
 NS_LOG_COMPONENT_DEFINE ("FlowMonitor");
 
@@ -500,6 +504,14 @@ FlowMonitor::SerializeToXmlFile (std::string fileName, bool enableHistograms, bo
   os << "<?xml version=\"1.0\" ?>\n";
   SerializeToXmlStream (os, 0, enableHistograms, enableProbes);
   os.close ();
+}
+
+bool
+FlowMonitor::IsEnabled ()
+{
+  BooleanValue val;
+  g_FlowMonitorEnabled.GetValue (val);
+  return val.Get ();
 }
 
 } // namespace ns3

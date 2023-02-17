@@ -91,6 +91,9 @@ FlowMonitorHelper::GetClassifier6 ()
 Ptr<FlowMonitor>
 FlowMonitorHelper::Install (Ptr<Node> node)
 {
+  if (!node->IsHost ())
+    return m_flowMonitor;
+
   Ptr<FlowMonitor> monitor = GetMonitor ();
   Ptr<FlowClassifier> classifier = GetClassifier ();
   Ptr<Ipv4L3Protocol> ipv4 = node->GetObject<Ipv4L3Protocol> ();
