@@ -1,6 +1,6 @@
 # Makefile wrapper for waf
 
-TOPO=ping
+TOPO=example
 OUTPUTS=outputs
 OPTIONS="flexcomm --topo=$(TOPO)" --cwd=../$(OUTPUTS)
 

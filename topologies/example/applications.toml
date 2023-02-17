@@ -4,3 +4,9 @@ host = "H1"
 remote = "H2"
 interval = "1s"
 verbose = true
+
+[app2]
+type = "constSend"
+host = "H1"
+remote = "H2"
+dataRate = "1Mbps"

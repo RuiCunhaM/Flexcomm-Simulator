@@ -2,6 +2,7 @@
 edges = ["H1", "S1"]
 dataRate = "1Gbps"
 delay = "2ms"
+pcap = true
 
 [link2]
 edges = ["H2", "S1"]

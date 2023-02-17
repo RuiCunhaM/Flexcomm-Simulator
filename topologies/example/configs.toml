@@ -4,3 +4,6 @@ stopTime = "10s"
 [ecofen]
 interval = "1s"
 logFile = true
+
+[flowMonitor]
+enable = true
