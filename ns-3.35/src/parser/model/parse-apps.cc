@@ -46,23 +46,23 @@ protocol2factory (std::string proto)
     NS_ABORT_MSG ("Unknown " << proto << " protocol");
 }
 
-void
+ApplicationContainer
 installSinker (Ptr<Node> host, string protocol, uint64_t port)
 {
   PacketSinkHelper sinkHelper (protocol, InetSocketAddress (Ipv4Address::GetAny (), port));
-  sinkHelper.Install (host);
+  return sinkHelper.Install (host);
 }
 
-void
+ApplicationContainer
 parseV4ping (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   V4PingHelper v4helper = V4PingHelper (getAddress (remoteHost));
   v4helper.SetAttribute ("Verbose", BooleanValue (configs["verbose"].value_or (true)));
   v4helper.SetAttribute ("Interval", StringValue (configs["interval"].value_or ("1s")));
-  v4helper.Install (host);
+  return v4helper.Install (host);
 }
 
-void
+ApplicationContainer
 parseBulkSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
@@ -72,12 +72,13 @@ parseBulkSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   BulkSendHelper bulkHelper = BulkSendHelper (protocol, InetSocketAddress (remoteAddress, port));
   bulkHelper.SetAttribute ("SendSize", UintegerValue (configs["sendSize"].value_or (512)));
   bulkHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
-  bulkHelper.Install (host);
+  ApplicationContainer apps = bulkHelper.Install (host);
 
-  installSinker (remoteHost, protocol, port);
+  apps.Add (installSinker (remoteHost, protocol, port));
+  return apps;
 }
 
-void
+ApplicationContainer
 parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
@@ -88,9 +89,10 @@ parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   onOffHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (512)));
   onOffHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
   onOffHelper.SetConstantRate (DataRate (configs["dataRate"].value_or ("500kb/s")));
-  onOffHelper.Install (host);
+  ApplicationContainer apps = onOffHelper.Install (host);
 
-  installSinker (remoteHost, protocol, port);
+  apps.Add (installSinker (remoteHost, protocol, port));
+  return apps;
 }
 
 void
@@ -118,22 +120,27 @@ parseApps (std::string topoName)
       Ptr<Node> host = Names::Find<Node> (configs["host"].ref<string> ());
       Ptr<Node> remoteHost = Names::Find<Node> (configs["remote"].ref<string> ());
 
+      ApplicationContainer apps;
       if (!appType.compare ("v4ping"))
         {
-          parseV4ping (configs, host, remoteHost);
+          apps = parseV4ping (configs, host, remoteHost);
         }
       else if (!appType.compare ("bulkSend"))
         {
-          parseBulkSend (configs, host, remoteHost);
+          apps = parseBulkSend (configs, host, remoteHost);
         }
       else if (!appType.compare ("constSend"))
         {
-          parseConstSend (configs, host, remoteHost);
+          apps = parseConstSend (configs, host, remoteHost);
         }
       else
         {
           NS_ABORT_MSG ("Unknown " << appType << " application");
         }
+
+      apps.Start (Time (configs["startTime"].value_or ("1s")));
+      if (configs.contains ("stopTime"))
+        apps.Stop (Time (configs["stopTime"].ref<string> ()));
     }
 }
 
