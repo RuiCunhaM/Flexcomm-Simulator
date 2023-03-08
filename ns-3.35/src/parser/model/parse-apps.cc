@@ -95,6 +95,26 @@ parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   return apps;
 }
 
+ApplicationContainer
+parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
+{
+  Ipv4Address remoteAddress = getAddress (remoteHost);
+  uint64_t port = configs["port"].value_or (portCounter++);
+  string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
+
+  SinGenHelper sinHelper = SinGenHelper (protocol, InetSocketAddress (remoteAddress, port));
+  sinHelper.SetAttribute ("Const", StringValue (configs["const"].value_or ("3Mb/s")));
+  sinHelper.SetAttribute ("A", StringValue (configs["a"].value_or ("1Mb/s")));
+  sinHelper.SetAttribute ("B", DoubleValue (configs["b"].value_or (0.5)));
+  sinHelper.SetAttribute ("C", DoubleValue (configs["c"].value_or (0.0)));
+  sinHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (1024)));
+  sinHelper.SetAttribute ("Unit", StringValue (configs["unit"].value_or ("min")));
+  ApplicationContainer apps = sinHelper.Install (host);
+
+  apps.Add (installSinker (remoteHost, protocol, port));
+  return apps;
+}
+
 void
 parseApps (std::string topoName)
 {
@@ -132,6 +152,10 @@ parseApps (std::string topoName)
       else if (!appType.compare ("constSend"))
         {
           apps = parseConstSend (configs, host, remoteHost);
+        }
+      else if (!appType.compare ("sinSend"))
+        {
+          apps = parseSinSend (configs, host, remoteHost);
         }
       else
         {
