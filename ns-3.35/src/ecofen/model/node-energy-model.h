@@ -61,7 +61,8 @@ public:
    * \param node Pointer to the desired node.
    */
   double GetTotalPowerConsumption (Ptr<Node> node);
-  void LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper);
+
+  double GetPowerDrawn ();
 
   /**
   * To log the energy consumption each time interval up to stop.
@@ -71,7 +72,9 @@ public:
   * \param node Pointer to the desired node.
   */
   void GetConso (Time interval, Time stop, Ptr<Node> node);
-  void GetConso (Time interval, Time stop, Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper);
+
+  void GetConsoLog (Time interval, Time stop, Ptr<Node> node,
+                    Ptr<OutputStreamWrapper> streamWrapper);
 
   /**
   * Getter for node state.
@@ -158,10 +161,17 @@ private:
    */
   virtual double GetPowerConsumption (void);
 
+  void UpdateEnergy (Ptr<Node> node);
+  void LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper);
+
 private:
   uint32_t m_nodeState; // Node state for this node
   uint32_t m_nodeOnState; // Current On state for this node
   uint32_t m_nodeOffState; // Current Off state for this node
+
+  double m_powerDrawn;
+  double m_lastConso;
+  Time m_lastUpdate;
 
   /**
    * Pointer to node containing this NodeEnergyModel. Used by helper class to make

@@ -44,7 +44,8 @@ NodeEnergyModel::GetTypeId (void)
   return tid;
 }
 
-NodeEnergyModel::NodeEnergyModel () : m_nodeState (1)
+NodeEnergyModel::NodeEnergyModel ()
+    : m_nodeState (1), m_powerDrawn (0), m_lastConso (0), m_lastUpdate (Time (0))
 {
 }
 
@@ -140,29 +141,26 @@ NodeEnergyModel::GetTotalPowerConsumption (Ptr<Node> node)
 }
 
 void
+NodeEnergyModel::UpdateEnergy (Ptr<Node> node)
+{
+  Time t_now = Simulator::Now ();
+  m_lastConso = GetTotalPowerConsumption (node);
+  m_powerDrawn += m_lastConso * (t_now - m_lastUpdate).GetSeconds ();
+  m_lastUpdate = t_now;
+}
+
+void
 NodeEnergyModel::LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper)
 {
   std::string nodeName = Names::FindName (node);
 
   std::ostream *stream = streamWrapper->GetStream ();
-  *stream << Simulator::Now ().GetSeconds () << " " << nodeName << " "
-          << GetTotalPowerConsumption (node) << "\n";
+  *stream << Simulator::Now ().GetSeconds () << " " << nodeName << " " << m_lastConso << "\n";
 }
 
 void
-NodeEnergyModel::GetConso (Time interval, Time stop, Ptr<Node> node)
-{
-  Time i = Seconds (0.0);
-  while (i <= stop)
-    {
-      Simulator::Schedule (i, &NodeEnergyModel::GetTotalPowerConsumption, this, node);
-      i += interval;
-    }
-}
-
-void
-NodeEnergyModel::GetConso (Time interval, Time stop, Ptr<Node> node,
-                           Ptr<OutputStreamWrapper> streamWrapper)
+NodeEnergyModel::GetConsoLog (Time interval, Time stop, Ptr<Node> node,
+                              Ptr<OutputStreamWrapper> streamWrapper)
 {
   Time i = Seconds (0.0);
   while (i <= stop)
@@ -171,6 +169,23 @@ NodeEnergyModel::GetConso (Time interval, Time stop, Ptr<Node> node,
                            streamWrapper);
       i += interval;
     }
+}
+
+void
+NodeEnergyModel::GetConso (Time interval, Time stop, Ptr<Node> node)
+{
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &NodeEnergyModel::UpdateEnergy, this, node);
+      i += interval;
+    }
+}
+
+double
+NodeEnergyModel::GetPowerDrawn ()
+{
+  return m_powerDrawn;
 }
 
 void

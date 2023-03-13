@@ -38,12 +38,13 @@ void
 parseEcofenConfigs (toml::table ecofenConfigs, string outPath)
 {
   ConsumptionLogger consoLogger;
-
-  if (ecofenConfigs["logFile"].value_or (false))
-    consoLogger.EnableLogFile (SystemPath::Append (outPath, "ecofen-trace"));
-
   TimeValue stopTime;
   GlobalValue::GetValueByName ("SimStopTime", stopTime);
+
+  if (ecofenConfigs["logFile"].value_or (false))
+    consoLogger.NodeConsoAllLog (Time (ecofenConfigs["logInterval"].value_or ("5s")),
+                                 stopTime.Get (), SystemPath::Append (outPath, "ecofen-trace"));
+
   consoLogger.NodeConsoAll (Time (ecofenConfigs["interval"].value_or ("5s")), stopTime.Get ());
 }
 

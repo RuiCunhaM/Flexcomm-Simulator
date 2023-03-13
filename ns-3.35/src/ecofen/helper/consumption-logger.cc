@@ -42,11 +42,17 @@ ConsumptionLogger::NodeConso (Time interval, Time stop, Ptr<Node> node)
   Ptr<NodeEnergyModel> noem = node->GetObject<NodeEnergyModel> ();
 
   if (noem)
+    noem->GetConso (interval, stop, node);
+}
+
+void
+ConsumptionLogger::NodeConsoLog (Time interval, Time stop, Ptr<Node> node, std::string path)
+{
+  Ptr<NodeEnergyModel> noem = node->GetObject<NodeEnergyModel> ();
+  if (noem)
     {
-      if (m_streamWrapper)
-        noem->GetConso (interval, stop, node, m_streamWrapper);
-      else
-        noem->GetConso (interval, stop, node);
+      CreateLogFile (path);
+      noem->GetConsoLog (interval, stop, node, m_streamWrapper);
     }
 }
 
@@ -60,10 +66,26 @@ ConsumptionLogger::NodeConso (Time interval, Time stop, NodeContainer c)
 }
 
 void
+ConsumptionLogger::NodeConsoLog (Time interval, Time stop, NodeContainer c, std::string path)
+{
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      NodeConsoLog (interval, stop, *i, path);
+    }
+}
+
+void
 ConsumptionLogger::NodeConso (Time interval, Time stop, std::string nodeName)
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
   NodeConso (interval, stop, NodeContainer (node));
+}
+
+void
+ConsumptionLogger::NodeConsoLog (Time interval, Time stop, std::string nodeName, std::string path)
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  NodeConsoLog (interval, stop, NodeContainer (node));
 }
 
 void
@@ -73,9 +95,16 @@ ConsumptionLogger::NodeConsoAll (Time interval, Time stop)
 }
 
 void
-ConsumptionLogger::EnableLogFile (std::string path)
+ConsumptionLogger::NodeConsoAllLog (Time interval, Time stop, std::string path)
 {
-  m_streamWrapper = Create<OutputStreamWrapper> (path, std::ios::out);
+  NodeConsoLog (interval, stop, NodeContainer::GetGlobal (), path);
+}
+
+void
+ConsumptionLogger::CreateLogFile (std::string path)
+{
+  if (!m_streamWrapper)
+    m_streamWrapper = Create<OutputStreamWrapper> (path, std::ios::out);
 }
 
 } // namespace ns3
