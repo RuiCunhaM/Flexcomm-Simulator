@@ -23,8 +23,11 @@
 #include "ns3/core-module.h"
 #include "ns3/parser-module.h"
 #include "ns3/flow-monitor-module.h"
+#include "ns3/system-wall-clock-ms.h"
 
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("Flexcomm");
 
 int
 main (int argc, char *argv[])
@@ -36,7 +39,16 @@ main (int argc, char *argv[])
   cmd.AddValue ("topo", "Topology to load", topo);
   cmd.Parse (argc, argv);
 
+  SystemWallClockMs clock;
+  uint64_t endTime;
+  clock.Start ();
+
   Parser::ParseTopology (topo);
+
+  endTime = clock.End ();
+  uint64_t milliseconds = endTime % 1000;
+  uint64_t seconds = (endTime / 1000) % 60;
+  NS_LOG_UNCOND ("Parsing Time: " << seconds << "s " << milliseconds << "ms");
 
   FlowMonitorHelper flowHelper;
   if (FlowMonitor::IsEnabled ())
@@ -46,7 +58,16 @@ main (int argc, char *argv[])
   GlobalValue::GetValueByName ("SimStopTime", stopTime);
   Simulator::Stop (stopTime.Get ());
 
+  clock.Start ();
+
   Simulator::Run ();
+
+  endTime = clock.End ();
+  seconds = (endTime / 1000) % 60;
+  uint64_t minutes = ((endTime / (1000 * 60)) % 60);
+  uint64_t hours = ((endTime / (1000 * 60 * 60)) % 24);
+
+  NS_LOG_UNCOND ("Execution Time: " << hours << "h " << minutes << "m " << seconds << "s");
 
   flowHelper.SerializeToXmlFile (SystemPath::Append (topo, "flow-monitor.xml"), true, true);
 
