@@ -3,7 +3,7 @@
 def build(bld):
     # Create the module with the appropriate name and the list of
     # modules it depends on.
-    module = bld.create_ns3_module('ecofen', ['network'])
+    module = bld.create_ns3_module('ecofen', ['network', 'ofswitch13'])
 
     # Set the C++ source files for this module.
     module.source = [
@@ -16,6 +16,7 @@ def build(bld):
         'model/complete-netdevice-energy-model.cc',
         'model/on-off-netdevice.cc',
         'model/on-off-node.cc',
+        'model/cpu-load-base-energy-model.cc',
 
         # Uncomment these lines to compile these helper source files.
         'helper/node-energy-helper.cc',
@@ -27,6 +28,7 @@ def build(bld):
         'helper/consumption-logger.cc',
         'helper/on-off-netdevice-helper.cc',
         'helper/on-off-node-helper.cc',
+        'helper/cpu-load-base-energy-helper.cc',
         ]
 
     # Create the module's test library.
@@ -56,6 +58,7 @@ def build(bld):
         'model/on-off-node.h',
         'model/lpi-link.h',
         'model/agenda.h',
+        'model/cpu-load-base-energy-model.h',
 
         # Uncomment these lines to install these helper header files.
         'helper/node-energy-helper.h',
@@ -68,6 +71,7 @@ def build(bld):
         'helper/on-off-netdevice-helper.h',
         'helper/on-off-node-helper.h',
         'helper/agenda-helper.h',
+        'helper/cpu-load-base-energy-helper.h',
         ]
 
     # Uncomment these lines if this module needs a library such as the

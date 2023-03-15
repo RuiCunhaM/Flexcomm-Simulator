@@ -43,6 +43,20 @@ parseChassisEnergyModel (toml::table chassis)
       helper->Set ("OffConso", DoubleValue (chassis["offConso"].value_or (0.0)));
       return helper;
     }
+  else if (!chassisModel.compare ("cpuLoad"))
+    {
+      toml::array &percentages = *chassis.get_as<toml::array> ("percentages");
+      toml::array &consumptions = *chassis.get_as<toml::array> ("consumptions");
+      map<double, double> values = map<double, double> ();
+      Ptr<CpuLoadBaseEnergyHelper> helper = CreateObject<CpuLoadBaseEnergyHelper> ();
+
+      for (size_t i = 0; i < percentages.size (); i++)
+        {
+          values[percentages.at (i).ref<double> ()] = consumptions.at (i).ref<double> ();
+        }
+      helper->SetUsageLvels (values);
+      return helper;
+    }
   else
     {
       NS_ABORT_MSG ("Unknown " << chassisModel << " chassis model");

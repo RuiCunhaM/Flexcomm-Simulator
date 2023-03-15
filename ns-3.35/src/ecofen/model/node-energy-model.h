@@ -177,6 +177,7 @@ private:
    * Pointer to node containing this NodeEnergyModel. Used by helper class to make
    * sure energy models are installed onto the corresponding node.
    */
+protected:
   Ptr<Node> m_node;
 };
 
