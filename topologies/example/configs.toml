@@ -1,5 +1,5 @@
 [simulator]
-stopTime = "10s"
+stopTime = "60s"
 
 [ecofen]
 interval = "1s"

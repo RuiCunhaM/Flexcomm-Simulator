@@ -8,6 +8,6 @@ type = "host"
 type = "switch"
 
 [S1.chassis]
-model = "basic"
-onConso = 50.0
-offConso = 20.0
+model = "cpuLoad"
+percentages = [0.0, 1.0]
+consumptions = [100.0, 300.0]
