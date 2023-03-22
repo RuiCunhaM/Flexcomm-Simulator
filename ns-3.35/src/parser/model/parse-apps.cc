@@ -33,7 +33,16 @@ using namespace std;
 
 #define getAddress(h) (h->GetObject<Ipv4> ()->GetAddress (1, 0).GetLocal ())
 
-uint64_t portCounter = 10000;
+std::map<Ptr<Node>, uint64_t> portCounter = std::map<Ptr<Node>, uint64_t> ();
+
+uint64_t
+getPort (Ptr<Node> node)
+{
+  if (portCounter.find (node) == portCounter.end ())
+    portCounter[node] = 10000;
+
+  return portCounter[node]++;
+}
 
 std::string
 protocol2factory (std::string proto)
@@ -66,15 +75,17 @@ ApplicationContainer
 parseBulkSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
-  uint64_t port = configs["port"].value_or (portCounter++);
   string protocol = protocol2factory (configs["protocol"].value_or ("TCP"));
+  uint64_t hostPort = getPort (host);
+  uint64_t remotePort = getPort (remoteHost);
 
-  BulkSendHelper bulkHelper = BulkSendHelper (protocol, InetSocketAddress (remoteAddress, port));
+  BulkSendHelper bulkHelper =
+      BulkSendHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
   bulkHelper.SetAttribute ("SendSize", UintegerValue (configs["sendSize"].value_or (512)));
   bulkHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
   ApplicationContainer apps = bulkHelper.Install (host);
 
-  apps.Add (installSinker (remoteHost, protocol, port));
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
   return apps;
 }
 
@@ -82,16 +93,17 @@ ApplicationContainer
 parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
-  uint64_t port = configs["port"].value_or (portCounter++);
   string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
+  uint64_t hostPort = getPort (host);
+  uint64_t remotePort = getPort (remoteHost);
 
-  OnOffHelper onOffHelper = OnOffHelper (protocol, InetSocketAddress (remoteAddress, port));
+  OnOffHelper onOffHelper = OnOffHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
   onOffHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (512)));
   onOffHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
   onOffHelper.SetConstantRate (DataRate (configs["dataRate"].value_or ("500kb/s")));
   ApplicationContainer apps = onOffHelper.Install (host);
 
-  apps.Add (installSinker (remoteHost, protocol, port));
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
   return apps;
 }
 
@@ -99,10 +111,11 @@ ApplicationContainer
 parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
-  uint64_t port = configs["port"].value_or (portCounter++);
   string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
+  uint64_t hostPort = getPort (host);
+  uint64_t remotePort = getPort (remoteHost);
 
-  SinGenHelper sinHelper = SinGenHelper (protocol, InetSocketAddress (remoteAddress, port));
+  SinGenHelper sinHelper = SinGenHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
   sinHelper.SetAttribute ("Const", StringValue (configs["const"].value_or ("3Mb/s")));
   sinHelper.SetAttribute ("A", StringValue (configs["a"].value_or ("1Mb/s")));
   sinHelper.SetAttribute ("B", DoubleValue (configs["b"].value_or (0.5)));
@@ -111,7 +124,7 @@ parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   sinHelper.SetAttribute ("Unit", StringValue (configs["unit"].value_or ("min")));
   ApplicationContainer apps = sinHelper.Install (host);
 
-  apps.Add (installSinker (remoteHost, protocol, port));
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
   return apps;
 }
 
