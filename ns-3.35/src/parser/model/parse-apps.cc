@@ -128,6 +128,30 @@ parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   return apps;
 }
 
+ApplicationContainer
+parsePPBP (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
+{
+  Ipv4Address remoteAddress = getAddress (remoteHost);
+  string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
+  uint64_t hostPort = getPort (host);
+  uint64_t remotePort = getPort (remoteHost);
+
+  PPBPHelper ppbpHelper = PPBPHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
+  ppbpHelper.SetAttribute ("BurstIntensity",
+                           StringValue (configs["burstIntensity"].value_or ("1Mb/s")));
+  ppbpHelper.SetAttribute ("MeanBurstArrivals", StringValue (configs["meanBurstArrivals"].value_or (
+                                                    "ns3::ConstantRandomVariable[Constant=20.0]")));
+  ppbpHelper.SetAttribute ("MeanBurstTimeLength",
+                           StringValue (configs["meanBurstTimeLength"].value_or (
+                               "ns3::ConstantRandomVariable[Constant=0.2]")));
+  ppbpHelper.SetAttribute ("H", DoubleValue (configs["h"].value_or (0.7)));
+  ppbpHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (1470)));
+  ApplicationContainer apps = ppbpHelper.Install (host);
+
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
+  return apps;
+}
+
 void
 parseApps (std::string topoName)
 {
@@ -155,25 +179,17 @@ parseApps (std::string topoName)
 
       ApplicationContainer apps;
       if (!appType.compare ("v4ping"))
-        {
-          apps = parseV4ping (configs, host, remoteHost);
-        }
+        apps = parseV4ping (configs, host, remoteHost);
       else if (!appType.compare ("bulkSend"))
-        {
-          apps = parseBulkSend (configs, host, remoteHost);
-        }
+        apps = parseBulkSend (configs, host, remoteHost);
       else if (!appType.compare ("constSend"))
-        {
-          apps = parseConstSend (configs, host, remoteHost);
-        }
+        apps = parseConstSend (configs, host, remoteHost);
       else if (!appType.compare ("sinSend"))
-        {
-          apps = parseSinSend (configs, host, remoteHost);
-        }
+        apps = parseSinSend (configs, host, remoteHost);
+      else if (!appType.compare ("PPBP"))
+        apps = parsePPBP (configs, host, remoteHost);
       else
-        {
-          NS_ABORT_MSG ("Unknown " << appType << " application");
-        }
+        NS_ABORT_MSG ("Unknown " << appType << " application");
 
       apps.Start (Time (configs["startTime"].value_or ("1s")));
       if (configs.contains ("stopTime"))
