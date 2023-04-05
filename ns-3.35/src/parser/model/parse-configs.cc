@@ -20,8 +20,9 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#include "parse-configs.h"
 #include "toml.hpp"
+#include "parse-configs.h"
+#include "ns3/switch-stats-module.h"
 #include "ns3/ecofen-module.h"
 
 namespace ns3 {
@@ -46,6 +47,22 @@ parseEcofenConfigs (toml::table ecofenConfigs, string outPath)
                                  stopTime.Get (), SystemPath::Append (outPath, "ecofen-trace"));
 
   consoLogger.NodeConsoAll (Time (ecofenConfigs["interval"].value_or ("5s")), stopTime.Get ());
+}
+
+void
+parseSwitchStatsConfigs (toml::table switchConfigs, string outPath)
+{
+  if (switchConfigs["enable"].value_or (false))
+    {
+      TimeValue stopTime;
+      GlobalValue::GetValueByName ("SimStopTime", stopTime);
+
+      SwitchStatsHelper statsHelper;
+      statsHelper.InstallAll ();
+
+      SwitchStatsLogger statsLogger (SystemPath::Append (outPath, "switch-stats"));
+      statsLogger.LogStatsAll (Time (switchConfigs["interval"].value_or ("1s")), stopTime.Get ());
+    }
 }
 
 void
@@ -74,6 +91,7 @@ parseConfigs (std::string topoName, std::string outPath)
 
   parseSimConfigs (*tbl["simulator"].as_table ());
   parseEcofenConfigs (*tbl["ecofen"].as_table (), outPath);
+  parseSwitchStatsConfigs (*tbl["switchStats"].as_table (), outPath);
   parseFlowMonitorConfigs (*tbl["flowMonitor"].as_table ());
 }
 

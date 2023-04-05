@@ -5,5 +5,9 @@ stopTime = "60s"
 interval = "1s"
 logFile = true
 
+[switchStats]
+enable = true
+interval = "1s"
+
 [flowMonitor]
 enable = true
