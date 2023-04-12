@@ -46,6 +46,7 @@ Channel::Channel () : m_id (0)
 {
   NS_LOG_FUNCTION (this);
   m_id = ChannelList::Add (this);
+  m_usage = 0.0;
 }
 
 Channel::~Channel ()
@@ -58,6 +59,28 @@ Channel::GetId (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_id;
+}
+
+double
+Channel::GetChannelUsage (void)
+{
+  return m_usage;
+}
+
+void
+Channel::ComputeUsage (Time interval, Time stop)
+{
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &Channel::UpdateUsage, this);
+      i += interval;
+    }
+}
+
+void
+Channel::UpdateUsage (void)
+{
 }
 
 } // namespace ns3

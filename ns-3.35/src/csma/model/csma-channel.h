@@ -291,6 +291,8 @@ public:
    */
   Time GetDelay (void);
 
+  void UpdateUsage (void);
+
 private:
   /**
    * Copy constructor is declared but not implemented.  This disables the
@@ -348,6 +350,9 @@ private:
    * Current state of the channel
    */
   WireState m_state;
+
+  Time m_lastTime;
+  uint32_t m_bytesTransmitted;
 };
 
 } // namespace ns3

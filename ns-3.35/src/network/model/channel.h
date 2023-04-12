@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
+#include "ns3/core-module.h"
 
 namespace ns3 {
 
@@ -73,6 +74,16 @@ public:
    * This method must be implemented by subclasses.
    */
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const = 0;
+
+  double GetChannelUsage (void);
+
+  void ComputeUsage (Time interval, Time stop);
+
+  // To be implemented by subclasses
+  virtual void UpdateUsage (void);
+
+protected:
+  double m_usage;
 
 private:
   uint32_t m_id; //!< Channel id for this channel

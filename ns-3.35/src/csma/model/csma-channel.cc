@@ -53,6 +53,8 @@ CsmaChannel::CsmaChannel () : Channel ()
   NS_LOG_FUNCTION_NOARGS ();
   m_state = IDLE;
   m_deviceList.clear ();
+  m_lastTime = Simulator::Now ();
+  m_bytesTransmitted = 0;
 }
 
 CsmaChannel::~CsmaChannel ()
@@ -234,6 +236,8 @@ CsmaChannel::TransmitEnd ()
       devId++;
     }
 
+  m_bytesTransmitted += m_currentPkt->GetSize ();
+
   // also schedule for the tx side to go back to IDLE
   Simulator::Schedule (m_delay, &CsmaChannel::PropagationCompleteEvent, this);
   return retVal;
@@ -334,6 +338,20 @@ Ptr<NetDevice>
 CsmaChannel::GetDevice (std::size_t i) const
 {
   return GetCsmaDevice (i);
+}
+
+void
+CsmaChannel::UpdateUsage (void)
+{
+  Time delta = Simulator::Now () - m_lastTime;
+
+  if (delta.GetSeconds () > 0)
+    {
+      m_lastTime = Simulator::Now ();
+      uint32_t bytes = m_bytesTransmitted * 8;
+      m_bytesTransmitted = 0;
+      m_usage = (bytes / delta.GetSeconds ()) / m_bps.GetBitRate ();
+    }
 }
 
 CsmaDeviceRec::CsmaDeviceRec ()
