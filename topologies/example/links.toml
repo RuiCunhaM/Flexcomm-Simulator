@@ -5,6 +5,11 @@ delay = "2ms"
 pcap = true
 
 [link2]
-edges = ["H2", "S1"]
+edges = ["H2", "S2"]
+dataRate = "1Gbps"
+delay = "2ms"
+
+[link3]
+edges = ["S2", "S1"]
 dataRate = "1Gbps"
 delay = "2ms"

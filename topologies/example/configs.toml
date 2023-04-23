@@ -9,5 +9,8 @@ logFile = true
 enable = true
 interval = "1s"
 
+[linkStats]
+logFile = true
+
 [flowMonitor]
 enable = true
