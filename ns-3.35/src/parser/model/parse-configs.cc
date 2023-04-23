@@ -24,6 +24,7 @@
 #include "parse-configs.h"
 #include "ns3/switch-stats-module.h"
 #include "ns3/ecofen-module.h"
+#include "ns3/link-stats-module.h"
 
 namespace ns3 {
 
@@ -66,6 +67,23 @@ parseSwitchStatsConfigs (toml::table switchConfigs, string outPath)
 }
 
 void
+parseLinkStatsConfigs (toml::table linkConfigs, string outPath)
+{
+  LinkStatsHelper statsHelper;
+  statsHelper.InstallAll ();
+
+  LinkStatsLogger statsLogger;
+  TimeValue stopTime;
+  GlobalValue::GetValueByName ("SimStopTime", stopTime);
+
+  if (linkConfigs["logFile"].value_or (false))
+    statsLogger.ComputeStatsAllLog (Time (linkConfigs["logInterval"].value_or ("5s")),
+                                    stopTime.Get (), SystemPath::Append (outPath, "link-stats"));
+
+  statsLogger.ComputeStatsAll (Time (linkConfigs["interval"].value_or ("5s")), stopTime.Get ());
+}
+
+void
 parseFlowMonitorConfigs (toml::table flowMonitorConfigs)
 {
   GlobalValue::Bind ("FlowMonitorEnabled",
@@ -92,6 +110,7 @@ parseConfigs (std::string topoName, std::string outPath)
   parseSimConfigs (*tbl["simulator"].as_table ());
   parseEcofenConfigs (*tbl["ecofen"].as_table (), outPath);
   parseSwitchStatsConfigs (*tbl["switchStats"].as_table (), outPath);
+  parseLinkStatsConfigs (*tbl["linkStats"].as_table (), outPath);
   parseFlowMonitorConfigs (*tbl["flowMonitor"].as_table ());
 }
 

@@ -51,6 +51,7 @@ installLinks (toml::table tbl, string outPath)
                                       StringValue (configs["dataRate"].value_or ("1000Gbps")));
 
       NetDeviceContainer csmaDevices = csmaHelper.Install (NodeContainer (n0, n1));
+      Names::Add (pair.first.data (), csmaDevices.Get (0)->GetChannel ());
 
       if (configs["pcap"].value_or (false))
         csmaHelper.EnablePcap (SystemPath::Append (outPath, "capture"), csmaDevices, true);
