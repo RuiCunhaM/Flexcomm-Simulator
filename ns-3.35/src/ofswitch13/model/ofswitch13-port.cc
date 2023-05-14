@@ -23,6 +23,7 @@
 #include <ns3/pointer.h>
 #include <ns3/csma-net-device.h>
 #include <ns3/virtual-net-device.h>
+#include <ns3/point-to-point-ethernet-net-device.h>
 #include "ofswitch13-device.h"
 #include "ofswitch13-port.h"
 #include "tunnel-id-tag.h"
@@ -122,7 +123,10 @@ OFSwitch13Port::NotifyConstructionCompleted ()
   // Check for valid NetDevice type
   Ptr<CsmaNetDevice> csmaDev = m_netDev->GetObject<CsmaNetDevice> ();
   Ptr<VirtualNetDevice> virtDev = m_netDev->GetObject<VirtualNetDevice> ();
-  NS_ABORT_MSG_IF (!csmaDev && !virtDev, "NetDevice must be CsmaNetDevice or VirtualNetDevice.");
+  Ptr<PointToPointEthernetNetDevice> p2pDev = m_netDev->GetObject<PointToPointEthernetNetDevice> ();
+  NS_ABORT_MSG_IF (
+      !csmaDev && !virtDev && !p2pDev,
+      "NetDevice must be CsmaNetDevice, VirtualNetDevice or PointToPointEthernetNetDevice.");
 
   // Filling ofsoftswitch13 internal structures for this port.
   size_t oflPortSize = sizeof (struct ofl_port);
@@ -163,9 +167,9 @@ OFSwitch13Port::NotifyConstructionCompleted ()
   m_portQueue->SetPortStruct (m_swPort);
   m_portQueue->Initialize ();
   if (csmaDev)
-    {
-      csmaDev->SetQueue (m_portQueue);
-    }
+    csmaDev->SetQueue (m_portQueue);
+  if (p2pDev)
+    p2pDev->SetQueue (m_portQueue);
 
   m_swPort->created = time_msec ();
 
@@ -180,9 +184,9 @@ OFSwitch13Port::NotifyConstructionCompleted ()
 
   // Register the receive callback to get packets from the NetDevice.
   if (csmaDev)
-    {
-      csmaDev->SetOpenFlowReceiveCallback (MakeCallback (&OFSwitch13Port::Receive, this));
-    }
+    csmaDev->SetOpenFlowReceiveCallback (MakeCallback (&OFSwitch13Port::Receive, this));
+  else if (p2pDev)
+    p2pDev->SetOpenFlowReceiveCallback (MakeCallback (&OFSwitch13Port::Receive, this));
   else
     {
       NS_ASSERT (virtDev);
@@ -247,15 +251,27 @@ OFSwitch13Port::GetPortFeatures ()
   NS_LOG_FUNCTION (this);
 
   DataRate dr;
-  Ptr<Channel> channel = m_netDev->GetChannel ();
-  if (channel)
+  DataRateValue drv;
+
+  Ptr<PointToPointEthernetNetDevice> p2pEthDev =
+      m_netDev->GetObject<PointToPointEthernetNetDevice> ();
+
+  if (p2pEthDev)
     {
-      Ptr<CsmaChannel> csmaChannel = channel->GetObject<CsmaChannel> ();
-      if (csmaChannel)
+      m_netDev->GetAttribute ("DataRate", drv);
+      dr = drv.Get ();
+    }
+  else
+    {
+      Ptr<Channel> channel = m_netDev->GetChannel ();
+      if (channel)
         {
-          DataRateValue drv;
-          csmaChannel->GetAttribute ("DataRate", drv);
-          dr = drv.Get ();
+          Ptr<CsmaChannel> csmaChannel = channel->GetObject<CsmaChannel> ();
+          if (csmaChannel)
+            {
+              csmaChannel->GetAttribute ("DataRate", drv);
+              dr = drv.Get ();
+            }
         }
     }
 

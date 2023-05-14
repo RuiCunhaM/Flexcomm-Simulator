@@ -24,7 +24,7 @@
 #include "parser.h"
 #include "toml.hpp"
 #include "ns3/ipv4-address-helper.h"
-#include "ns3/csma-helper.h"
+#include "ns3/point-to-point-ethernet-helper.h"
 #include "ns3/ofswitch13-module.h"
 
 namespace ns3 {
@@ -45,22 +45,22 @@ installLinks (toml::table tbl, string outPath)
       Ptr<Node> n0 = Names::Find<Node> (node0);
       Ptr<Node> n1 = Names::Find<Node> (node1);
 
-      CsmaHelper csmaHelper;
-      csmaHelper.SetChannelAttribute ("Delay", StringValue (configs["delay"].value_or ("0ns")));
-      csmaHelper.SetChannelAttribute ("DataRate",
-                                      StringValue (configs["dataRate"].value_or ("1000Gbps")));
+      PointToPointEthernetHelper p2pHelper;
+      p2pHelper.SetChannelAttribute ("Delay", StringValue (configs["delay"].value_or ("1ns")));
+      p2pHelper.SetDeviceAttribute ("DataRate",
+                                    StringValue (configs["dataRate"].value_or ("1000Gbps")));
 
-      NetDeviceContainer csmaDevices = csmaHelper.Install (NodeContainer (n0, n1));
-      Names::Add (pair.first.data (), csmaDevices.Get (0)->GetChannel ());
+      NetDeviceContainer p2pDevices = p2pHelper.Install (NodeContainer (n0, n1));
+      Names::Add (pair.first.data (), p2pDevices.Get (0)->GetChannel ());
 
       if (configs["pcap"].value_or (false))
-        csmaHelper.EnablePcap (SystemPath::Append (outPath, "capture"), csmaDevices, true);
+        p2pHelper.EnablePcap (SystemPath::Append (outPath, "capture"), p2pDevices, true);
 
       if (n0->IsHost ())
-        address.Assign (csmaDevices.Get (0));
+        address.Assign (p2pDevices.Get (0));
 
       if (n1->IsHost ())
-        address.Assign (csmaDevices.Get (1));
+        address.Assign (p2pDevices.Get (1));
     }
 }
 
