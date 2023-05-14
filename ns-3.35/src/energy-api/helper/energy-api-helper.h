@@ -15,35 +15,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http: //www.gnu.org/licenses/>.
  *
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#include "parser.h"
-#include "parse-nodes.h"
-#include "parse-links.h"
-#include "parse-apps.h"
-#include "parse-configs.h"
-#include "parse-energy.h"
+#ifndef ENERGY_API_HELPER_H
+#define ENERGY_API_HELPER_H
+
+#include "ns3/energy-api.h"
 
 namespace ns3 {
 
-using namespace std;
+/* ... */
 
-void
-Parser::ParseTopology (string topoName)
-{
-  string outPath = topoName;
-  string topoPath = SystemPath::Append ("../topologies", topoName);
-
-  NS_ABORT_MSG_IF (!SystemPath::Exists (topoPath), "Topology " << topoName << " not found");
-
-  parseEnergy (topoPath);
-  parseNodes (topoPath);
-  parseLinks (topoPath, outPath);
-  parseApps (topoPath);
-  parseConfigs (topoPath, outPath);
 }
 
-} // namespace ns3
+#endif /* ENERGY_API_HELPER_H */

@@ -15,35 +15,43 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http: //www.gnu.org/licenses/>.
  *
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#include "parser.h"
-#include "parse-nodes.h"
-#include "parse-links.h"
-#include "parse-apps.h"
-#include "parse-configs.h"
-#include "parse-energy.h"
+#ifndef ENERGY_API_H
+#define ENERGY_API_H
+
+#include "ns3/core-module.h"
 
 namespace ns3 {
 
 using namespace std;
 
-void
-Parser::ParseTopology (string topoName)
+class EnergyAPI : public Object
 {
-  string outPath = topoName;
-  string topoPath = SystemPath::Append ("../topologies", topoName);
 
-  NS_ABORT_MSG_IF (!SystemPath::Exists (topoPath), "Topology " << topoName << " not found");
+public:
+  static TypeId GetTypeId (void);
+  EnergyAPI ();
+  ~EnergyAPI ();
 
-  parseEnergy (topoPath);
-  parseNodes (topoPath);
-  parseLinks (topoPath, outPath);
-  parseApps (topoPath);
-  parseConfigs (topoPath, outPath);
-}
+  static vector<float> GetFlexArray (string id);
+  static vector<float> GetEstimateArray (string id);
+
+  static void AddFlexArray (string id, vector<float> arr);
+  static void AddEstimateArray (string id, vector<float> arr);
+
+  static void StartExternalServer (string topo);
+  static void StopExternalServer ();
+
+private:
+  static map<string, vector<float>> m_flexes;
+  static map<string, vector<float>> m_estimates;
+  static pid_t m_pid;
+};
 
 } // namespace ns3
+
+#endif /* ENERGY_API_H */

@@ -14,6 +14,7 @@ def build(bld):
         'model/parse-links.cc',
         'model/parse-apps.cc',
         'model/parse-configs.cc',
+        'model/parse-energy.cc',
         'helper/parser-helper.cc',
         ]
 
@@ -35,7 +36,9 @@ def build(bld):
         'model/parse-links.h',
         'model/parse-apps.h',
         'model/parse-configs.h',
+        'model/parse-energy.h',
         'model/toml.hpp',
+        'model/json.hpp',
         'helper/parser-helper.h',
         ]
 

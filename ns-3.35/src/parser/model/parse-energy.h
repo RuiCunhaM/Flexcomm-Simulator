@@ -20,30 +20,15 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#include "parser.h"
-#include "parse-nodes.h"
-#include "parse-links.h"
-#include "parse-apps.h"
-#include "parse-configs.h"
-#include "parse-energy.h"
+#ifndef PARSE_ENERGY_H
+#define PARSE_ENERGY_H
+
+#include "ns3/core-module.h"
 
 namespace ns3 {
 
-using namespace std;
-
-void
-Parser::ParseTopology (string topoName)
-{
-  string outPath = topoName;
-  string topoPath = SystemPath::Append ("../topologies", topoName);
-
-  NS_ABORT_MSG_IF (!SystemPath::Exists (topoPath), "Topology " << topoName << " not found");
-
-  parseEnergy (topoPath);
-  parseNodes (topoPath);
-  parseLinks (topoPath, outPath);
-  parseApps (topoPath);
-  parseConfigs (topoPath, outPath);
-}
+void parseEnergy (std::string topoName);
 
 } // namespace ns3
+
+#endif /* PARSE_ENERGY_H */
