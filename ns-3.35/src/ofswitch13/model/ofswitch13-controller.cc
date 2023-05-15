@@ -28,6 +28,10 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("OFSwitch13Controller");
 NS_OBJECT_ENSURE_REGISTERED (OFSwitch13Controller);
 
+static GlobalValue g_ControllerType =
+    GlobalValue ("ControllerType", "The ControllerType in use",
+                 StringValue ("ns3::OFSwitch13LearningController"), MakeStringChecker ());
+
 /********** Public methods ***********/
 OFSwitch13Controller::OFSwitch13Controller () : m_serverSocket (0)
 {

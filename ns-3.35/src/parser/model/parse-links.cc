@@ -67,12 +67,20 @@ installLinks (toml::table tbl, string outPath)
 void
 installController ()
 {
-  // We assume a single controller at the moment
+  // Create controller node
   Ptr<Node> controllerNode = CreateObject<Node> ();
   Names::Add ("controller", controllerNode);
 
+  // Create controller
+  StringValue controllerType;
+  GlobalValue::GetValueByName ("ControllerType", controllerType);
+  ObjectFactory factory;
+  factory.SetTypeId (controllerType.Get ());
+  Ptr<OFSwitch13Controller> controller = factory.Create<OFSwitch13Controller> ();
+
+  // Install controller
   Ptr<OFSwitch13InternalHelper> of13Helper = CreateObject<OFSwitch13InternalHelper> ();
-  of13Helper->InstallController (controllerNode);
+  of13Helper->InstallController (controllerNode, controller);
 
   NodeContainer switches = NodeContainer::GetGlobalSwitches ();
   for (NodeContainer::Iterator n = switches.Begin (); n != switches.End (); n++)

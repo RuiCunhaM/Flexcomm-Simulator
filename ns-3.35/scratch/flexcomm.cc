@@ -34,10 +34,14 @@ main (int argc, char *argv[])
 {
 
   std::string topo;
+  std::string ctrl;
 
   CommandLine cmd;
   cmd.AddValue ("topo", "Topology to load", topo);
+  cmd.AddValue ("ctrl", "Controller to use", ctrl);
   cmd.Parse (argc, argv);
+
+  GlobalValue::Bind ("ControllerType", StringValue (ctrl));
 
   SystemWallClockMs clock;
   uint64_t endTime;
