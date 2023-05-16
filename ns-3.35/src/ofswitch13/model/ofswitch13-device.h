@@ -222,6 +222,8 @@ public:
    */
   Ptr<OFSwitch13Port> GetSwitchPort (uint32_t no) const;
 
+  uint32_t GetPortNoConnectedTo (Ptr<Node> node);
+
   /**
    * Called when a packet is received on one of the switch's ports. This method
    * will schedule the packet for OpenFlow pipeline.
@@ -669,6 +671,7 @@ private:
    */
   static DpIdDevMap_t m_globalSwitchMap;
 
+  std::map<Ptr<Node>, uint32_t> m_portsNo;
 }; // Class OFSwitch13Device
 
 } // namespace ns3

@@ -402,6 +402,14 @@ OFSwitch13Device::AddSwitchPort (Ptr<NetDevice> portDevice)
   NS_ASSERT ((m_ports.size () == ofPort->GetPortNo ()) &&
              (m_ports.size () == m_datapath->ports_num));
 
+  Ptr<Channel> channel = portDevice->GetChannel ();
+  Ptr<Node> node;
+  if (channel->GetDevice (0) == portDevice)
+    node = channel->GetDevice (1)->GetNode ();
+  else
+    node = channel->GetDevice (0)->GetNode ();
+
+  m_portsNo[node] = ofPort->GetPortNo ();
   return ofPort;
 }
 
@@ -413,6 +421,14 @@ OFSwitch13Device::GetSwitchPort (uint32_t no) const
   // Assert port no (starts at 1).
   NS_ASSERT_MSG (no > 0 && no <= m_ports.size (), "Port is out of range.");
   return m_ports.at (no - 1);
+}
+
+uint32_t
+OFSwitch13Device::GetPortNoConnectedTo (Ptr<Node> node)
+{
+  if (m_portsNo.count (node))
+    return m_portsNo[node];
+  return -1;
 }
 
 void
