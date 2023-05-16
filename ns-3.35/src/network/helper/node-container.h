@@ -303,6 +303,7 @@ public:
    */
   static NodeContainer GetGlobal (void);
   static NodeContainer GetGlobalSwitches (void);
+  static NodeContainer GetGlobalHosts (void);
 
   /**
    * \brief Return true if container contains a Node with index id

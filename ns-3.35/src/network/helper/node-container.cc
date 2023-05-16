@@ -153,6 +153,18 @@ NodeContainer::GetGlobalSwitches (void)
   return c;
 }
 
+NodeContainer
+NodeContainer::GetGlobalHosts (void)
+{
+  NodeContainer c;
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
+    {
+      if ((*i)->IsHost ())
+        c.Add (*i);
+    }
+  return c;
+}
+
 bool
 NodeContainer::Contains (uint32_t id) const
 {
