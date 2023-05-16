@@ -25,6 +25,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/packet.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/core-module.h"
 
 namespace ns3 {
 
@@ -114,7 +115,7 @@ V4Ping::Receive (Ptr<Socket> socket)
       NS_ASSERT (realFrom.GetPort () == 1); // protocol should be icmp.
       Ipv4Header ipv4;
       p->RemoveHeader (ipv4);
-      uint32_t recvSize = p->GetSize ();
+      // uint32_t recvSize = p->GetSize ();
       NS_ASSERT (ipv4.GetProtocol () == 1); // protocol should be icmp.
       Icmpv4Header icmp;
       p->RemoveHeader (icmp);
@@ -147,13 +148,13 @@ V4Ping::Receive (Ptr<Socket> socket)
                       m_recv++;
                       m_traceRtt (delta);
 
-                      if (m_verbose)
-                        {
-                          std::cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
-                                    << " icmp_seq=" << echo.GetSequenceNumber ()
-                                    << " ttl=" << (unsigned) ipv4.GetTtl ()
-                                    << " time=" << delta.As (Time::MS) << "\n";
-                        }
+                      // if (m_verbose)
+                      //   {
+                      //     std::cout << recvSize << " bytes from " << realFrom.GetIpv4 () << ":"
+                      //               << " icmp_seq=" << echo.GetSequenceNumber ()
+                      //               << " ttl=" << (unsigned) ipv4.GetTtl ()
+                      //               << " time=" << delta.As (Time::MS) << "\n";
+                      //   }
                     }
                 }
               delete[] buf;
@@ -234,11 +235,11 @@ V4Ping::StartApplication (void)
   NS_LOG_FUNCTION (this);
 
   m_started = Simulator::Now ();
-  if (m_verbose)
-    {
-      std::cout << "PING " << m_remote << " - " << m_size << " bytes of data - " << m_size + 28
-                << " bytes including ICMP and IPv4 headers.\n";
-    }
+  // if (m_verbose)
+  //   {
+  //     std::cout << "PING " << m_remote << " - " << m_size << " bytes of data - " << m_size + 28
+  //               << " bytes including ICMP and IPv4 headers.\n";
+  //   }
 
   m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
   NS_ASSERT (m_socket != 0);
@@ -272,7 +273,7 @@ V4Ping::StopApplication (void)
     {
       std::ostringstream os;
       os.precision (4);
-      os << "--- " << m_remote << " ping statistics ---\n"
+      os << "--- " << Names::FindName (m_node) << " <--> " << m_remote << " ping statistics ---\n"
          << m_seq << " packets transmitted, " << m_recv << " received, "
          << ((m_seq - m_recv) * 100 / m_seq) << "% packet loss, "
          << "time " << (Simulator::Now () - m_started).As (Time::MS) << "\n";
