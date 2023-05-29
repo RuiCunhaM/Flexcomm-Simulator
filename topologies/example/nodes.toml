@@ -19,3 +19,19 @@ type = "switch"
 model = "cpuLoad"
 percentages = [0.0, 1.0]
 consumptions = [100.0, 300.0]
+
+[S3]
+type = "switch"
+
+[S3.chassis]
+model = "cpuLoad"
+percentages = [0.0, 1.0]
+consumptions = [100.0, 300.0]
+
+[S4]
+type = "switch"
+
+[S4.chassis]
+model = "cpuLoad"
+percentages = [0.0, 1.0]
+consumptions = [100.0, 300.0]

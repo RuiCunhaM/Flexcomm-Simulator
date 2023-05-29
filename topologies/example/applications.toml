@@ -3,7 +3,7 @@ type = "v4ping"
 host = "H1"
 remote = "H2"
 interval = "1s"
-verbose = false
+verbose = true
 
 [app2]
 type = "constSend"
