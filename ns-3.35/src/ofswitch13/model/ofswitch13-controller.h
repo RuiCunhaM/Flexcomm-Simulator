@@ -191,6 +191,9 @@ public:
    */
   static void DpctlSendAndPrint (struct vconn *vconn, struct ofl_msg_header *msg);
 
+  static uint32_t DpId2Id (uint64_t DpId);
+  static uint64_t Id2DpId (uint32_t Id);
+
 protected:
   // inherited from Application
   virtual void StartApplication (void);

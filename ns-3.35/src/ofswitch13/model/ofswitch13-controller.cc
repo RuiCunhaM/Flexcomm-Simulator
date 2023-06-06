@@ -22,6 +22,7 @@
 #include <ns3/uinteger.h>
 #include <ns3/tcp-socket-factory.h>
 #include "ofswitch13-controller.h"
+#include "ofswitch13-device.h"
 
 namespace ns3 {
 
@@ -726,6 +727,29 @@ OFSwitch13Controller::BarrierInfo::BarrierInfo (Ptr<const RemoteSwitch> swtch)
 
 OFSwitch13Controller::PendingCommands::PendingCommands ()
 {
+}
+
+uint32_t
+OFSwitch13Controller::DpId2Id (uint64_t DpId)
+{
+  // TODO: Improve this
+  NodeContainer switches = NodeContainer::GetGlobalSwitches ();
+  for (NodeContainer::Iterator i = switches.Begin (); i != switches.End (); i++)
+    {
+      if ((*i)->GetObject<OFSwitch13Device> ()->GetDatapathId () == DpId)
+        {
+          return (*i)->GetId ();
+        }
+    }
+  return -1;
+}
+
+uint64_t
+OFSwitch13Controller::Id2DpId (uint32_t Id)
+{
+  Ptr<OFSwitch13Device> ofDevice =
+      NodeContainer::GetGlobal ().Get (Id)->GetObject<OFSwitch13Device> ();
+  return ofDevice->GetDatapathId ();
 }
 
 } // namespace ns3
