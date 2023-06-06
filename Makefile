@@ -1,6 +1,6 @@
 # Makefile wrapper for waf
 
-MODULES=applications,core,csma,ecofen,energy-api,flow-monitor,internet,internet-apps,link-stats,ofswitch13,parser,point-to-point-ethernet,switch-stats
+MODULES=applications,core,csma,ecofen,energy-api,flow-monitor,internet,internet-apps,link-stats,ofswitch13,parser,point-to-point-ethernet,switch-stats,topology
 
 TOPO=example
 CONTROLLER=ns3::OFSwitch13LearningController

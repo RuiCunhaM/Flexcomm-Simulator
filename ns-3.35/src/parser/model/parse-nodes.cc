@@ -26,6 +26,7 @@
 #include "toml.hpp"
 #include "ns3/node.h"
 #include "ns3/ecofen-module.h"
+#include "ns3/topology-module.h"
 
 namespace ns3 {
 
@@ -108,6 +109,7 @@ parseNodes (string topoName)
         {
           node->SetAttribute ("NodeType", StringValue ("Switch"));
           parseEnergyModels (configs, node);
+          Topology::AddSwitch (node);
         }
       else if (!nodeType.compare ("host"))
         {

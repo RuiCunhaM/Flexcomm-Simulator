@@ -26,6 +26,7 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/point-to-point-ethernet-helper.h"
 #include "ns3/ofswitch13-module.h"
+#include "ns3/topology-module.h"
 
 namespace ns3 {
 
@@ -57,10 +58,18 @@ installLinks (toml::table tbl, string outPath)
         p2pHelper.EnablePcap (SystemPath::Append (outPath, "capture"), p2pDevices, true);
 
       if (n0->IsHost ())
-        address.Assign (p2pDevices.Get (0));
+        {
+          Ipv4InterfaceContainer ips = address.Assign (p2pDevices.Get (0));
+          Topology::AddHost (n0, ips.GetAddress (0));
+        }
 
       if (n1->IsHost ())
-        address.Assign (p2pDevices.Get (1));
+        {
+          Ipv4InterfaceContainer ips = address.Assign (p2pDevices.Get (1));
+          Topology::AddHost (n1, ips.GetAddress (0));
+        }
+
+      Topology::AddLink (n0, n1);
     }
 }
 
