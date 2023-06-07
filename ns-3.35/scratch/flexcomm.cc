@@ -52,7 +52,7 @@ main (int argc, char *argv[])
   endTime = clock.End ();
   uint64_t milliseconds = endTime % 1000;
   uint64_t seconds = (endTime / 1000) % 60;
-  NS_LOG_UNCOND ("Parsing Time: " << seconds << "s " << milliseconds << "ms");
+  std::cout << "Parsing Time: " << seconds << "s " << milliseconds << "ms" << std::endl;
 
   FlowMonitorHelper flowHelper;
   if (FlowMonitor::IsEnabled ())
@@ -71,7 +71,8 @@ main (int argc, char *argv[])
   uint64_t minutes = ((endTime / (1000 * 60)) % 60);
   uint64_t hours = ((endTime / (1000 * 60 * 60)) % 24);
 
-  NS_LOG_UNCOND ("Execution Time: " << hours << "h " << minutes << "m " << seconds << "s");
+  std::cout << "Execution Time: " << hours << "h " << minutes << "m " << seconds << "s"
+            << std::endl;
 
   flowHelper.SerializeToXmlFile (SystemPath::Append (topo, "flow-monitor.xml"), true, true);
 
