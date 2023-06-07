@@ -63,6 +63,8 @@ public:
   double GetTotalPowerConsumption (Ptr<Node> node);
 
   double GetPowerDrawn ();
+  double GetCurrentPowerConsumption ();
+  double GetPowerPerGB ();
 
   /**
   * To log the energy consumption each time interval up to stop.

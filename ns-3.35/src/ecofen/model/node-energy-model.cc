@@ -19,6 +19,7 @@
  */
 
 #include "node-energy-model.h"
+#include "ns3/ofswitch13-device.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
@@ -186,6 +187,19 @@ double
 NodeEnergyModel::GetPowerDrawn ()
 {
   return m_powerDrawn;
+}
+
+double
+NodeEnergyModel::GetCurrentPowerConsumption ()
+{
+  return m_lastConso;
+}
+
+double
+NodeEnergyModel::GetPowerPerGB ()
+{
+  Ptr<OFSwitch13Device> of = m_node->GetObject<OFSwitch13Device> ();
+  return m_lastConso / (of->GetCpuLoad ().GetBitRate () / 1e9);
 }
 
 void
