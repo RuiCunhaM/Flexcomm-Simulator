@@ -33,6 +33,20 @@ namespace ns3 {
 using namespace std;
 
 Ptr<NodeEnergyHelper>
+parseLoadBaseModel (toml::table chassis, Ptr<CpuLoadBaseEnergyHelper> helper)
+{
+  toml::array &percentages = *chassis.get_as<toml::array> ("percentages");
+  toml::array &consumptions = *chassis.get_as<toml::array> ("consumptions");
+  map<double, double> values = map<double, double> ();
+
+  for (size_t i = 0; i < percentages.size (); i++)
+    values[percentages.at (i).ref<double> ()] = consumptions.at (i).ref<double> ();
+
+  helper->SetUsageLvels (values);
+  return helper;
+}
+
+Ptr<NodeEnergyHelper>
 parseChassisEnergyModel (toml::table chassis)
 {
   string chassisModel = chassis["model"].ref<string> ();
@@ -46,17 +60,14 @@ parseChassisEnergyModel (toml::table chassis)
     }
   else if (!chassisModel.compare ("cpuLoad"))
     {
-      toml::array &percentages = *chassis.get_as<toml::array> ("percentages");
-      toml::array &consumptions = *chassis.get_as<toml::array> ("consumptions");
-      map<double, double> values = map<double, double> ();
       Ptr<CpuLoadBaseEnergyHelper> helper = CreateObject<CpuLoadBaseEnergyHelper> ();
-
-      for (size_t i = 0; i < percentages.size (); i++)
-        {
-          values[percentages.at (i).ref<double> ()] = consumptions.at (i).ref<double> ();
-        }
-      helper->SetUsageLvels (values);
-      return helper;
+      return parseLoadBaseModel (chassis, helper);
+    }
+  else if (!chassisModel.compare ("cpuLoadDiscrete"))
+    {
+      Ptr<CpuLoadBaseDiscreteEnergyHelper> helper =
+          CreateObject<CpuLoadBaseDiscreteEnergyHelper> ();
+      return parseLoadBaseModel (chassis, helper);
     }
   else
     {

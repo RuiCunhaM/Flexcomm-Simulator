@@ -20,27 +20,44 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#ifndef CPU_LOAD_BASE_ENERGY_HELPER_H_
-#define CPU_LOAD_BASE_ENERGY_HELPER_H_
-
-#include "node-energy-helper.h"
+#include "cpu-load-base-discrete-energy-model.h"
+#include "ns3/ofswitch13-device.h"
 
 namespace ns3 {
 
-class CpuLoadBaseEnergyHelper : public NodeEnergyHelper
+NS_OBJECT_ENSURE_REGISTERED (CpuLoadBaseDiscreteEnergyModel);
+
+TypeId
+CpuLoadBaseDiscreteEnergyModel::GetTypeId (void)
 {
-public:
-  CpuLoadBaseEnergyHelper ();
-  ~CpuLoadBaseEnergyHelper ();
+  static TypeId tid = TypeId ("ns3::CpuLoadBaseDiscreteEnergyModel")
+                          .SetParent<CpuLoadBaseEnergyModel> ()
+                          .AddConstructor<CpuLoadBaseDiscreteEnergyModel> ();
+  return tid;
+}
 
-  void SetUsageLvels (std::map<double, double> values);
+CpuLoadBaseDiscreteEnergyModel::CpuLoadBaseDiscreteEnergyModel ()
+{
+}
 
-protected:
-  virtual Ptr<NodeEnergyModel> DoInstall (Ptr<Node> node) const;
-  ObjectFactory m_cpuLoadBaseEnergyModel;
-  std::map<double, double> m_values;
-};
+CpuLoadBaseDiscreteEnergyModel::~CpuLoadBaseDiscreteEnergyModel ()
+{
+}
+
+double
+CpuLoadBaseDiscreteEnergyModel::GetPowerConsumption ()
+{
+  Ptr<OFSwitch13Device> device = m_node->GetObject<OFSwitch13Device> ();
+  double cpuUsage = device->GetCpuUsage ();
+
+  int i = 0;
+  for (double percent : m_percentages)
+    {
+      if (cpuUsage <= percent)
+        break;
+      i++;
+    }
+  return m_values[i];
+}
 
 } // namespace ns3
-
-#endif

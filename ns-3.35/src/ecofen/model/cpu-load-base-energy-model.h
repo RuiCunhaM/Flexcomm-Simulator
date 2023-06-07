@@ -38,7 +38,7 @@ public:
   double GetPowerConsumption (void);
   void SetUsageValues (std::map<double, double> values);
 
-private:
+protected:
   std::vector<double> m_percentages;
   std::vector<double> m_values;
 };
