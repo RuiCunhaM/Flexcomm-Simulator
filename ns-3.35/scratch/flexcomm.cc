@@ -35,13 +35,16 @@ main (int argc, char *argv[])
 
   std::string topo;
   std::string ctrl;
+  bool checksum;
 
   CommandLine cmd;
   cmd.AddValue ("topo", "Topology to load", topo);
   cmd.AddValue ("ctrl", "Controller to use", ctrl);
+  cmd.AddValue ("checksum", "Calculate checksums", checksum);
   cmd.Parse (argc, argv);
 
   GlobalValue::Bind ("ControllerType", StringValue (ctrl));
+  GlobalValue::Bind ("ChecksumEnabled", BooleanValue (checksum));
 
   SystemWallClockMs clock;
   uint64_t endTime;

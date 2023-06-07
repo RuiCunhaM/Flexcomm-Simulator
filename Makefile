@@ -4,8 +4,9 @@ MODULES=applications,core,csma,ecofen,energy-api,flow-monitor,internet,internet-
 
 TOPO=example
 CONTROLLER=ns3::SimpleController
+CHECKSUM=false
 OUTPUTS=outputs
-OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER)" --cwd=../$(OUTPUTS)
+OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM)" --cwd=../$(OUTPUTS)
 CXXFLAGS="-Wall"
 
 all:
