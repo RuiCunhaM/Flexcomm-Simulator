@@ -186,7 +186,7 @@ NodeEnergyModel::GetConso (Time interval, Time stop, Ptr<Node> node)
 double
 NodeEnergyModel::GetPowerDrawn ()
 {
-  return m_powerDrawn;
+  return m_powerDrawn / 3600; // To Wh
 }
 
 double
