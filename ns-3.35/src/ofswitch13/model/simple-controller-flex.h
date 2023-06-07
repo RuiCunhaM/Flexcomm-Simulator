@@ -20,24 +20,29 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#ifndef SIMPLE_CONTROLLER_H
-#define SIMPLE_CONTROLLER_H
+#ifndef SIMPLE_CONTROLLER_FLEX_H
+#define SIMPLE_CONTROLLER_FLEX_H
 
-#include "ofswitch13-controller.h"
+#include "simple-controller.h"
 
 namespace ns3 {
 
-class SimpleController : public OFSwitch13Controller
+class SimpleControllerFlex : public SimpleController
 {
 public:
-  SimpleController ();
-  virtual ~SimpleController ();
+  SimpleControllerFlex ();
+  virtual ~SimpleControllerFlex ();
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
 protected:
   void HandshakeSuccessful (Ptr<const RemoteSwitch> sw);
-  void ApplyRouting (uint64_t src);
+
+private:
+  void UpdateRouting ();
+  void UpdateWeights ();
+
+  bool m_isFirstUpdate;
 };
 
 } // namespace ns3

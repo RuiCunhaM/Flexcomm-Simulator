@@ -3,7 +3,7 @@
 MODULES=applications,core,csma,ecofen,energy-api,flow-monitor,internet,internet-apps,link-stats,ofswitch13,parser,point-to-point-ethernet,switch-stats,topology
 
 TOPO=example
-CONTROLLER=ns3::OFSwitch13LearningController
+CONTROLLER=ns3::SimpleController
 OUTPUTS=outputs
 OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER)" --cwd=../$(OUTPUTS)
 CXXFLAGS="-Wall"
