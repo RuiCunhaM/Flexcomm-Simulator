@@ -23,6 +23,7 @@
 
 #include <vector>
 
+#include "ns3/data-rate.h"
 #include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
@@ -301,9 +302,12 @@ public:
   NodeType GetNodeType ();
   bool IsSwitch ();
   bool IsHost ();
+  DataRate GetCpuCapacity ();
 
 private:
   NodeType m_nodeType; //!< The node type
+  // NOTE: There should be a better place to store this
+  DataRate m_cpuCapacity; //!< Cpu Capacity for this switch
 };
 
 } // namespace ns3

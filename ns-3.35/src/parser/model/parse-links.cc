@@ -116,7 +116,9 @@ installController ()
         {
           switchPorts.Add ((*n)->GetDevice (i));
         }
+      of13Helper->SetDeviceAttribute ("CpuCapacity", DataRateValue ((*n)->GetCpuCapacity ()));
       of13Helper->InstallSwitch (*n, switchPorts);
+      of13Helper->SetDeviceAttribute ("CpuCapacity", StringValue ("100Gbps"));
     }
   of13Helper->CreateOpenFlowChannels ();
 }

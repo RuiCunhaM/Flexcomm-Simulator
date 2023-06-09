@@ -23,6 +23,7 @@
 #include "node-list.h"
 #include "net-device.h"
 #include "application.h"
+#include "ns3/data-rate.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/object-vector.h"
@@ -73,7 +74,9 @@ Node::GetTypeId (void)
               MakeUintegerAccessor (&Node::m_sid), MakeUintegerChecker<uint32_t> ())
           .AddAttribute ("NodeType", "The node type", EnumValue (DEFAULT),
                          MakeEnumAccessor (&Node::m_nodeType),
-                         MakeEnumChecker (DEFAULT, "Default", SWITCH, "Switch", HOST, "Host"));
+                         MakeEnumChecker (DEFAULT, "Default", SWITCH, "Switch", HOST, "Host"))
+          .AddAttribute ("CpuCapacity", "The Switch Cpu Capacity", DataRateValue (),
+                         MakeDataRateAccessor (&Node::m_cpuCapacity), MakeDataRateChecker ());
   return tid;
 }
 
@@ -378,6 +381,12 @@ bool
 Node::IsHost ()
 {
   return m_nodeType == HOST;
+}
+
+DataRate
+Node::GetCpuCapacity ()
+{
+  return m_cpuCapacity;
 }
 
 } // namespace ns3
