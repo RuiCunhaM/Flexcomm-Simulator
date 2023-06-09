@@ -43,6 +43,12 @@ main (int argc, char *argv[])
   cmd.AddValue ("checksum", "Calculate checksums", checksum);
   cmd.Parse (argc, argv);
 
+  if (ctrl == "External")
+    {
+      GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+      checksum = true; // Override checksum option
+    }
+
   GlobalValue::Bind ("ControllerType", StringValue (ctrl));
   GlobalValue::Bind ("ChecksumEnabled", BooleanValue (checksum));
 

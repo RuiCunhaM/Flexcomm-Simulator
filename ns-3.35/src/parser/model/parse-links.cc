@@ -27,6 +27,7 @@
 #include "ns3/point-to-point-ethernet-helper.h"
 #include "ns3/ofswitch13-module.h"
 #include "ns3/topology-module.h"
+#include "ns3/tap-bridge-module.h"
 
 namespace ns3 {
 
@@ -79,17 +80,33 @@ installController ()
   // Create controller node
   Ptr<Node> controllerNode = CreateObject<Node> ();
   Names::Add ("controller", controllerNode);
+  Ptr<OFSwitch13Helper> of13Helper;
 
   // Create controller
   StringValue controllerType;
   GlobalValue::GetValueByName ("ControllerType", controllerType);
-  ObjectFactory factory;
-  factory.SetTypeId (controllerType.Get ());
-  Ptr<OFSwitch13Controller> controller = factory.Create<OFSwitch13Controller> ();
 
-  // Install controller
-  Ptr<OFSwitch13InternalHelper> of13Helper = CreateObject<OFSwitch13InternalHelper> ();
-  of13Helper->InstallController (controllerNode, controller);
+  if (controllerType.Get () == "External")
+    {
+      of13Helper = CreateObject<OFSwitch13ExternalHelper> ();
+      Ptr<NetDevice> ctrlDev = DynamicCast<OFSwitch13ExternalHelper> (of13Helper)
+                                   ->InstallExternalController (controllerNode);
+
+      // Install tapBridge
+      TapBridgeHelper tapBridge;
+      tapBridge.SetAttribute ("Mode", StringValue ("ConfigureLocal"));
+      tapBridge.SetAttribute ("DeviceName", StringValue ("ctrl"));
+      tapBridge.Install (controllerNode, ctrlDev);
+    }
+  else
+    {
+      ObjectFactory factory;
+      of13Helper = CreateObject<OFSwitch13InternalHelper> ();
+      factory.SetTypeId (controllerType.Get ());
+      Ptr<OFSwitch13Controller> controller = factory.Create<OFSwitch13Controller> ();
+      DynamicCast<OFSwitch13InternalHelper> (of13Helper)
+          ->InstallController (controllerNode, controller);
+    }
 
   NodeContainer switches = NodeContainer::GetGlobalSwitches ();
   for (NodeContainer::Iterator n = switches.Begin (); n != switches.End (); n++)
