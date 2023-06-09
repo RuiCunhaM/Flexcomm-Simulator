@@ -75,7 +75,7 @@ installLinks (toml::table tbl, string outPath)
 }
 
 void
-installController ()
+installController (std::string outPath)
 {
   // Create controller node
   Ptr<Node> controllerNode = CreateObject<Node> ();
@@ -121,6 +121,7 @@ installController ()
       of13Helper->SetDeviceAttribute ("CpuCapacity", StringValue ("100Gbps"));
     }
   of13Helper->CreateOpenFlowChannels ();
+  of13Helper->EnableOpenFlowPcap (SystemPath::Append (outPath, "ofchannel"));
 }
 
 void
@@ -141,7 +142,7 @@ parseLinks (string topoName, string outPath)
     }
 
   installLinks (tbl, outPath);
-  installController ();
+  installController (outPath);
 }
 
 } // namespace ns3
