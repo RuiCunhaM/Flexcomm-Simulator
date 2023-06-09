@@ -24,6 +24,7 @@
 #include "ns3/parser-module.h"
 #include "ns3/flow-monitor-module.h"
 #include "ns3/system-wall-clock-ms.h"
+#include "ns3/snmp-module.h"
 
 using namespace ns3;
 
@@ -38,6 +39,7 @@ main (int argc, char *argv[])
   std::string estiFile;
   std::string flexFile;
   bool checksum;
+  bool snmp;
 
   CommandLine cmd;
   cmd.AddValue ("topo", "Topology to load", topo);
@@ -45,12 +47,16 @@ main (int argc, char *argv[])
   cmd.AddValue ("checksum", "Calculate checksums", checksum);
   cmd.AddValue ("estifile", "Estimate file", estiFile);
   cmd.AddValue ("flexfile", "Flexibility file", flexFile);
+  cmd.AddValue ("snmp", "Enable Mib Logger", snmp);
   cmd.Parse (argc, argv);
 
   if (ctrl == "External")
     {
       GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
       checksum = true; // Override checksum option
+
+      if (snmp)
+        GlobalValue::Bind ("MibLoggerEnabled", BooleanValue (true));
     }
 
   GlobalValue::Bind ("ControllerType", StringValue (ctrl));
@@ -74,6 +80,30 @@ main (int argc, char *argv[])
   TimeValue stopTime;
   GlobalValue::GetValueByName ("SimStopTime", stopTime);
   Simulator::Stop (stopTime.Get ());
+
+  if (MibLogger::IsEnabled ())
+    {
+      // TODO: This is a proof of concept. We need to make this
+      // more generic to support more mibs
+      NodeContainer switches = NodeContainer::GetGlobalSwitches ();
+      MibManagerHelper managerHelper;
+      managerHelper.Install (switches);
+
+      for (NodeContainer::Iterator it = switches.Begin (); it != switches.End (); it++)
+        {
+          for (std::string mib : (*it)->GetMibs ())
+            {
+              if (mib == "energy")
+                {
+                  EnergyMibHelper energyHelper;
+                  energyHelper.Install ((*it));
+                }
+            }
+        }
+      MibLogger logger (SystemPath::Append (topo, "snmp"));
+      // TODO: Allow setting custom interval
+      logger.EnableDumpAll (Time ("5s"), stopTime.Get ());
+    }
 
   clock.Start ();
 

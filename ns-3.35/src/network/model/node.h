@@ -303,11 +303,14 @@ public:
   bool IsSwitch ();
   bool IsHost ();
   DataRate GetCpuCapacity ();
+  void AddMib (std::string mib);
+  std::vector<std::string> GetMibs ();
 
 private:
   NodeType m_nodeType; //!< The node type
   // NOTE: There should be a better place to store this
   DataRate m_cpuCapacity; //!< Cpu Capacity for this switch
+  std::vector<std::string> m_mibs;
 };
 
 } // namespace ns3

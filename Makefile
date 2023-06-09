@@ -1,14 +1,15 @@
 # Makefile wrapper for waf
 
-MODULES=applications,core,csma,ecofen,energy-api,flow-monitor,internet,internet-apps,link-stats,ofswitch13,parser,point-to-point-ethernet,switch-stats,topology,tap-bridge
+MODULES=applications,core,csma,ecofen,energy-api,flow-monitor,internet,internet-apps,link-stats,ofswitch13,parser,point-to-point-ethernet,switch-stats,topology,tap-bridge,snmp
 
 TOPO=example
 CONTROLLER=ns3::SimpleController
 CHECKSUM=false
+SNMP=false
 OUTPUTS=outputs
 ESTIFILE=estimate.json
 FLEXFILE=flex.json
-OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM) --estifile=$(ESTIFILE) --flexfile=$(FLEXFILE)" --cwd=../$(OUTPUTS)
+OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM) --estifile=$(ESTIFILE) --flexfile=$(FLEXFILE) --snmp=$(SNMP)" --cwd=../$(OUTPUTS)
 CXXFLAGS="-Wall"
 
 all:

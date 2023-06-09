@@ -389,4 +389,16 @@ Node::GetCpuCapacity ()
   return m_cpuCapacity;
 }
 
+void
+Node::AddMib (std::string mib)
+{
+  m_mibs.push_back (mib);
+}
+
+std::vector<std::string>
+Node::GetMibs ()
+{
+  return m_mibs;
+}
+
 } // namespace ns3

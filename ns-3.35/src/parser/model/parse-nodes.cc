@@ -28,6 +28,7 @@
 #include "ns3/ecofen-module.h"
 #include "ns3/topology-module.h"
 #include "parse-templates.h"
+#include "ns3/snmp-module.h"
 
 namespace ns3 {
 
@@ -50,6 +51,15 @@ parseEnergyModels (toml::table configs, Ptr<Node> sw)
   model->Install (sw);
 
   // TODO: Add interface models
+}
+
+void
+parseMibs (toml::table configs, Ptr<Node> node)
+{
+  toml::array &mibsToml = *configs.get_as<toml::array> ("mibs");
+  std::vector<std::string> mibs;
+  for (size_t i = 0; i < mibsToml.size (); i++)
+    node->AddMib (mibsToml.at (i).ref<std::string> ());
 }
 
 void
@@ -87,6 +97,9 @@ parseNodes (string topoName)
                               StringValue (configs["cpuCapacity"].value_or ("100Gbps")));
           parseEnergyModels (configs, node);
           Topology::AddSwitch (node);
+
+          if (MibLogger::IsEnabled () && configs.contains ("mibs"))
+            parseMibs (configs, node);
         }
       else if (!nodeType.compare ("host"))
         {
