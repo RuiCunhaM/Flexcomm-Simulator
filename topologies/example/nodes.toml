@@ -6,6 +6,7 @@ type = "host"
 
 [S1]
 type = "switch"
+cpuCapacity = "10Gbps"
 
 [S1.chassis]
 model = "cpuLoad"
@@ -14,6 +15,7 @@ consumptions = [100.0, 300.0]
 
 [S2]
 type = "switch"
+cpuCapacity = "10Gbps"
 
 [S2.chassis]
 model = "cpuLoad"
@@ -22,6 +24,7 @@ consumptions = [100.0, 300.0]
 
 [S3]
 type = "switch"
+cpuCapacity = "10Gbps"
 
 [S3.chassis]
 model = "cpuLoad"
@@ -30,6 +33,7 @@ consumptions = [100.0, 300.0]
 
 [S4]
 type = "switch"
+cpuCapacity = "10Gbps"
 
 [S4.chassis]
 model = "cpuLoad"
