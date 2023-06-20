@@ -28,6 +28,7 @@
 #include "ns3/ofswitch13-module.h"
 #include "ns3/topology-module.h"
 #include "ns3/tap-bridge-module.h"
+#include "ns3/mpi-interface.h"
 
 namespace ns3 {
 
@@ -57,7 +58,14 @@ installLinks (toml::table tbl, string outPath)
       Names::Add (pair.first.data (), channel);
 
       if (configs["pcap"].value_or (false))
-        p2pHelper.EnablePcap (SystemPath::Append (outPath, "capture"), p2pDevices, true);
+        {
+          if (MpiInterface::GetSystemId () == n0->GetSystemId ())
+            p2pHelper.EnablePcap (SystemPath::Append (outPath, "capture"), p2pDevices.Get (0),
+                                  true);
+          if (MpiInterface::GetSystemId () == n1->GetSystemId ())
+            p2pHelper.EnablePcap (SystemPath::Append (outPath, "capture"), p2pDevices.Get (1),
+                                  true);
+        }
 
       if (n0->IsHost ())
         {
@@ -79,7 +87,7 @@ void
 installController (std::string outPath)
 {
   // Create controller node
-  Ptr<Node> controllerNode = CreateObject<Node> ();
+  Ptr<Node> controllerNode = CreateObject<Node> (0);
   Names::Add ("controller", controllerNode);
   Ptr<OFSwitch13Helper> of13Helper;
 

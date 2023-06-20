@@ -47,9 +47,6 @@ public:
   void ComputeStatsAllLog (Time interval, Time stop, std::string path = "link-stats");
 
 private:
-  void CreateLogFile (std::string path);
-
-  Ptr<OutputStreamWrapper> m_streamWrapper;
 };
 
 } // namespace ns3

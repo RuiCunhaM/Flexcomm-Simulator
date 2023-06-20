@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("ConsumptionLogger");
 
 namespace ns3 {
 
-ConsumptionLogger::ConsumptionLogger () : m_streamWrapper (0)
+ConsumptionLogger::ConsumptionLogger ()
 {
 }
 
@@ -51,8 +51,9 @@ ConsumptionLogger::NodeConsoLog (Time interval, Time stop, Ptr<Node> node, std::
   Ptr<NodeEnergyModel> noem = node->GetObject<NodeEnergyModel> ();
   if (noem)
     {
-      CreateLogFile (path);
-      noem->GetConsoLog (interval, stop, node, m_streamWrapper);
+      Ptr<OutputStreamWrapper> wrapper =
+          Create<OutputStreamWrapper> (path + Names::FindName (node), std::ios::out);
+      noem->GetConsoLog (interval, stop, node, wrapper);
     }
 }
 
@@ -98,13 +99,6 @@ void
 ConsumptionLogger::NodeConsoAllLog (Time interval, Time stop, std::string path)
 {
   NodeConsoLog (interval, stop, NodeContainer::GetGlobal (), path);
-}
-
-void
-ConsumptionLogger::CreateLogFile (std::string path)
-{
-  if (!m_streamWrapper)
-    m_streamWrapper = Create<OutputStreamWrapper> (path, std::ios::out);
 }
 
 } // namespace ns3

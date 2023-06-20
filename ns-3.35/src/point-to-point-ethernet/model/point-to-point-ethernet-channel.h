@@ -147,12 +147,13 @@ protected:
   typedef void (*TxRxAnimationCallback) (Ptr<const Packet> packet, Ptr<NetDevice> txDevice,
                                          Ptr<NetDevice> rxDevice, Time duration, Time lastBitTime);
 
+protected:
+  Time m_lastTime;
+  uint32_t m_bytesTransmitted;
+
 private:
   /** Each point to point link has exactly two net devices. */
   static const std::size_t N_DEVICES = 2;
-
-  Time m_lastTime;
-  uint32_t m_bytesTransmitted;
 
   Time m_delay; //!< Propagation delay
   std::size_t m_nDevices; //!< Devices of this channel

@@ -68,6 +68,8 @@ PointToPointEthernetRemoteChannel::TransmitStart (Ptr<const Packet> p,
   // Calculate the rxTime (absolute)
   Time rxTime = Simulator::Now () + txTime + GetDelay ();
   MpiInterface::SendPacket (p->Copy (), rxTime, dst->GetNode ()->GetId (), dst->GetIfIndex ());
+
+  m_bytesTransmitted += p->GetSize ();
   return true;
 }
 

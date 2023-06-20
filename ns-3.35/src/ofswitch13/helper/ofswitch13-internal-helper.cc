@@ -22,6 +22,7 @@
 
 #include "ofswitch13-internal-helper.h"
 #include <ns3/ofswitch13-learning-controller.h>
+#include "ns3/mpi-interface.h"
 
 namespace ns3 {
 
@@ -121,7 +122,7 @@ OFSwitch13InternalHelper::CreateOpenFlowChannels (void)
                                       StringValue ("65536p"));
 
         // Create individual channels for each pair switch/controller.
-        UintegerValue portValue;
+        UintegerValue portValue = 6653;
         for (uint32_t swIdx = 0; swIdx < m_switchNodes.GetN (); swIdx++)
           {
             Ptr<Node> swNode = m_switchNodes.Get (swIdx);
@@ -130,19 +131,22 @@ OFSwitch13InternalHelper::CreateOpenFlowChannels (void)
             for (uint32_t ctIdx = 0; ctIdx < m_controlNodes.GetN (); ctIdx++)
               {
                 Ptr<Node> ctNode = m_controlNodes.Get (ctIdx);
-                Ptr<Application> ctApp = m_controlApps.Get (ctIdx);
 
                 NetDeviceContainer pairDevs = Connect (ctNode, swNode);
                 m_controlDevs.Add (pairDevs.Get (0));
                 Ipv4InterfaceContainer pairIfaces = m_ipv4helper.Assign (pairDevs);
 
-                // Start this single connection between switch and controller.
-                m_controlApps.Get (ctIdx)->GetAttribute ("Port", portValue);
-                InetSocketAddress addr (pairIfaces.GetAddress (0), portValue.Get ());
+                if (MpiInterface::GetSystemId () == swNode->GetSystemId ())
+                  {
+                    // Start this single connection between switch and controller.
+                    InetSocketAddress addr (pairIfaces.GetAddress (0), portValue.Get ());
 
-                NS_LOG_INFO ("Connect switch " << ofDev->GetDatapathId () << " to controller "
-                                               << addr.GetIpv4 () << " port " << addr.GetPort ());
-                Simulator::ScheduleNow (&OFSwitch13Device::StartControllerConnection, ofDev, addr);
+                    NS_LOG_INFO ("Connect switch " << ofDev->GetDatapathId () << " to controller "
+                                                   << addr.GetIpv4 () << " port "
+                                                   << addr.GetPort ());
+                    Simulator::ScheduleNow (&OFSwitch13Device::StartControllerConnection, ofDev,
+                                            addr);
+                  }
                 m_ipv4helper.NewNetwork ();
               }
           }
@@ -168,10 +172,13 @@ OFSwitch13InternalHelper::InstallController (Ptr<Node> cNode, Ptr<OFSwitch13Cont
       m_internet.Install (cNode);
     }
 
-  // Configure and save controller application and node.
-  controller->SetStartTime (Seconds (0));
-  cNode->AddApplication (controller);
-  m_controlApps.Add (controller);
+  if (MpiInterface::GetSystemId () == cNode->GetSystemId ())
+    {
+      // Configure and save controller application and node.
+      controller->SetStartTime (Seconds (0));
+      cNode->AddApplication (controller);
+      m_controlApps.Add (controller);
+    }
   m_controlNodes.Add (cNode);
 
   return controller;

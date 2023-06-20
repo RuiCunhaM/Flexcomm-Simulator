@@ -87,9 +87,6 @@ public:
   void NodeConsoAllLog (Time interval, Time stop, std::string path = "ecofen-trace");
 
 private:
-  void CreateLogFile (std::string path);
-
-  Ptr<OutputStreamWrapper> m_streamWrapper;
 };
 
 } // namespace ns3

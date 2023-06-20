@@ -41,7 +41,7 @@ public:
   void LogStatsAll (Time interval, Time stop);
 
 private:
-  Ptr<OutputStreamWrapper> m_streamWrapper;
+  std::string m_path;
 };
 
 } // namespace ns3

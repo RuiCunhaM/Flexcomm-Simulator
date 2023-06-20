@@ -25,6 +25,7 @@
 #include "ns3/switch-stats-module.h"
 #include "ns3/ecofen-module.h"
 #include "ns3/link-stats-module.h"
+#include "ns3/mpi-interface.h"
 
 namespace ns3 {
 
@@ -45,7 +46,7 @@ parseEcofenConfigs (toml::table ecofenConfigs, string outPath)
 
   if (ecofenConfigs["logFile"].value_or (false))
     consoLogger.NodeConsoAllLog (Time (ecofenConfigs["logInterval"].value_or ("5s")),
-                                 stopTime.Get (), SystemPath::Append (outPath, "ecofen-trace"));
+                                 stopTime.Get (), SystemPath::Append (outPath, "ecofen-trace-"));
 
   consoLogger.NodeConsoAll (Time (ecofenConfigs["interval"].value_or ("5s")), stopTime.Get ());
 }
@@ -58,10 +59,16 @@ parseSwitchStatsConfigs (toml::table switchConfigs, string outPath)
       TimeValue stopTime;
       GlobalValue::GetValueByName ("SimStopTime", stopTime);
 
+      NodeContainer switches = NodeContainer::GetGlobalSwitches ();
       SwitchStatsHelper statsHelper;
-      statsHelper.InstallAll ();
 
-      SwitchStatsLogger statsLogger (SystemPath::Append (outPath, "switch-stats"));
+      for (NodeContainer::Iterator i = switches.Begin (); i != switches.End (); i++)
+        {
+          if (MpiInterface::GetSystemId () == (*i)->GetSystemId ())
+            statsHelper.Install (*i);
+        }
+
+      SwitchStatsLogger statsLogger (SystemPath::Append (outPath, "switch-stats-"));
       statsLogger.LogStatsAll (Time (switchConfigs["interval"].value_or ("5s")), stopTime.Get ());
     }
 }
@@ -70,7 +77,12 @@ void
 parseLinkStatsConfigs (toml::table linkConfigs, string outPath)
 {
   LinkStatsHelper statsHelper;
-  statsHelper.InstallAll ();
+  ChannelContainer links = ChannelContainer::GetSwitch2Switch ();
+  for (ChannelContainer::Iterator i = links.Begin (); i != links.End (); i++)
+    {
+      if (MpiInterface::GetSystemId () == (*i)->GetDevice (0)->GetNode ()->GetSystemId ())
+        statsHelper.Install (*i);
+    }
 
   LinkStatsLogger statsLogger;
   TimeValue stopTime;
@@ -78,7 +90,7 @@ parseLinkStatsConfigs (toml::table linkConfigs, string outPath)
 
   if (linkConfigs["logFile"].value_or (false))
     statsLogger.ComputeStatsAllLog (Time (linkConfigs["logInterval"].value_or ("5s")),
-                                    stopTime.Get (), SystemPath::Append (outPath, "link-stats"));
+                                    stopTime.Get (), SystemPath::Append (outPath, "link-stats-"));
 
   statsLogger.ComputeStatsAll (Time (linkConfigs["interval"].value_or ("5s")), stopTime.Get ());
 }

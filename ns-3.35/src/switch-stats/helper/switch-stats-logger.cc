@@ -32,12 +32,11 @@ SwitchStatsLogger::SwitchStatsLogger ()
 
 SwitchStatsLogger::SwitchStatsLogger (std::string path)
 {
-  m_streamWrapper = Create<OutputStreamWrapper> (path, std::ios::out);
+  m_path = path;
 }
 
 SwitchStatsLogger::~SwitchStatsLogger ()
 {
-  m_streamWrapper = 0;
 }
 
 void
@@ -46,7 +45,11 @@ SwitchStatsLogger::LogStats (Time interval, Time stop, Ptr<Node> node)
   Ptr<SwitchStats> stats = node->GetObject<SwitchStats> ();
 
   if (stats)
-    stats->GetStatsLog (interval, stop, m_streamWrapper);
+    {
+      Ptr<OutputStreamWrapper> wrapper =
+          Create<OutputStreamWrapper> (m_path + Names::FindName (node), std::ios::out);
+      stats->GetStatsLog (interval, stop, wrapper);
+    }
 }
 
 void

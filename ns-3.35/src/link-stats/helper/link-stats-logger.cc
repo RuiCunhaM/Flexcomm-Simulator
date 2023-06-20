@@ -27,7 +27,6 @@ namespace ns3 {
 
 LinkStatsLogger::LinkStatsLogger ()
 {
-  m_streamWrapper = 0;
 }
 
 LinkStatsLogger::~LinkStatsLogger ()
@@ -67,8 +66,9 @@ LinkStatsLogger::ComputeStatsLog (Time interval, Time stop, Ptr<Channel> channel
 
   if (ls)
     {
-      CreateLogFile (path);
-      ls->LogStats (interval, stop, m_streamWrapper);
+      Ptr<OutputStreamWrapper> wrapper =
+          Create<OutputStreamWrapper> (path + Names::FindName (channel), std::ios::out);
+      ls->LogStats (interval, stop, wrapper);
     }
 }
 
@@ -85,13 +85,6 @@ void
 LinkStatsLogger::ComputeStatsAllLog (Time interval, Time stop, std::string path)
 {
   ComputeStatsLog (interval, stop, ChannelContainer::GetSwitch2Switch (), path);
-}
-
-void
-LinkStatsLogger::CreateLogFile (std::string path)
-{
-  if (!m_streamWrapper)
-    m_streamWrapper = Create<OutputStreamWrapper> (path, std::ios::out);
 }
 
 } // namespace ns3

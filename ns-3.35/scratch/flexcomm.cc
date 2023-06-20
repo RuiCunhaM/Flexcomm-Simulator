@@ -24,6 +24,7 @@
 #include "ns3/parser-module.h"
 #include "ns3/flow-monitor-module.h"
 #include "ns3/system-wall-clock-ms.h"
+#include "ns3/mpi-interface.h"
 
 using namespace ns3;
 
@@ -48,13 +49,14 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   if (ctrl == "External")
-    {
-      GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
-      checksum = true; // Override checksum option
-    }
+    NS_ABORT_MSG ("External Controller not supported with Distributed Simulations");
 
   GlobalValue::Bind ("ControllerType", StringValue (ctrl));
   GlobalValue::Bind ("ChecksumEnabled", BooleanValue (checksum));
+  GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::DistributedSimulatorImpl"));
+
+  // Enale MPI
+  MpiInterface::Enable (&argc, &argv);
 
   SystemWallClockMs clock;
   uint64_t endTime;
@@ -65,11 +67,13 @@ main (int argc, char *argv[])
   endTime = clock.End ();
   uint64_t milliseconds = endTime % 1000;
   uint64_t seconds = (endTime / 1000) % 60;
-  std::cout << "Parsing Time: " << seconds << "s " << milliseconds << "ms" << std::endl;
 
-  FlowMonitorHelper flowHelper;
-  if (FlowMonitor::IsEnabled ())
-    flowHelper.InstallAll ();
+  if (MpiInterface::GetSystemId () == 0)
+    std::cout << "Parsing Time: " << seconds << "s " << milliseconds << "ms" << std::endl;
+
+  // FlowMonitorHelper flowHelper;
+  // if (FlowMonitor::IsEnabled ())
+  //   flowHelper.InstallAll ();
 
   TimeValue stopTime;
   GlobalValue::GetValueByName ("SimStopTime", stopTime);
@@ -84,10 +88,14 @@ main (int argc, char *argv[])
   uint64_t minutes = ((endTime / (1000 * 60)) % 60);
   uint64_t hours = ((endTime / (1000 * 60 * 60)) % 24);
 
-  std::cout << "Execution Time: " << hours << "h " << minutes << "m " << seconds << "s"
-            << std::endl;
+  if (MpiInterface::GetSystemId () == 0)
+    std::cout << "Execution Time: " << hours << "h " << minutes << "m " << seconds << "s"
+              << std::endl;
 
-  flowHelper.SerializeToXmlFile (SystemPath::Append (topo, "flow-monitor.xml"), true, true);
+  // flowHelper.SerializeToXmlFile (SystemPath::Append (topo, "flow-monitor.xml"), true, true);
 
   Simulator::Destroy ();
+
+  // Disable MPI
+  MpiInterface::Disable ();
 }

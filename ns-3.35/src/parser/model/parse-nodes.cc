@@ -28,6 +28,7 @@
 #include "ns3/ecofen-module.h"
 #include "ns3/topology-module.h"
 #include "parse-templates.h"
+#include "ns3/mpi-interface.h"
 
 namespace ns3 {
 
@@ -75,7 +76,7 @@ parseNodes (string topoName)
       string nodeName = pair.first.data ();
       toml::table configs = *pair.second.as_table ();
 
-      Ptr<Node> node = CreateObject<Node> ();
+      Ptr<Node> node = CreateObject<Node> (configs["rank"].value_or (0));
       Names::Add (nodeName, node);
 
       string nodeType = configs["type"].value_or ("switch");
@@ -85,7 +86,10 @@ parseNodes (string topoName)
           node->SetAttribute ("NodeType", StringValue ("Switch"));
           node->SetAttribute ("CpuCapacity",
                               StringValue (configs["cpuCapacity"].value_or ("100Gbps")));
-          parseEnergyModels (configs, node);
+
+          if (MpiInterface::GetSystemId () == node->GetSystemId ())
+            parseEnergyModels (configs, node);
+
           Topology::AddSwitch (node);
         }
       else if (!nodeType.compare ("host"))

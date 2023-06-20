@@ -23,6 +23,7 @@
 #include <ns3/ofswitch13-port.h>
 #include "ofswitch13-helper.h"
 #include "ofswitch13-stats-calculator.h"
+#include "ns3/mpi-interface.h"
 
 namespace ns3 {
 
@@ -100,25 +101,29 @@ OFSwitch13Helper::EnableOpenFlowPcap (std::string prefix, bool promiscuous)
 {
   NS_LOG_FUNCTION (this << prefix);
 
-  NS_ABORT_MSG_IF (!m_blocked, "OpenFlow channels not configured yet.");
-  switch (m_channelType)
+  // We only capture traffic in rank 0
+  if (MpiInterface::GetSystemId () == 0)
     {
-    case OFSwitch13Helper::SINGLECSMA:
-      case OFSwitch13Helper::DEDICATEDCSMA: {
-        m_csmaHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
-        break;
-      }
-      case OFSwitch13Helper::DEDICATEDP2P: {
-        m_p2pHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
-        break;
-      }
-      case OFSwitch13Helper::DEDICATEDP2PETHERNET: {
-        m_p2pEthernetHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
-        break;
-      }
-      default: {
-        NS_ABORT_MSG ("Invalid OpenflowChannelType.");
-      }
+      NS_ABORT_MSG_IF (!m_blocked, "OpenFlow channels not configured yet.");
+      switch (m_channelType)
+        {
+        case OFSwitch13Helper::SINGLECSMA:
+          case OFSwitch13Helper::DEDICATEDCSMA: {
+            m_csmaHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
+            break;
+          }
+          case OFSwitch13Helper::DEDICATEDP2P: {
+            m_p2pHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
+            break;
+          }
+          case OFSwitch13Helper::DEDICATEDP2PETHERNET: {
+            m_p2pEthernetHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
+            break;
+          }
+          default: {
+            NS_ABORT_MSG ("Invalid OpenflowChannelType.");
+          }
+        }
     }
 }
 
