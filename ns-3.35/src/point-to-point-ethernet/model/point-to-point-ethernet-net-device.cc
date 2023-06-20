@@ -260,6 +260,12 @@ PointToPointEthernetNetDevice::SetDataRate (DataRate bps)
   m_bps = bps;
 }
 
+DataRate
+PointToPointEthernetNetDevice::GetDataRate ()
+{
+  return m_bps;
+}
+
 void
 PointToPointEthernetNetDevice::SetInterframeGap (Time t)
 {

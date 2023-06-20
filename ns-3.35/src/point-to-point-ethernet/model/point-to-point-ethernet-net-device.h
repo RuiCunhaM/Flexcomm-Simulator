@@ -94,6 +94,7 @@ public:
    * \param bps the data rate at which this object operates
    */
   void SetDataRate (DataRate bps);
+  DataRate GetDataRate ();
 
   /**
    * Set the interframe gap used to separate packets.  The interframe gap

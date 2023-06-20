@@ -57,6 +57,8 @@ PointToPointEthernetChannel::PointToPointEthernetChannel ()
     : Channel (), m_delay (Seconds (0.)), m_nDevices (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_lastTime = Simulator::Now ();
+  m_bytesTransmitted = 0;
 }
 
 void
@@ -98,6 +100,7 @@ PointToPointEthernetChannel::TransmitStart (Ptr<const Packet> p,
 
   // Call the tx anim callback on the net device
   m_txrxPointToPointEthernet (p, src, m_link[wire].m_dst, txTime, txTime + m_delay);
+  m_bytesTransmitted += p->GetSize ();
   return true;
 }
 
@@ -147,6 +150,20 @@ PointToPointEthernetChannel::IsInitialized (void) const
   NS_ASSERT (m_link[0].m_state != INITIALIZING);
   NS_ASSERT (m_link[1].m_state != INITIALIZING);
   return true;
+}
+
+void
+PointToPointEthernetChannel::UpdateUsage ()
+{
+  Time delta = Simulator::Now () - m_lastTime;
+
+  if (delta.GetSeconds () > 0)
+    {
+      m_lastTime = Simulator::Now ();
+      uint32_t bytes = m_bytesTransmitted * 8;
+      m_bytesTransmitted = 0;
+      m_usage = (bytes / delta.GetSeconds ()) / m_link[0].m_dst->GetDataRate ().GetBitRate ();
+    }
 }
 
 } // namespace ns3

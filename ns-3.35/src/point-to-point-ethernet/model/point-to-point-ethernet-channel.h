@@ -101,6 +101,8 @@ public:
    */
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
+  void UpdateUsage (void);
+
 protected:
   /**
    * \brief Get the delay associated with this channel
@@ -147,6 +149,9 @@ protected:
 private:
   /** Each point to point link has exactly two net devices. */
   static const std::size_t N_DEVICES = 2;
+
+  Time m_lastTime;
+  uint32_t m_bytesTransmitted;
 
   Time m_delay; //!< Propagation delay
   std::size_t m_nDevices; //!< Devices of this channel
