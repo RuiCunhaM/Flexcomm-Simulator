@@ -99,9 +99,11 @@ OFSwitch13InternalHelper::CreateOpenFlowChannels (void)
         break;
       }
     case OFSwitch13InternalHelper::DEDICATEDCSMA:
-      case OFSwitch13InternalHelper::DEDICATEDP2P: {
+    case OFSwitch13InternalHelper::DEDICATEDP2P:
+      case OFSwitch13InternalHelper::DEDICATEDP2PETHERNET: {
         // Setting channel/device data rates.
         m_p2pHelper.SetDeviceAttribute ("DataRate", DataRateValue (m_channelDataRate));
+        m_p2pEthernetHelper.SetDeviceAttribute ("DataRate", DataRateValue (m_channelDataRate));
         m_csmaHelper.SetChannelAttribute ("DataRate", DataRateValue (m_channelDataRate));
 
         // To avoid IP datagram fragmentation, we are configuring the OpenFlow
@@ -110,10 +112,13 @@ OFSwitch13InternalHelper::CreateOpenFlowChannels (void)
         // segment size at OFSwitch13Controller and OFSwitch13Device.
         m_csmaHelper.SetDeviceAttribute ("Mtu", UintegerValue (9000));
         m_p2pHelper.SetDeviceAttribute ("Mtu", UintegerValue (9000));
+        m_p2pEthernetHelper.SetDeviceAttribute ("Mtu", UintegerValue (9000));
 
         // Using large queues on devices to avoid losing packets.
         m_csmaHelper.SetQueue ("ns3::DropTailQueue<Packet>", "MaxSize", StringValue ("65536p"));
         m_p2pHelper.SetQueue ("ns3::DropTailQueue<Packet>", "MaxSize", StringValue ("65536p"));
+        m_p2pEthernetHelper.SetQueue ("ns3::DropTailQueue<Packet>", "MaxSize",
+                                      StringValue ("65536p"));
 
         // Create individual channels for each pair switch/controller.
         UintegerValue portValue;
@@ -193,6 +198,9 @@ OFSwitch13InternalHelper::Connect (Ptr<Node> ctrl, Ptr<Node> swtch)
       }
       case OFSwitch13InternalHelper::DEDICATEDP2P: {
         return m_p2pHelper.Install (pairNodes);
+      }
+      case OFSwitch13InternalHelper::DEDICATEDP2PETHERNET: {
+        return m_p2pEthernetHelper.Install (pairNodes);
       }
     case OFSwitch13InternalHelper::SINGLECSMA:
       default: {

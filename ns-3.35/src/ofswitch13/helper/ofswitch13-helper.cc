@@ -60,11 +60,13 @@ OFSwitch13Helper::GetTypeId (void)
                          MakeDataRateChecker ())
           .AddAttribute ("ChannelType", "The configuration used to create the OpenFlow channel",
                          TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
-                         EnumValue (OFSwitch13Helper::SINGLECSMA),
+                         EnumValue (OFSwitch13Helper::DEDICATEDP2PETHERNET),
                          MakeEnumAccessor (&OFSwitch13Helper::SetChannelType),
                          MakeEnumChecker (OFSwitch13Helper::SINGLECSMA, "SingleCsma",
                                           OFSwitch13Helper::DEDICATEDCSMA, "DedicatedCsma",
-                                          OFSwitch13Helper::DEDICATEDP2P, "DedicatedP2p"));
+                                          OFSwitch13Helper::DEDICATEDP2P, "DedicatedP2p",
+                                          OFSwitch13Helper::DEDICATEDP2PETHERNET,
+                                          "DedicatedP2pEthernet"));
   return tid;
 }
 
@@ -108,6 +110,10 @@ OFSwitch13Helper::EnableOpenFlowPcap (std::string prefix, bool promiscuous)
       }
       case OFSwitch13Helper::DEDICATEDP2P: {
         m_p2pHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
+        break;
+      }
+      case OFSwitch13Helper::DEDICATEDP2PETHERNET: {
+        m_p2pEthernetHelper.EnablePcap (prefix, m_controlDevs, promiscuous);
         break;
       }
       default: {

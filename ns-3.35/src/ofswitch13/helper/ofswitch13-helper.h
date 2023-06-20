@@ -21,6 +21,7 @@
 #ifndef OFSWITCH13_HELPER_H
 #define OFSWITCH13_HELPER_H
 
+#include "ns3/point-to-point-ethernet-helper.h"
 #include <ns3/ofswitch13-interface.h>
 #include <ns3/ofswitch13-controller.h>
 #include <ns3/ofswitch13-device.h>
@@ -78,7 +79,8 @@ public:
   enum ChannelType {
     SINGLECSMA = 0, //!< Uses a single shared CSMA channel.
     DEDICATEDCSMA = 1, //!< Uses individual CSMA channels.
-    DEDICATEDP2P = 2 //!< Uses individual P2P channels.
+    DEDICATEDP2P = 2, //!< Uses individual P2P channels.
+    DEDICATEDP2PETHERNET = 3 //!< Uses individual P2PEthernet channels.
   };
 
   OFSwitch13Helper (); //!< Default constructor.
@@ -225,6 +227,7 @@ protected:
   InternetStackHelper m_internet; //!< Helper for TCP/IP stack.
   CsmaHelper m_csmaHelper; //!< Helper for CSMA links.
   PointToPointHelper m_p2pHelper; //!< Helper for P2P links.
+  PointToPointEthernetHelper m_p2pEthernetHelper; //!< Helper for P2PEthernet links.
 
   static Ipv4AddressHelper m_ipv4helper; //!< Helper for IP address.
 };
