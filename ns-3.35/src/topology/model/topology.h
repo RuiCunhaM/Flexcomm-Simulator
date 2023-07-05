@@ -26,6 +26,7 @@
 #include "ns3/core-module.h"
 #include "ns3/node.h"
 #include <boost/graph/adjacency_list.hpp>
+#include "ns3/channel.h"
 
 using namespace boost;
 
@@ -44,7 +45,7 @@ public:
 
   static void AddSwitch (Ptr<Node> sw);
   static void AddHost (Ptr<Node> host, Ipv4Address ip);
-  static void AddLink (Ptr<Node> n1, Ptr<Node> n2);
+  static void AddLink (Ptr<Node> n1, Ptr<Node> n2, Ptr<Channel> channel);
 
   static std::vector<Ptr<Node>> DijkstraShortestPath (Ptr<Node> src, Ptr<Node> dst);
   static std::vector<Ptr<Node>> DijkstraShortestPath (Ptr<Node> src, Ipv4Address dst);
@@ -64,6 +65,8 @@ public:
 
   static Vertex NodeToVertex (Ptr<Node> node);
 
+  static Ptr<Channel> GetChannel (Ptr<Node> n1, Ptr<Node> n2);
+
 private:
   static Graph m_graph;
 
@@ -72,10 +75,12 @@ private:
   static std::map<Vertex, Ptr<Node>> m_nodes;
   static std::map<Ipv4Address, Vertex> m_ip_to_vertex;
   static std::map<Vertex, Ipv4Address> m_vertex_to_ip;
+  static std::map<Edge, Ptr<Channel>> m_channels;
 
   static std::vector<Vertex> DijkstraShortestPathsInternal (Vertex src);
   static std::vector<Vertex> DijkstraShortestPathInternal (Vertex src, Vertex dst);
   static void UpdateEdgeWeight (Edge ed, int newWeight);
+  static Ptr<Channel> GetChannel (Edge e);
 
   static Vertex AddNode (Ptr<Node> node);
 };

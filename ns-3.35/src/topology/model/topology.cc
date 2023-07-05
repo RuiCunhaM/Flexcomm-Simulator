@@ -35,6 +35,7 @@ std::map<Ptr<Node>, Vertex> Topology::m_vertexes = std::map<Ptr<Node>, Vertex> (
 std::map<Vertex, Ptr<Node>> Topology::m_nodes = std::map<Vertex, Ptr<Node>> ();
 std::map<Ipv4Address, Vertex> Topology::m_ip_to_vertex = std::map<Ipv4Address, Vertex> ();
 std::map<Vertex, Ipv4Address> Topology::m_vertex_to_ip = std::map<Vertex, Ipv4Address> ();
+std::map<Edge, Ptr<Channel>> Topology::m_channels = std::map<Edge, Ptr<Channel>> ();
 
 TypeId
 Topology::GetTypeId (void)
@@ -75,11 +76,12 @@ Topology::AddHost (Ptr<Node> host, Ipv4Address ip)
 }
 
 void
-Topology::AddLink (Ptr<Node> n1, Ptr<Node> n2)
+Topology::AddLink (Ptr<Node> n1, Ptr<Node> n2, Ptr<Channel> channel)
 {
   Vertex vd1 = m_vertexes[n1];
   Vertex vd2 = m_vertexes[n2];
-  add_edge (vd1, vd2, 1, m_graph);
+  Edge e = add_edge (vd1, vd2, 1, m_graph).first;
+  m_channels[e] = channel;
 }
 
 std::vector<Vertex>
@@ -193,7 +195,6 @@ Topology::NodeToVertex (Ptr<Node> node)
 void
 Topology::UpdateEdgeWeight (Ptr<Node> n1, Ptr<Node> n2, int newWeight)
 {
-  Edge ed;
   std::pair<Edge, bool> pair = boost::edge (m_vertexes[n1], m_vertexes[n2], m_graph);
 
   if (pair.second)
@@ -207,6 +208,22 @@ Topology::UpdateEdgeWeight (Edge ed, int newWeight)
   if (newWeight < 0)
     newWeight = 0;
   put (edge_weight_t (), m_graph, ed, newWeight);
+}
+
+Ptr<Channel>
+Topology::GetChannel (Ptr<Node> n1, Ptr<Node> n2)
+{
+  std::pair<Edge, bool> pair = boost::edge (m_vertexes[n1], m_vertexes[n2], m_graph);
+
+  if (pair.second)
+    return Topology::GetChannel (pair.first);
+  return NULL;
+}
+
+Ptr<Channel>
+Topology::GetChannel (Edge e)
+{
+  return m_channels[e];
 }
 
 } // namespace ns3

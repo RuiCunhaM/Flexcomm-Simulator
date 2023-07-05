@@ -53,7 +53,8 @@ installLinks (toml::table tbl, string outPath)
                                     StringValue (configs["dataRate"].value_or ("1000Gbps")));
 
       NetDeviceContainer p2pDevices = p2pHelper.Install (NodeContainer (n0, n1));
-      Names::Add (pair.first.data (), p2pDevices.Get (0)->GetChannel ());
+      Ptr<Channel> channel = p2pDevices.Get (0)->GetChannel ();
+      Names::Add (pair.first.data (), channel);
 
       if (configs["pcap"].value_or (false))
         p2pHelper.EnablePcap (SystemPath::Append (outPath, "capture"), p2pDevices, true);
@@ -70,7 +71,7 @@ installLinks (toml::table tbl, string outPath)
           Topology::AddHost (n1, ips.GetAddress (0));
         }
 
-      Topology::AddLink (n0, n1);
+      Topology::AddLink (n0, n1, channel);
     }
 }
 
