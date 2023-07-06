@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-void parseEnergy (std::string topoName);
+void parseEnergy (std::string topoName, std::string estiFile, std::string flexFile);
 
 } // namespace ns3
 

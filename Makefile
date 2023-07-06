@@ -6,7 +6,9 @@ TOPO=example
 CONTROLLER=ns3::SimpleController
 CHECKSUM=false
 OUTPUTS=outputs
-OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM)" --cwd=../$(OUTPUTS)
+ESTIFILE=estimate.json
+FLEXFILE=flex.json
+OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM) --estifile=$(ESTIFILE) --flexfile=$(FLEXFILE)" --cwd=../$(OUTPUTS)
 CXXFLAGS="-Wall"
 
 all:

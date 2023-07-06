@@ -35,12 +35,16 @@ main (int argc, char *argv[])
 
   std::string topo;
   std::string ctrl;
+  std::string estiFile;
+  std::string flexFile;
   bool checksum;
 
   CommandLine cmd;
   cmd.AddValue ("topo", "Topology to load", topo);
   cmd.AddValue ("ctrl", "Controller to use", ctrl);
   cmd.AddValue ("checksum", "Calculate checksums", checksum);
+  cmd.AddValue ("estifile", "Estimate file", estiFile);
+  cmd.AddValue ("flexfile", "Flexibility file", flexFile);
   cmd.Parse (argc, argv);
 
   if (ctrl == "External")
@@ -56,7 +60,7 @@ main (int argc, char *argv[])
   uint64_t endTime;
   clock.Start ();
 
-  Parser::ParseTopology (topo);
+  Parser::ParseTopology (topo, estiFile, flexFile);
 
   endTime = clock.End ();
   uint64_t milliseconds = endTime % 1000;

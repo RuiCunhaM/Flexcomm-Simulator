@@ -30,7 +30,7 @@ namespace ns3 {
 class Parser
 {
 public:
-  static void ParseTopology (std::string topoName);
+  static void ParseTopology (std::string topoName, std::string estiFile, std::string flexFile);
 };
 
 } // namespace ns3

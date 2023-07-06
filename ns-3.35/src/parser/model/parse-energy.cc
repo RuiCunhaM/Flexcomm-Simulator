@@ -31,10 +31,10 @@ using namespace std;
 using json = nlohmann::json;
 
 void
-parseEnergy (std::string topoName)
+parseEnergy (std::string topoName, std::string estiFile, std::string flexFile)
 {
-  string flexFilePath = SystemPath::Append (topoName, "flex.json");
-  string estiFilePath = SystemPath::Append (topoName, "estimate.json");
+  string flexFilePath = SystemPath::Append (topoName, flexFile);
+  string estiFilePath = SystemPath::Append (topoName, estiFile);
 
   if (SystemPath::Exists (flexFilePath))
     {
@@ -48,11 +48,11 @@ parseEnergy (std::string topoName)
         }
       catch (const json::parse_error &err)
         {
-          NS_ABORT_MSG ("Failed to parse flex.json");
+          NS_ABORT_MSG ("Failed to parse " << flexFilePath);
         }
     }
   else
-    NS_LOG_UNCOND ("flex.json not found");
+    std::cout << flexFilePath << " not found. Skipping flexibility values." << std::endl;
 
   if (SystemPath::Exists (estiFilePath))
     {
@@ -66,11 +66,11 @@ parseEnergy (std::string topoName)
         }
       catch (const json::parse_error &err)
         {
-          NS_ABORT_MSG ("Failed to parse estimate.json");
+          NS_ABORT_MSG ("Failed to parse " << estiFilePath);
         }
     }
   else
-    NS_LOG_UNCOND ("estimate.json not found");
+    std::cout << estiFilePath << " not found. Skipping estimate values." << std::endl;
 }
 
 } // namespace ns3
