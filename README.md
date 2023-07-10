@@ -89,13 +89,13 @@ The `SimpleControllerFlex` also calculates each minute the shortest paths using 
 #### Simple Controller
 
 ```
-make run TOPO=example CONTROLLER=Simple OUTPUTS=simple
+make run TOPO=example CONTROLLER=ns3::SimpleController OUTPUTS=simple
 ```
 
 #### Simple Controller (Flexibility Aware)
 
 ```
-make run TOPO=example CONTROLLER=SimpleFlex OUTPUTS=simple_flex
+make run TOPO=example CONTROLLER=ns3::SimpleControllerFlex OUTPUTS=simple_flex
 ```
 
 ## Interpret results
