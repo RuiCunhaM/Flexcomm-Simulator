@@ -20,22 +20,22 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#ifndef CPU_LOAD_BASE_DISCRETE_ENERGY_HELPER_H_
-#define CPU_LOAD_BASE_DISCRETE_ENERGY_HELPER_H_
+#ifndef CPU_LOAD_BASED_DISCRETE_ENERGY_HELPER_H_
+#define CPU_LOAD_BASED_DISCRETE_ENERGY_HELPER_H_
 
-#include "ns3/cpu-load-base-energy-helper.h"
+#include "ns3/cpu-load-based-energy-helper.h"
 
 namespace ns3 {
 
-class CpuLoadBaseDiscreteEnergyHelper : public CpuLoadBaseEnergyHelper
+class CpuLoadBasedDiscreteEnergyHelper : public CpuLoadBasedEnergyHelper
 {
 public:
-  CpuLoadBaseDiscreteEnergyHelper ();
-  ~CpuLoadBaseDiscreteEnergyHelper ();
+  CpuLoadBasedDiscreteEnergyHelper ();
+  ~CpuLoadBasedDiscreteEnergyHelper ();
 
 protected:
   virtual Ptr<NodeEnergyModel> DoInstall (Ptr<Node> node) const;
-  ObjectFactory m_cpuLoadBaseDiscreteEnergyModel;
+  ObjectFactory m_cpuLoadBasedDiscreteEnergyModel;
 };
 
 } // namespace ns3

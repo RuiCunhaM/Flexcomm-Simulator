@@ -20,38 +20,47 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#include "cpu-load-base-discrete-energy-helper.h"
-#include "ns3/cpu-load-base-discrete-energy-model.h"
+#include "cpu-load-based-energy-helper.h"
+#include "ns3/cpu-load-based-energy-model.h"
 
 namespace ns3 {
 
-CpuLoadBaseDiscreteEnergyHelper::CpuLoadBaseDiscreteEnergyHelper ()
+CpuLoadBasedEnergyHelper::CpuLoadBasedEnergyHelper ()
 {
-  m_cpuLoadBaseDiscreteEnergyModel.SetTypeId ("ns3::CpuLoadBaseDiscreteEnergyModel");
+  m_cpuLoadBasedEnergyModel.SetTypeId ("ns3::CpuLoadBasedEnergyModel");
 }
 
-CpuLoadBaseDiscreteEnergyHelper::~CpuLoadBaseDiscreteEnergyHelper ()
+CpuLoadBasedEnergyHelper::~CpuLoadBasedEnergyHelper ()
 {
 }
 
 Ptr<NodeEnergyModel>
-CpuLoadBaseDiscreteEnergyHelper::DoInstall (Ptr<Node> node) const
+CpuLoadBasedEnergyHelper::DoInstall (Ptr<Node> node) const
 {
   NS_ASSERT (node != NULL);
   // check if energy model already exists
   Ptr<NodeEnergyModel> nenergy = node->GetObject<NodeEnergyModel> ();
-
   if (nenergy != NULL)
-    NS_FATAL_ERROR ("Node energy model already installed!");
-
-  Ptr<CpuLoadBaseDiscreteEnergyModel> energy =
-      m_cpuLoadBaseDiscreteEnergyModel.Create<CpuLoadBaseDiscreteEnergyModel> ();
+    {
+      NS_FATAL_ERROR ("Node energy model already installed!");
+    }
+  Ptr<CpuLoadBasedEnergyModel> energy =
+      m_cpuLoadBasedEnergyModel.Create<CpuLoadBasedEnergyModel> ();
   NS_ASSERT (energy != NULL);
   energy->SetNode (node);
   energy->SetUsageValues (m_values);
   node->AggregateObject (energy);
   energy->Initialize ();
   return energy;
+}
+
+void
+CpuLoadBasedEnergyHelper::SetUsageLvels (std::map<double, double> values)
+{
+  if (values.size () < 2)
+    NS_ABORT_MSG ("Unsuficient values");
+
+  m_values = values;
 }
 
 } // namespace ns3

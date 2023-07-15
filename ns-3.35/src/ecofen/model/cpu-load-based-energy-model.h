@@ -20,20 +20,20 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#ifndef CPU_LOAD_BASE_ENERGY_MODEL_H_
-#define CPU_LOAD_BASE_ENERGY_MODEL_H_
+#ifndef CPU_LOAD_BASED_ENERGY_MODEL_H_
+#define CPU_LOAD_BASED_ENERGY_MODEL_H_
 
 #include "node-energy-model.h"
 #include "ns3/core-module.h"
 
 namespace ns3 {
 
-class CpuLoadBaseEnergyModel : public NodeEnergyModel
+class CpuLoadBasedEnergyModel : public NodeEnergyModel
 {
 public:
   static TypeId GetTypeId (void);
-  CpuLoadBaseEnergyModel ();
-  virtual ~CpuLoadBaseEnergyModel ();
+  CpuLoadBasedEnergyModel ();
+  virtual ~CpuLoadBasedEnergyModel ();
 
   double GetPowerConsumption (void);
   void SetUsageValues (std::map<double, double> values);

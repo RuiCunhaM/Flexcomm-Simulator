@@ -30,7 +30,7 @@ using namespace std;
 #define TEMPLATES_FILE_DEFAULT "../topologies/energy-templates.toml"
 
 Ptr<NodeEnergyHelper>
-parseLoadBaseModel (toml::table chassis, Ptr<CpuLoadBaseEnergyHelper> helper)
+parseLoadBasedModel (toml::table chassis, Ptr<CpuLoadBasedEnergyHelper> helper)
 {
   toml::array &percentages = *chassis.get_as<toml::array> ("percentages");
   toml::array &consumptions = *chassis.get_as<toml::array> ("consumptions");
@@ -57,14 +57,14 @@ parseChassisEnergyModel (toml::table chassis)
     }
   else if (!chassisModel.compare ("cpuLoad"))
     {
-      Ptr<CpuLoadBaseEnergyHelper> helper = CreateObject<CpuLoadBaseEnergyHelper> ();
-      return parseLoadBaseModel (chassis, helper);
+      Ptr<CpuLoadBasedEnergyHelper> helper = CreateObject<CpuLoadBasedEnergyHelper> ();
+      return parseLoadBasedModel (chassis, helper);
     }
   else if (!chassisModel.compare ("cpuLoadDiscrete"))
     {
-      Ptr<CpuLoadBaseDiscreteEnergyHelper> helper =
-          CreateObject<CpuLoadBaseDiscreteEnergyHelper> ();
-      return parseLoadBaseModel (chassis, helper);
+      Ptr<CpuLoadBasedDiscreteEnergyHelper> helper =
+          CreateObject<CpuLoadBasedDiscreteEnergyHelper> ();
+      return parseLoadBasedModel (chassis, helper);
     }
   else
     {

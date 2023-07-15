@@ -20,35 +20,35 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#include "cpu-load-base-energy-model.h"
+#include "cpu-load-based-energy-model.h"
 #include "ns3/node-energy-model.h"
 #include "ns3/ofswitch13-device.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (CpuLoadBaseEnergyModel);
+NS_OBJECT_ENSURE_REGISTERED (CpuLoadBasedEnergyModel);
 
 TypeId
-CpuLoadBaseEnergyModel::GetTypeId (void)
+CpuLoadBasedEnergyModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::CpuLoadBaseEnergyModel")
+  static TypeId tid = TypeId ("ns3::CpuLoadBasedEnergyModel")
                           .SetParent<NodeEnergyModel> ()
-                          .AddConstructor<CpuLoadBaseEnergyModel> ();
+                          .AddConstructor<CpuLoadBasedEnergyModel> ();
   return tid;
 }
 
-CpuLoadBaseEnergyModel::CpuLoadBaseEnergyModel ()
+CpuLoadBasedEnergyModel::CpuLoadBasedEnergyModel ()
 {
   m_percentages = {0.0, 1.0};
   m_values = {100.0, 200.0};
 }
 
-CpuLoadBaseEnergyModel::~CpuLoadBaseEnergyModel ()
+CpuLoadBasedEnergyModel::~CpuLoadBasedEnergyModel ()
 {
 }
 
 double
-CpuLoadBaseEnergyModel::GetPowerConsumption ()
+CpuLoadBasedEnergyModel::GetPowerConsumption ()
 {
   Ptr<OFSwitch13Device> device = m_node->GetObject<OFSwitch13Device> ();
   double cpuUsage = device->GetCpuUsage ();
@@ -71,7 +71,7 @@ CpuLoadBaseEnergyModel::GetPowerConsumption ()
 }
 
 void
-CpuLoadBaseEnergyModel::SetUsageValues (std::map<double, double> values)
+CpuLoadBasedEnergyModel::SetUsageValues (std::map<double, double> values)
 {
   m_percentages.clear ();
   m_values.clear ();

@@ -20,22 +20,25 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#ifndef CPU_LOAD_BASE_DISCRETE_ENERGY_MODEL_H_
-#define CPU_LOAD_BASE_DISCRETE_ENERGY_MODEL_H_
+#ifndef CPU_LOAD_BASED_ENERGY_HELPER_H_
+#define CPU_LOAD_BASED_ENERGY_HELPER_H_
 
-#include "ns3/core-module.h"
-#include "ns3/cpu-load-base-energy-model.h"
+#include "node-energy-helper.h"
 
 namespace ns3 {
 
-class CpuLoadBaseDiscreteEnergyModel : public CpuLoadBaseEnergyModel
+class CpuLoadBasedEnergyHelper : public NodeEnergyHelper
 {
 public:
-  static TypeId GetTypeId (void);
-  CpuLoadBaseDiscreteEnergyModel ();
-  virtual ~CpuLoadBaseDiscreteEnergyModel ();
+  CpuLoadBasedEnergyHelper ();
+  ~CpuLoadBasedEnergyHelper ();
 
-  double GetPowerConsumption (void);
+  void SetUsageLvels (std::map<double, double> values);
+
+protected:
+  virtual Ptr<NodeEnergyModel> DoInstall (Ptr<Node> node) const;
+  ObjectFactory m_cpuLoadBasedEnergyModel;
+  std::map<double, double> m_values;
 };
 
 } // namespace ns3

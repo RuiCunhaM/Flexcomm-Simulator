@@ -16,8 +16,8 @@ def build(bld):
         'model/complete-netdevice-energy-model.cc',
         'model/on-off-netdevice.cc',
         'model/on-off-node.cc',
-        'model/cpu-load-base-energy-model.cc',
-        'model/cpu-load-base-discrete-energy-model.cc',
+        'model/cpu-load-based-energy-model.cc',
+        'model/cpu-load-based-discrete-energy-model.cc',
 
         # Uncomment these lines to compile these helper source files.
         'helper/node-energy-helper.cc',
@@ -29,8 +29,8 @@ def build(bld):
         'helper/consumption-logger.cc',
         'helper/on-off-netdevice-helper.cc',
         'helper/on-off-node-helper.cc',
-        'helper/cpu-load-base-energy-helper.cc',
-        'helper/cpu-load-base-discrete-energy-helper.cc',
+        'helper/cpu-load-based-energy-helper.cc',
+        'helper/cpu-load-based-discrete-energy-helper.cc',
         ]
 
     # Create the module's test library.
@@ -60,8 +60,8 @@ def build(bld):
         'model/on-off-node.h',
         'model/lpi-link.h',
         'model/agenda.h',
-        'model/cpu-load-base-energy-model.h',
-        'model/cpu-load-base-discrete-energy-model.h',
+        'model/cpu-load-based-energy-model.h',
+        'model/cpu-load-based-discrete-energy-model.h',
 
         # Uncomment these lines to install these helper header files.
         'helper/node-energy-helper.h',
@@ -74,8 +74,8 @@ def build(bld):
         'helper/on-off-netdevice-helper.h',
         'helper/on-off-node-helper.h',
         'helper/agenda-helper.h',
-        'helper/cpu-load-base-energy-helper.h',
-        'helper/cpu-load-base-discrete-energy-helper.h',
+        'helper/cpu-load-based-energy-helper.h',
+        'helper/cpu-load-based-discrete-energy-helper.h',
         ]
 
     # Uncomment these lines if this module needs a library such as the

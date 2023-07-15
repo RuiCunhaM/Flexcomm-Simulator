@@ -20,32 +20,32 @@
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
 
-#include "cpu-load-base-discrete-energy-model.h"
+#include "cpu-load-based-discrete-energy-model.h"
 #include "ns3/ofswitch13-device.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (CpuLoadBaseDiscreteEnergyModel);
+NS_OBJECT_ENSURE_REGISTERED (CpuLoadBasedDiscreteEnergyModel);
 
 TypeId
-CpuLoadBaseDiscreteEnergyModel::GetTypeId (void)
+CpuLoadBasedDiscreteEnergyModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::CpuLoadBaseDiscreteEnergyModel")
-                          .SetParent<CpuLoadBaseEnergyModel> ()
-                          .AddConstructor<CpuLoadBaseDiscreteEnergyModel> ();
+  static TypeId tid = TypeId ("ns3::CpuLoadBasedDiscreteEnergyModel")
+                          .SetParent<CpuLoadBasedEnergyModel> ()
+                          .AddConstructor<CpuLoadBasedDiscreteEnergyModel> ();
   return tid;
 }
 
-CpuLoadBaseDiscreteEnergyModel::CpuLoadBaseDiscreteEnergyModel ()
+CpuLoadBasedDiscreteEnergyModel::CpuLoadBasedDiscreteEnergyModel ()
 {
 }
 
-CpuLoadBaseDiscreteEnergyModel::~CpuLoadBaseDiscreteEnergyModel ()
+CpuLoadBasedDiscreteEnergyModel::~CpuLoadBasedDiscreteEnergyModel ()
 {
 }
 
 double
-CpuLoadBaseDiscreteEnergyModel::GetPowerConsumption ()
+CpuLoadBasedDiscreteEnergyModel::GetPowerConsumption ()
 {
   Ptr<OFSwitch13Device> device = m_node->GetObject<OFSwitch13Device> ();
   double cpuUsage = device->GetCpuUsage ();
