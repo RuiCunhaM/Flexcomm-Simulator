@@ -27,53 +27,11 @@
 #include "ns3/node.h"
 #include "ns3/ecofen-module.h"
 #include "ns3/topology-module.h"
+#include "parse-templates.h"
 
 namespace ns3 {
 
 using namespace std;
-
-Ptr<NodeEnergyHelper>
-parseLoadBaseModel (toml::table chassis, Ptr<CpuLoadBaseEnergyHelper> helper)
-{
-  toml::array &percentages = *chassis.get_as<toml::array> ("percentages");
-  toml::array &consumptions = *chassis.get_as<toml::array> ("consumptions");
-  map<double, double> values = map<double, double> ();
-
-  for (size_t i = 0; i < percentages.size (); i++)
-    values[percentages.at (i).ref<double> ()] = consumptions.at (i).ref<double> ();
-
-  helper->SetUsageLvels (values);
-  return helper;
-}
-
-Ptr<NodeEnergyHelper>
-parseChassisEnergyModel (toml::table chassis)
-{
-  string chassisModel = chassis["model"].ref<string> ();
-
-  if (!chassisModel.compare ("basic"))
-    {
-      Ptr<BasicNodeEnergyHelper> helper = CreateObject<BasicNodeEnergyHelper> ();
-      helper->Set ("OnConso", DoubleValue (chassis["onConso"].value_or (0.0)));
-      helper->Set ("OffConso", DoubleValue (chassis["offConso"].value_or (0.0)));
-      return helper;
-    }
-  else if (!chassisModel.compare ("cpuLoad"))
-    {
-      Ptr<CpuLoadBaseEnergyHelper> helper = CreateObject<CpuLoadBaseEnergyHelper> ();
-      return parseLoadBaseModel (chassis, helper);
-    }
-  else if (!chassisModel.compare ("cpuLoadDiscrete"))
-    {
-      Ptr<CpuLoadBaseDiscreteEnergyHelper> helper =
-          CreateObject<CpuLoadBaseDiscreteEnergyHelper> ();
-      return parseLoadBaseModel (chassis, helper);
-    }
-  else
-    {
-      NS_ABORT_MSG ("Unknown " << chassisModel << " chassis model");
-    }
-}
 
 void
 parseEnergyModels (toml::table configs, Ptr<Node> sw)
@@ -82,8 +40,14 @@ parseEnergyModels (toml::table configs, Ptr<Node> sw)
     return;
 
   toml::table chassis = *configs["chassis"].as_table ();
-  Ptr<NodeEnergyHelper> chassisHelper = parseChassisEnergyModel (chassis);
-  chassisHelper->Install (sw);
+  Ptr<NodeEnergyHelper> model = NULL;
+
+  if (chassis.contains ("template"))
+    model = Parser::m_templates[chassis["template"].ref<std::string> ()];
+  else
+    model = parseChassisEnergyModel (chassis);
+
+  model->Install (sw);
 
   // TODO: Add interface models
 }

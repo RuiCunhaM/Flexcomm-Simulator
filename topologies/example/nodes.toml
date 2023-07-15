@@ -9,18 +9,14 @@ type = "switch"
 cpuCapacity = "10Gbps"
 
 [S1.chassis]
-model = "cpuLoad"
-percentages = [0.0, 1.0]
-consumptions = [100.0, 300.0]
+template = "default"
 
 [S2]
 type = "switch"
 cpuCapacity = "10Gbps"
 
 [S2.chassis]
-model = "cpuLoad"
-percentages = [0.0, 1.0]
-consumptions = [100.0, 300.0]
+template = "default2"
 
 [S3]
 type = "switch"

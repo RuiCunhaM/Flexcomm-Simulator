@@ -26,10 +26,14 @@
 #include "parse-apps.h"
 #include "parse-configs.h"
 #include "parse-energy.h"
+#include "parse-templates.h"
 
 namespace ns3 {
 
 using namespace std;
+
+std::map<std::string, Ptr<NodeEnergyHelper>> Parser::m_templates =
+    std::map<std::string, Ptr<NodeEnergyHelper>> ();
 
 void
 Parser::ParseTopology (string topoName, string estiFile, string flexFile)
@@ -40,6 +44,7 @@ Parser::ParseTopology (string topoName, string estiFile, string flexFile)
   NS_ABORT_MSG_IF (!SystemPath::Exists (topoPath), "Topology " << topoName << " not found");
 
   parseEnergy (topoPath, estiFile, flexFile);
+  parseTemplates (topoPath);
   parseNodes (topoPath);
   parseLinks (topoPath, outPath);
   parseApps (topoPath);

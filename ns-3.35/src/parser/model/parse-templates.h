@@ -19,23 +19,19 @@
  *
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
-#ifndef PARSER_H
-#define PARSER_H
+
+#ifndef PARSE_TEMPLATES_H
+#define PARSE_TEMPLATES_H
 
 #include "ns3/core-module.h"
-#include "ns3/node-container.h"
-#include "ns3/node-energy-helper.h"
+#include "ns3/ecofen-module.h"
+#include "toml.hpp"
 
 namespace ns3 {
 
-class Parser
-{
-public:
-  static void ParseTopology (std::string topoName, std::string estiFile, std::string flexFile);
-
-  static std::map<std::string, Ptr<NodeEnergyHelper>> m_templates;
-};
+Ptr<NodeEnergyHelper> parseChassisEnergyModel (toml::table chassis);
+void parseTemplates (std::string topoName);
 
 } // namespace ns3
 
-#endif /* PARSER_H */
+#endif /* PARSE_TEMPLATES_H */
