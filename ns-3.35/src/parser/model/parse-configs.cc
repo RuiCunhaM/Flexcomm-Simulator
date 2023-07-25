@@ -62,7 +62,7 @@ parseSwitchStatsConfigs (toml::table switchConfigs, string outPath)
       statsHelper.InstallAll ();
 
       SwitchStatsLogger statsLogger (SystemPath::Append (outPath, "switch-stats"));
-      statsLogger.LogStatsAll (Time (switchConfigs["interval"].value_or ("1s")), stopTime.Get ());
+      statsLogger.LogStatsAll (Time (switchConfigs["interval"].value_or ("5s")), stopTime.Get ());
     }
 }
 
