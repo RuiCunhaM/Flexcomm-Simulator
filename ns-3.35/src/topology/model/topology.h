@@ -56,6 +56,9 @@ public:
   static std::vector<Ptr<Node>> DijkstraShortestPaths (Ipv4Address src);
   static std::vector<Ptr<Node>> DijkstraShortestPaths (std::string src);
 
+  static std::vector<std::pair<std::vector<Ptr<Node>>, int>> DijkstraShortestPaths (Ptr<Node> src,
+                                                                                    Ptr<Node> dst);
+
   static void UpdateEdgeWeight (Ptr<Node> n1, Ptr<Node> n2, int newWeight);
 
   static Graph GetGraph ();
