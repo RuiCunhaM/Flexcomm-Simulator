@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import tomllib
+import toml
 import argparse
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -8,12 +8,8 @@ import matplotlib.pyplot as plt
 
 def vis_topo(topology, showHosts):
     try:
-        nodes_file = tomllib.load(
-            open(f"topologies/{topology}/nodes.toml", "rb")
-        )
-        links_file = tomllib.load(
-            open(f"topologies/{topology}/links.toml", "rb")
-        )
+        nodes_file = toml.load(f"topologies/{topology}/nodes.toml")
+        links_file = toml.load(f"topologies/{topology}/links.toml")
     except FileNotFoundError:
         print("Topology not found")
         exit(1)
