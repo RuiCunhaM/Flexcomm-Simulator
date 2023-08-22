@@ -102,6 +102,7 @@ public:
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
   void UpdateUsage (void);
+  DataRate GetDataRate (void);
 
 protected:
   /**

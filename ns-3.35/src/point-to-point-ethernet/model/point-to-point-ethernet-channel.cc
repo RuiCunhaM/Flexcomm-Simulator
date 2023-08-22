@@ -162,8 +162,14 @@ PointToPointEthernetChannel::UpdateUsage ()
       m_lastTime = Simulator::Now ();
       uint32_t bytes = m_bytesTransmitted * 8;
       m_bytesTransmitted = 0;
-      m_usage = (bytes / delta.GetSeconds ()) / m_link[0].m_dst->GetDataRate ().GetBitRate ();
+      m_usage = (bytes / delta.GetSeconds ()) / GetDataRate ().GetBitRate ();
     }
+}
+
+DataRate
+PointToPointEthernetChannel::GetDataRate ()
+{
+  return m_link[0].m_dst->GetDataRate ();
 }
 
 } // namespace ns3

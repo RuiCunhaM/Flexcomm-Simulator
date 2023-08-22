@@ -19,6 +19,7 @@
 
 #include <string>
 #include <stdint.h>
+#include "ns3/data-rate.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/core-module.h"
@@ -81,6 +82,7 @@ public:
 
   // To be implemented by subclasses
   virtual void UpdateUsage (void);
+  virtual DataRate GetDataRate (void);
 
 protected:
   double m_usage;

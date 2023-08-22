@@ -83,4 +83,10 @@ Channel::UpdateUsage (void)
 {
 }
 
+DataRate
+Channel::GetDataRate ()
+{
+  return DataRate ();
+}
+
 } // namespace ns3
