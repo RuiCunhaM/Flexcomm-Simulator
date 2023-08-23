@@ -60,6 +60,7 @@ public:
                                                                                     Ptr<Node> dst);
 
   static void UpdateEdgeWeight (Ptr<Node> n1, Ptr<Node> n2, int newWeight);
+  static int GetEdgeWeight (Ptr<Node> n1, Ptr<Node> n2);
 
   static Graph GetGraph ();
 
@@ -83,6 +84,8 @@ private:
   static std::vector<Vertex> DijkstraShortestPathsInternal (Vertex src);
   static std::vector<Vertex> DijkstraShortestPathInternal (Vertex src, Vertex dst);
   static void UpdateEdgeWeight (Edge ed, int newWeight);
+  static int GetEdgeWeight (Edge ed);
+
   static Ptr<Channel> GetChannel (Edge e);
 
   static Vertex AddNode (Ptr<Node> node);
