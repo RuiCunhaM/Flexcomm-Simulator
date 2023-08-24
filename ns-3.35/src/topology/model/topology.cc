@@ -255,6 +255,22 @@ Topology::UpdateEdgeWeight (Edge ed, int newWeight)
   put (edge_weight_t (), m_graph, ed, newWeight);
 }
 
+int 
+Topology::GetEdgeWeight (Ptr<Node> n1, Ptr<Node> n2)
+{
+  std::pair<Edge, bool> pair = boost::edge (m_vertexes[n1], m_vertexes[n2], m_graph);
+
+  if (pair.second)
+    return Topology::GetEdgeWeight (pair.first);
+  return -1;
+}
+
+int
+Topology::GetEdgeWeight (Edge e)
+{
+  return get (edge_weight_t (), m_graph, e);
+}
+
 Ptr<Channel>
 Topology::GetChannel (Ptr<Node> n1, Ptr<Node> n2)
 {
