@@ -22,8 +22,7 @@ private:
 };
 
 // Add some help text to this case to describe what it is intended to test
-EnergyApiTestCase1::EnergyApiTestCase1 ()
-  : TestCase ("EnergyApi test case (does nothing)")
+EnergyApiTestCase1::EnergyApiTestCase1 () : TestCase ("EnergyApi test case (does nothing)")
 {
 }
 
@@ -56,8 +55,7 @@ public:
   EnergyApiTestSuite ();
 };
 
-EnergyApiTestSuite::EnergyApiTestSuite ()
-  : TestSuite ("energy-api", UNIT)
+EnergyApiTestSuite::EnergyApiTestSuite () : TestSuite ("energy-api", UNIT)
 {
   // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
   AddTestCase (new EnergyApiTestCase1, TestCase::QUICK);
@@ -65,4 +63,3 @@ EnergyApiTestSuite::EnergyApiTestSuite ()
 
 // Do not forget to allocate an instance of this TestSuite
 static EnergyApiTestSuite senergyApiTestSuite;
-

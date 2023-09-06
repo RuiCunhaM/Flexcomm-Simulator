@@ -596,7 +596,8 @@ OfdmPhy::CalculateDataRate (double symbolDuration, uint16_t guardInterval,
   return lrint (ceil (symbolRate * usableSubCarriers * numberOfBitsPerSubcarrier * codingRate));
 }
 
-bool OfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+bool
+OfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
 {
   return true;
 }

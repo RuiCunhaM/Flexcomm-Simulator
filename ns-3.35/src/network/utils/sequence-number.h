@@ -408,7 +408,7 @@ private: // unimplemented operators
    * \brief Logical NOT operator - unimplemented
    * \returns condition
    */
-  bool operator! () const;
+  bool operator!() const;
   /**
    * \brief Logical AND operator - unimplemented
    * \param b value
@@ -425,7 +425,7 @@ private: // unimplemented operators
    * \brief Bitwise NOT operator - unimplemented
    * \returns sequence number
    */
-  SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator~ () const;
+  SequenceNumber<NUMERIC_TYPE, SIGNED_TYPE> operator~() const;
   /**
    * \brief Bitwise AND operator - unimplemented
    * \param b value

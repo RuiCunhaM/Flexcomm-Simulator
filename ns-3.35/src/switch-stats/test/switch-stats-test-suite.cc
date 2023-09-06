@@ -22,8 +22,7 @@ private:
 };
 
 // Add some help text to this case to describe what it is intended to test
-SwitchStatsTestCase1::SwitchStatsTestCase1 ()
-  : TestCase ("SwitchStats test case (does nothing)")
+SwitchStatsTestCase1::SwitchStatsTestCase1 () : TestCase ("SwitchStats test case (does nothing)")
 {
 }
 
@@ -56,8 +55,7 @@ public:
   SwitchStatsTestSuite ();
 };
 
-SwitchStatsTestSuite::SwitchStatsTestSuite ()
-  : TestSuite ("switch-stats", UNIT)
+SwitchStatsTestSuite::SwitchStatsTestSuite () : TestSuite ("switch-stats", UNIT)
 {
   // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
   AddTestCase (new SwitchStatsTestCase1, TestCase::QUICK);
@@ -65,4 +63,3 @@ SwitchStatsTestSuite::SwitchStatsTestSuite ()
 
 // Do not forget to allocate an instance of this TestSuite
 static SwitchStatsTestSuite sswitchStatsTestSuite;
-

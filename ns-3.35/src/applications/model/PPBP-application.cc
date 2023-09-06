@@ -262,14 +262,16 @@ PPBPApplication::SendPacket ()
   ScheduleNextTx ();
 }
 
-void PPBPApplication::ConnectionSucceeded (Ptr<Socket>)
+void
+PPBPApplication::ConnectionSucceeded (Ptr<Socket>)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_connected = true;
   ScheduleStartEvent ();
 }
 
-void PPBPApplication::ConnectionFailed (Ptr<Socket>)
+void
+PPBPApplication::ConnectionFailed (Ptr<Socket>)
 {
   NS_LOG_FUNCTION_NOARGS ();
   cout << "PPBPApplication, Connection Failed" << endl;

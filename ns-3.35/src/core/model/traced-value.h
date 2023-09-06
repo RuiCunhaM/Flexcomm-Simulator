@@ -892,7 +892,7 @@ operator- (const TracedValue<T> &lhs)
 /** \copydoc operator+(const TracedValue<T>&lhs) */
 template <typename T>
 TracedValue<T>
-operator~ (const TracedValue<T> &lhs)
+operator~(const TracedValue<T> &lhs)
 {
   TRACED_VALUE_DEBUG ("(~x)");
   return TracedValue<T> (~lhs.Get ());
@@ -900,7 +900,7 @@ operator~ (const TracedValue<T> &lhs)
 /** \copydoc operator+(const TracedValue<T>&lhs) */
 template <typename T>
 TracedValue<T>
-operator! (const TracedValue<T> &lhs)
+operator!(const TracedValue<T> &lhs)
 {
   TRACED_VALUE_DEBUG ("(!x)");
   return TracedValue<T> (!lhs.Get ());

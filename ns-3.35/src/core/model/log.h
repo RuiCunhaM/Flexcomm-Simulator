@@ -498,7 +498,7 @@ ParameterLogger::operator<< (std::vector<T> vector)
  * \return This ParameterLogger, so it's chainable.
  */
 template <>
-ParameterLogger &ParameterLogger::operator<<<std::string> (const std::string param);
+ParameterLogger &ParameterLogger::operator<< <std::string> (const std::string param);
 
 /**
  * Specialization for C-strings.
@@ -506,7 +506,7 @@ ParameterLogger &ParameterLogger::operator<<<std::string> (const std::string par
  * \return This ParameterLogger, so it's chainable.
  */
 template <>
-ParameterLogger &ParameterLogger::operator<<<const char *> (const char *param);
+ParameterLogger &ParameterLogger::operator<< <const char *> (const char *param);
 
 /**
  * Specialization for int8_t.
@@ -514,7 +514,7 @@ ParameterLogger &ParameterLogger::operator<<<const char *> (const char *param);
  * \return This ParameterLogger, so it's chainable.
  */
 template <>
-ParameterLogger &ParameterLogger::operator<<<int8_t> (int8_t param);
+ParameterLogger &ParameterLogger::operator<< <int8_t> (int8_t param);
 
 /**
  * Specialization for uint8_t.
@@ -522,7 +522,7 @@ ParameterLogger &ParameterLogger::operator<<<int8_t> (int8_t param);
  * \return This ParameterLogger, so it's chainable.
  */
 template <>
-ParameterLogger &ParameterLogger::operator<<<uint8_t> (uint8_t param);
+ParameterLogger &ParameterLogger::operator<< <uint8_t> (uint8_t param);
 
 } // namespace ns3
 

@@ -22,8 +22,7 @@ private:
 };
 
 // Add some help text to this case to describe what it is intended to test
-LinkStatsTestCase1::LinkStatsTestCase1 ()
-  : TestCase ("LinkStats test case (does nothing)")
+LinkStatsTestCase1::LinkStatsTestCase1 () : TestCase ("LinkStats test case (does nothing)")
 {
 }
 
@@ -56,8 +55,7 @@ public:
   LinkStatsTestSuite ();
 };
 
-LinkStatsTestSuite::LinkStatsTestSuite ()
-  : TestSuite ("link-stats", UNIT)
+LinkStatsTestSuite::LinkStatsTestSuite () : TestSuite ("link-stats", UNIT)
 {
   // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
   AddTestCase (new LinkStatsTestCase1, TestCase::QUICK);
@@ -65,4 +63,3 @@ LinkStatsTestSuite::LinkStatsTestSuite ()
 
 // Do not forget to allocate an instance of this TestSuite
 static LinkStatsTestSuite slinkStatsTestSuite;
-

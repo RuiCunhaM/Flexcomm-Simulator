@@ -6,6 +6,4 @@ namespace ns3 {
 
 /* ... */
 
-
 }
-

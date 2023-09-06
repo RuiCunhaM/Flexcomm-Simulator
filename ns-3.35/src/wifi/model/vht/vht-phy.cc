@@ -156,7 +156,8 @@ VhtPhy::GetDuration (WifiPpduField field, const WifiTxVector &txVector) const
     }
 }
 
-Time VhtPhy::GetLSigDuration (WifiPreamble /* preamble */) const
+Time
+VhtPhy::GetLSigDuration (WifiPreamble /* preamble */) const
 {
   return MicroSeconds (4); //L-SIG
 }
@@ -176,7 +177,8 @@ VhtPhy::GetTrainingDuration (const WifiTxVector &txVector, uint8_t nDataLtf,
   return MicroSeconds (4 + 4 * nDataLtf); //VHT-STF + VHT-LTFs
 }
 
-Time VhtPhy::GetSigADuration (WifiPreamble /* preamble */) const
+Time
+VhtPhy::GetSigADuration (WifiPreamble /* preamble */) const
 {
   return MicroSeconds (8); //VHT-SIG-A (first and second symbol)
 }

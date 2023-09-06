@@ -225,7 +225,8 @@ ErpOfdmPhy::GetDataRate (const std::string &name, uint16_t channelWidth, uint16_
   return OfdmPhy::CalculateDataRate (codeRate, constellationSize, channelWidth, guardInterval, nss);
 }
 
-bool ErpOfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+bool
+ErpOfdmPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
 {
   return true;
 }

@@ -766,7 +766,8 @@ HtPhy::CalculateNonHtReferenceRate (WifiCodeRate codeRate, uint16_t constellatio
   return dataRate;
 }
 
-bool HtPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+bool
+HtPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
 {
   return true;
 }

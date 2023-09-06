@@ -407,7 +407,8 @@ AlohaNoackNetDevice::StartTransmission ()
     }
 }
 
-void AlohaNoackNetDevice::NotifyTransmissionEnd (Ptr<const Packet>)
+void
+AlohaNoackNetDevice::NotifyTransmissionEnd (Ptr<const Packet>)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (m_state == TX, "TX end notified while state != TX");

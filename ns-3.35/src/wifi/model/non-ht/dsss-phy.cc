@@ -360,7 +360,8 @@ DsssPhy::GetDataRate (const std::string &name, WifiModulationClass modClass,
   return dataRate;
 }
 
-bool DsssPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
+bool
+DsssPhy::IsModeAllowed (uint16_t /* channelWidth */, uint8_t /* nss */)
 {
   return true;
 }

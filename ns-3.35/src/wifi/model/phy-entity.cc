@@ -107,14 +107,16 @@ PhyEntity::GetNumModes (void) const
   return m_modeList.size ();
 }
 
-WifiMode PhyEntity::GetMcs (uint8_t /* index */) const
+WifiMode
+PhyEntity::GetMcs (uint8_t /* index */) const
 {
   NS_ABORT_MSG (
       "This method should be used only for HtPhy and child classes. Use GetMode instead.");
   return WifiMode ();
 }
 
-bool PhyEntity::IsMcsSupported (uint8_t /* index */) const
+bool
+PhyEntity::IsMcsSupported (uint8_t /* index */) const
 {
   NS_ABORT_MSG (
       "This method should be used only for HtPhy and child classes. Use IsModeSupported instead.");

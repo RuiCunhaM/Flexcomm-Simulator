@@ -321,7 +321,7 @@ private:
    *  \return The result of the operator.
    */
   friend int64x64_t operator- (const int64x64_t &lhs);
-  friend int64x64_t operator! (const int64x64_t &lhs);
+  friend int64x64_t operator!(const int64x64_t &lhs);
   /**@}*/
 
   /**
@@ -505,7 +505,7 @@ operator- (const int64x64_t &lhs)
  * \return The result of the operator.
  */
 inline int64x64_t
-operator! (const int64x64_t &lhs)
+operator!(const int64x64_t &lhs)
 {
   return (lhs == int64x64_t ()) ? int64x64_t (1, 0) : int64x64_t ();
 }

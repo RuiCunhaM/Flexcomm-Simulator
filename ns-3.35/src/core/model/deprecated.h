@@ -55,7 +55,7 @@
 #define NS_DEPRECATED __attribute__ ((deprecated))
 
 #elif defined(_MSC_VER)
-#define NS_DEPRECATED __declspec(deprecated)
+#define NS_DEPRECATED __declspec (deprecated)
 
 #else
 #define NS_DEPRECATED

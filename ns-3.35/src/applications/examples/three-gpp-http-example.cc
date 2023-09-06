@@ -28,7 +28,8 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ThreeGppHttpExample");
 
-void ServerConnectionEstablished (Ptr<const ThreeGppHttpServer>, Ptr<Socket>)
+void
+ServerConnectionEstablished (Ptr<const ThreeGppHttpServer>, Ptr<Socket>)
 {
   NS_LOG_INFO ("Client has established a connection to the server.");
 }

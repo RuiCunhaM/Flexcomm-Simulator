@@ -1758,7 +1758,8 @@ MakeCallback (R (T::*memPtr) (Ts...) const, OBJ objPtr)
  * \tparam Ts  \deduced Type list of any arguments to the member function.
  */
 template <typename R, typename... Ts>
-Callback<R, Ts...> MakeCallback (R (*fnPtr) (Ts...))
+Callback<R, Ts...>
+MakeCallback (R (*fnPtr) (Ts...))
 {
   return Callback<R, Ts...> (fnPtr, true, true);
 }

@@ -11,4 +11,3 @@ namespace ns3 {
 }
 
 #endif /* TOPOLOGY_HELPER_H */
-

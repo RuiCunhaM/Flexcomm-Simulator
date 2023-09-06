@@ -167,12 +167,12 @@ public:
    * An rvalue member access.
    * \returns A pointer to the underlying object.
    */
-  T *operator-> () const;
+  T *operator->() const;
   /**
    * An lvalue member access.
    * \returns A pointer to the underlying object.
    */
-  T *operator-> ();
+  T *operator->();
   /**
    * A \c const dereference.
    * \returns A pointer to the underlying object.
@@ -193,7 +193,7 @@ public:
    * \endcode
    * \returns \c true if the underlying pointer is NULL.
    */
-  bool operator! ();
+  bool operator!();
   /**
    * Test for non-NULL pointer.
    *
@@ -645,7 +645,7 @@ Ptr<T>::operator= (Ptr const &o)
 
 template <typename T>
 T *
-Ptr<T>::operator-> ()
+Ptr<T>::operator->()
 {
   NS_ASSERT_MSG (m_ptr, "Attempted to dereference zero pointer");
   return m_ptr;
@@ -653,7 +653,7 @@ Ptr<T>::operator-> ()
 
 template <typename T>
 T *
-Ptr<T>::operator-> () const
+Ptr<T>::operator->() const
 {
   NS_ASSERT_MSG (m_ptr, "Attempted to dereference zero pointer");
   return m_ptr;
@@ -677,7 +677,7 @@ Ptr<T>::operator* ()
 
 template <typename T>
 bool
-Ptr<T>::operator! ()
+Ptr<T>::operator!()
 {
   return m_ptr == 0;
 }

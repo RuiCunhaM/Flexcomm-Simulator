@@ -2292,7 +2292,8 @@ WifiPhy::GetMeasurementChannelWidth (const Ptr<const WifiPpdu> ppdu) const
   return GetPhyEntity (ppdu->GetModulation ())->GetMeasurementChannelWidth (ppdu);
 }
 
-WifiSpectrumBand WifiPhy::GetBand (uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
+WifiSpectrumBand
+WifiPhy::GetBand (uint16_t /*bandWidth*/, uint8_t /*bandIndex*/)
 {
   WifiSpectrumBand band;
   band.first = 0;

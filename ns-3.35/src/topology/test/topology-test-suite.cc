@@ -22,8 +22,7 @@ private:
 };
 
 // Add some help text to this case to describe what it is intended to test
-TopologyTestCase1::TopologyTestCase1 ()
-  : TestCase ("Topology test case (does nothing)")
+TopologyTestCase1::TopologyTestCase1 () : TestCase ("Topology test case (does nothing)")
 {
 }
 
@@ -56,8 +55,7 @@ public:
   TopologyTestSuite ();
 };
 
-TopologyTestSuite::TopologyTestSuite ()
-  : TestSuite ("topology", UNIT)
+TopologyTestSuite::TopologyTestSuite () : TestSuite ("topology", UNIT)
 {
   // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
   AddTestCase (new TopologyTestCase1, TestCase::QUICK);
@@ -65,4 +63,3 @@ TopologyTestSuite::TopologyTestSuite ()
 
 // Do not forget to allocate an instance of this TestSuite
 static TopologyTestSuite stopologyTestSuite;
-

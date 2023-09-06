@@ -620,7 +620,7 @@ ParameterLogger::ParameterLogger (std::ostream &os) : m_first (true), m_os (os)
 
 template <>
 ParameterLogger &
-ParameterLogger::operator<<<std::string> (const std::string param)
+ParameterLogger::operator<< <std::string> (const std::string param)
 {
   if (m_first)
     {
@@ -636,7 +636,7 @@ ParameterLogger::operator<<<std::string> (const std::string param)
 
 template <>
 ParameterLogger &
-ParameterLogger::operator<<<const char *> (const char *param)
+ParameterLogger::operator<< <const char *> (const char *param)
 {
   (*this) << std::string (param);
   return *this;
@@ -644,7 +644,7 @@ ParameterLogger::operator<<<const char *> (const char *param)
 
 template <>
 ParameterLogger &
-ParameterLogger::operator<<<int8_t> (const int8_t param)
+ParameterLogger::operator<< <int8_t> (const int8_t param)
 {
   if (m_first)
     {
@@ -660,7 +660,7 @@ ParameterLogger::operator<<<int8_t> (const int8_t param)
 
 template <>
 ParameterLogger &
-ParameterLogger::operator<<<uint8_t> (const uint8_t param)
+ParameterLogger::operator<< <uint8_t> (const uint8_t param)
 {
   if (m_first)
     {

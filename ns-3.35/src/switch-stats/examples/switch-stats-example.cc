@@ -5,8 +5,7 @@
 
 using namespace ns3;
 
-
-int 
+int
 main (int argc, char *argv[])
 {
   bool verbose = true;
@@ -14,7 +13,7 @@ main (int argc, char *argv[])
   CommandLine cmd (__FILE__);
   cmd.AddValue ("verbose", "Tell application to log if true", verbose);
 
-  cmd.Parse (argc,argv);
+  cmd.Parse (argc, argv);
 
   /* ... */
 
@@ -22,5 +21,3 @@ main (int argc, char *argv[])
   Simulator::Destroy ();
   return 0;
 }
-
-
