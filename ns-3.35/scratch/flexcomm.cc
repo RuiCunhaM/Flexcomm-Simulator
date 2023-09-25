@@ -63,9 +63,11 @@ main (int argc, char *argv[])
   Parser::ParseTopology (topo, estiFile, flexFile);
 
   endTime = clock.End ();
-  uint64_t milliseconds = endTime % 1000;
-  uint64_t seconds = (endTime / 1000) % 60;
-  std::cout << "Parsing Time: " << seconds << "s " << milliseconds << "ms" << std::endl;
+  uint64_t milli = endTime % 1000;
+  uint64_t scds = (endTime / 1000) % 60;
+
+  std::cout << "--------------------------------------------------------------" << std::endl;
+  std::cout << "Parsing Time: " << scds << "s " << milli << "ms" << std::endl;
 
   FlowMonitorHelper flowHelper;
   if (FlowMonitor::IsEnabled ())
@@ -80,12 +82,13 @@ main (int argc, char *argv[])
   Simulator::Run ();
 
   endTime = clock.End ();
-  seconds = (endTime / 1000) % 60;
-  uint64_t minutes = ((endTime / (1000 * 60)) % 60);
-  uint64_t hours = ((endTime / (1000 * 60 * 60)) % 24);
+  scds = (endTime / 1000) % 60;
+  uint64_t mins = ((endTime / (1000 * 60)) % 60);
+  uint64_t hrs = ((endTime / (1000 * 60 * 60)) % 24);
 
-  std::cout << "Execution Time: " << hours << "h " << minutes << "m " << seconds << "s"
-            << std::endl;
+  std::cout << "Nº Events: " << Simulator::GetEventCount () << std::endl;
+  std::cout << "Execution Time: " << hrs << "h " << mins << "m " << scds << "s" << std::endl;
+  std::cout << "--------------------------------------------------------------" << std::endl;
 
   flowHelper.SerializeToXmlFile (SystemPath::Append (topo, "flow-monitor.xml"), true, true);
 
