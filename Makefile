@@ -17,6 +17,9 @@ all:
 run: create_outpu_folder
 	./ns-3.35/waf -t ns-3.35 --run $(OPTIONS) 
 
+perf: create_outpu_folder
+	perf record ./ns-3.35/waf -t ns-3.35 --run $(OPTIONS) 
+
 run_debug: create_outpu_folder
 	./ns-3.35/waf -t ns-3.35 --run $(OPTIONS) --gdb 
 
@@ -31,3 +34,6 @@ format:
 
 create_outpu_folder:
 	mkdir -p $(OUTPUTS)/$(TOPO)
+
+clean:
+	rm -rf $(OUTPUTS) perf.data
