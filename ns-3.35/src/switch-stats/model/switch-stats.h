@@ -38,6 +38,7 @@ public:
 
   void SetNode (Ptr<Node> node);
   void GetStatsLog (Time interval, Time stop, Ptr<OutputStreamWrapper> streamWrapper);
+  void LogStats (Ptr<OutputStreamWrapper> streamWrapper);
 
 private:
   uint32_t m_packets;
@@ -47,7 +48,6 @@ private:
   Ptr<Node> m_node;
   Ptr<OFSwitch13Device> m_device;
 
-  void LogStats (Ptr<OutputStreamWrapper> streamWrapper);
   void HandlePipelinePacket (Ptr<const Packet> packet);
   void HandleDroppedPacket (Ptr<const Packet> packet);
 };

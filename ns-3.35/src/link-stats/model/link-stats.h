@@ -37,11 +37,11 @@ public:
   virtual ~LinkStats ();
 
   void LogStats (Time interval, Time stop, Ptr<OutputStreamWrapper> streamWrapper);
+  void LogStatsInternal (Ptr<OutputStreamWrapper> streamWrapper);
   void SetChannel (Ptr<Channel> channel);
 
 private:
   Ptr<Channel> m_channel;
-  void LogStatsInternal (Ptr<OutputStreamWrapper> streamWrapper);
 };
 
 } // namespace ns3

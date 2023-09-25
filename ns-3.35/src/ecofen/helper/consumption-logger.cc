@@ -32,7 +32,11 @@ NS_LOG_COMPONENT_DEFINE ("ConsumptionLogger");
 
 namespace ns3 {
 
-ConsumptionLogger::ConsumptionLogger () : m_streamWrapper (0)
+NodeContainer ConsumptionLogger::m_nodes = NodeContainer ();
+NodeContainer ConsumptionLogger::m_nodesLog = NodeContainer ();
+Ptr<OutputStreamWrapper> ConsumptionLogger::m_streamWrapper = NULL;
+
+ConsumptionLogger::ConsumptionLogger ()
 {
 }
 
@@ -57,20 +61,55 @@ ConsumptionLogger::NodeConsoLog (Time interval, Time stop, Ptr<Node> node, std::
 }
 
 void
+ConsumptionLogger::UpdateEnergy ()
+{
+  for (NodeContainer::Iterator i = m_nodes.Begin (); i != m_nodes.End (); ++i)
+    (*i)->GetObject<NodeEnergyModel> ()->UpdateEnergy (*i);
+}
+
+void
 ConsumptionLogger::NodeConso (Time interval, Time stop, NodeContainer c)
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      NodeConso (interval, stop, *i);
+      Ptr<NodeEnergyModel> noem = (*i)->GetObject<NodeEnergyModel> ();
+
+      if (noem)
+        m_nodes.Add (*i);
     }
+
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &ConsumptionLogger::UpdateEnergy, this);
+      i += interval;
+    }
+}
+
+void
+ConsumptionLogger::LogEnergy ()
+{
+  for (NodeContainer::Iterator i = m_nodesLog.Begin (); i != m_nodesLog.End (); ++i)
+    (*i)->GetObject<NodeEnergyModel> ()->LogTotalPowerConsumption (*i, m_streamWrapper);
 }
 
 void
 ConsumptionLogger::NodeConsoLog (Time interval, Time stop, NodeContainer c, std::string path)
 {
+  CreateLogFile (path);
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      NodeConsoLog (interval, stop, *i, path);
+      Ptr<NodeEnergyModel> noem = (*i)->GetObject<NodeEnergyModel> ();
+
+      if (noem)
+        m_nodesLog.Add (*i);
+    }
+
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &ConsumptionLogger::LogEnergy, this);
+      i += interval;
     }
 }
 
