@@ -88,8 +88,12 @@ public:
 
 private:
   void CreateLogFile (std::string path);
+  void UpdateEnergy ();
+  void LogEnergy ();
 
-  Ptr<OutputStreamWrapper> m_streamWrapper;
+  static Ptr<OutputStreamWrapper> m_streamWrapper;
+  static NodeContainer m_nodes;
+  static NodeContainer m_nodesLog;
 };
 
 } // namespace ns3

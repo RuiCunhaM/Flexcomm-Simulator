@@ -155,6 +155,9 @@ public:
    */
   virtual void UpdateState (uint32_t state, double energy, Time duration);
 
+  void UpdateEnergy (Ptr<Node> node);
+  void LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper);
+
 private:
   /**
    * \returns power consumption of the chassis.
@@ -162,9 +165,6 @@ private:
    * To be implemented in each child class. 
    */
   virtual double GetPowerConsumption (void);
-
-  void UpdateEnergy (Ptr<Node> node);
-  void LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper);
 
 private:
   uint32_t m_nodeState; // Node state for this node

@@ -41,7 +41,9 @@ public:
   void LogStatsAll (Time interval, Time stop);
 
 private:
-  Ptr<OutputStreamWrapper> m_streamWrapper;
+  static Ptr<OutputStreamWrapper> m_streamWrapper;
+  static NodeContainer m_nodes;
+  void Log ();
 };
 
 } // namespace ns3

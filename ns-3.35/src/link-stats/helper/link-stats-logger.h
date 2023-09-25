@@ -26,7 +26,6 @@
 #include "ns3/channel-container.h"
 #include "ns3/core-module.h"
 #include "ns3/output-stream-wrapper.h"
-#include "ns3/channel.h"
 
 namespace ns3 {
 
@@ -48,8 +47,12 @@ public:
 
 private:
   void CreateLogFile (std::string path);
+  void Compute ();
+  void Log ();
 
-  Ptr<OutputStreamWrapper> m_streamWrapper;
+  static Ptr<OutputStreamWrapper> m_streamWrapper;
+  static ChannelContainer m_links;
+  static ChannelContainer m_linksLog;
 };
 
 } // namespace ns3

@@ -25,6 +25,9 @@
 
 namespace ns3 {
 
+Ptr<OutputStreamWrapper> SwitchStatsLogger::m_streamWrapper = NULL;
+NodeContainer SwitchStatsLogger::m_nodes = NodeContainer ();
+
 SwitchStatsLogger::SwitchStatsLogger ()
 {
   SwitchStatsLogger ("switch-stats");
@@ -37,7 +40,6 @@ SwitchStatsLogger::SwitchStatsLogger (std::string path)
 
 SwitchStatsLogger::~SwitchStatsLogger ()
 {
-  m_streamWrapper = 0;
 }
 
 void
@@ -50,11 +52,28 @@ SwitchStatsLogger::LogStats (Time interval, Time stop, Ptr<Node> node)
 }
 
 void
+SwitchStatsLogger::Log ()
+{
+  for (NodeContainer::Iterator i = m_nodes.Begin (); i != m_nodes.End (); ++i)
+    (*i)->GetObject<SwitchStats> ()->LogStats (m_streamWrapper);
+}
+
+void
 SwitchStatsLogger::LogStats (Time interval, Time stop, NodeContainer c)
 {
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      LogStats (interval, stop, *i);
+      Ptr<SwitchStats> stats = (*i)->GetObject<SwitchStats> ();
+
+      if (stats)
+        m_nodes.Add (*i);
+    }
+
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &SwitchStatsLogger::Log, this);
+      i += interval;
     }
 }
 
