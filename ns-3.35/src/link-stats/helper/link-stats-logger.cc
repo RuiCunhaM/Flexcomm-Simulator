@@ -25,6 +25,10 @@
 
 namespace ns3 {
 
+Ptr<OutputStreamWrapper> LinkStatsLogger::m_streamWrapper = NULL;
+ChannelContainer LinkStatsLogger::m_links = ChannelContainer ();
+ChannelContainer LinkStatsLogger::m_linksLog = ChannelContainer ();
+
 LinkStatsLogger::LinkStatsLogger ()
 {
   m_streamWrapper = 0;
@@ -46,11 +50,23 @@ LinkStatsLogger::ComputeStats (Time interval, Time stop, Ptr<Channel> channel)
 }
 
 void
+LinkStatsLogger::Compute ()
+{
+  for (ChannelContainer::Iterator i = m_linksLog.Begin (); i != m_linksLog.End (); ++i)
+    (*i)->UpdateUsage ();
+}
+
+void
 LinkStatsLogger::ComputeStats (Time interval, Time stop, ChannelContainer c)
 {
   for (ChannelContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    m_links.Add (*i);
+
+  Time i = Seconds (0.0);
+  while (i <= stop)
     {
-      ComputeStats (interval, stop, *i);
+      Simulator::Schedule (i, &LinkStatsLogger::Compute, this);
+      i += interval;
     }
 }
 
@@ -73,11 +89,29 @@ LinkStatsLogger::ComputeStatsLog (Time interval, Time stop, Ptr<Channel> channel
 }
 
 void
+LinkStatsLogger::Log ()
+{
+  for (ChannelContainer::Iterator i = m_linksLog.Begin (); i != m_linksLog.End (); ++i)
+    (*i)->GetObject<LinkStats> ()->LogStatsInternal (m_streamWrapper);
+}
+
+void
 LinkStatsLogger::ComputeStatsLog (Time interval, Time stop, ChannelContainer c, std::string path)
 {
+  CreateLogFile (path);
   for (ChannelContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      ComputeStatsLog (interval, stop, *i, path);
+      Ptr<LinkStats> ls = (*i)->GetObject<LinkStats> ();
+
+      if (ls)
+        m_linksLog.Add (*i);
+    }
+
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &LinkStatsLogger::Log, this);
+      i += interval;
     }
 }
 
