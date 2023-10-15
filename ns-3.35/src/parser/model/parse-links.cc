@@ -103,6 +103,7 @@ installController (std::string outPath)
     {
       ObjectFactory factory;
       of13Helper = CreateObject<OFSwitch13InternalHelper> ();
+      of13Helper->SetChannelType (OFSwitch13Helper::DEDICATEDP2PETHERNET);
       factory.SetTypeId (controllerType.Get ());
       Ptr<OFSwitch13Controller> controller = factory.Create<OFSwitch13Controller> ();
       DynamicCast<OFSwitch13InternalHelper> (of13Helper)

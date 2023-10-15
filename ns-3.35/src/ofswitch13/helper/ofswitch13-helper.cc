@@ -58,15 +58,14 @@ OFSwitch13Helper::GetTypeId (void)
                          DataRateValue (DataRate ("10Gb/s")),
                          MakeDataRateAccessor (&OFSwitch13Helper::SetChannelDataRate),
                          MakeDataRateChecker ())
-          .AddAttribute ("ChannelType", "The configuration used to create the OpenFlow channel",
-                         TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
-                         EnumValue (OFSwitch13Helper::DEDICATEDP2PETHERNET),
-                         MakeEnumAccessor (&OFSwitch13Helper::SetChannelType),
-                         MakeEnumChecker (OFSwitch13Helper::SINGLECSMA, "SingleCsma",
-                                          OFSwitch13Helper::DEDICATEDCSMA, "DedicatedCsma",
-                                          OFSwitch13Helper::DEDICATEDP2P, "DedicatedP2p",
-                                          OFSwitch13Helper::DEDICATEDP2PETHERNET,
-                                          "DedicatedP2pEthernet"));
+          .AddAttribute (
+              "ChannelType", "The configuration used to create the OpenFlow channel",
+              TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT, EnumValue (OFSwitch13Helper::SINGLECSMA),
+              MakeEnumAccessor (&OFSwitch13Helper::SetChannelType),
+              MakeEnumChecker (OFSwitch13Helper::SINGLECSMA, "SingleCsma",
+                               OFSwitch13Helper::DEDICATEDCSMA, "DedicatedCsma",
+                               OFSwitch13Helper::DEDICATEDP2P, "DedicatedP2p",
+                               OFSwitch13Helper::DEDICATEDP2PETHERNET, "DedicatedP2pEthernet"));
   return tid;
 }
 
