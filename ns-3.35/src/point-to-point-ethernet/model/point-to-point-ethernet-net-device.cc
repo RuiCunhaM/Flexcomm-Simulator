@@ -209,9 +209,6 @@ PointToPointEthernetNetDevice::AddHeader (Ptr<Packet> p, Mac48Address src, Mac48
   header.SetLengthType (lengthType);
   p->AddHeader (header);
 
-  if (Node::ChecksumEnabled ())
-    trailer.EnableFcs (true);
-
   trailer.CalcFcs (p);
   p->AddTrailer (trailer);
 }
@@ -223,13 +220,6 @@ PointToPointEthernetNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t &param)
 
   EthernetTrailer trailer;
   p->RemoveTrailer (trailer);
-
-  if (Node::ChecksumEnabled ())
-    {
-      trailer.EnableFcs (true);
-      if (!trailer.CheckFcs (p))
-        return false;
-    }
 
   EthernetHeader header (false);
   p->RemoveHeader (header);
@@ -402,16 +392,6 @@ PointToPointEthernetNetDevice::Receive (Ptr<Packet> packet)
       // Process trailer
       EthernetTrailer trailer;
       packet->RemoveTrailer (trailer);
-      if (Node::ChecksumEnabled ())
-        {
-          trailer.EnableFcs (true);
-          if (!trailer.CheckFcs (packet))
-            {
-              NS_LOG_INFO ("CRC error on Packet " << packet);
-              m_phyRxDropTrace (packet);
-              return;
-            }
-        }
 
       // Process header
       EthernetHeader header (false);
