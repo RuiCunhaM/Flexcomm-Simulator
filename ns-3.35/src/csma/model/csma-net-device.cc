@@ -509,9 +509,9 @@ CsmaNetDevice::TransmitStart (void)
           m_backoff.ResetBackoffTime ();
           m_txMachineState = BUSY;
 
-          Time tEvent = m_bps.CalculateBytesTxTime (m_currentPkt->GetSize ());
-          NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << tEvent.As (Time::S));
-          Simulator::Schedule (tEvent, &CsmaNetDevice::TransmitCompleteEvent, this);
+          // Time tEvent = m_bps.CalculateBytesTxTime (m_currentPkt->GetSize ());
+          // NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << tEvent.As (Time::S));
+          Simulator::Schedule (Seconds (0), &CsmaNetDevice::TransmitCompleteEvent, this);
         }
     }
 }
@@ -593,7 +593,7 @@ CsmaNetDevice::TransmitCompleteEvent (void)
 
   NS_LOG_LOGIC ("Schedule TransmitReadyEvent in " << m_tInterframeGap.As (Time::S));
 
-  Simulator::Schedule (m_tInterframeGap, &CsmaNetDevice::TransmitReadyEvent, this);
+  Simulator::Schedule (Seconds (0), &CsmaNetDevice::TransmitReadyEvent, this);
 }
 
 void
