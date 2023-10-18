@@ -138,7 +138,7 @@ def gen_config(topology):
             ports[port]["interfaces"] = [
                 {
                     "name": f"eth{switches_ports[edge0]}",
-                    "ips": [f"10.1.0.{ip_counter}/24"],
+                    "ips": [f"10.1.1.{ip_counter}/24"],
                     "mac": mac_manager.new_address(),
                 }
             ]
@@ -152,7 +152,7 @@ def gen_config(topology):
             ports[port]["interfaces"] = [
                 {
                     "name": f"eth{switches_ports[edge1]}",
-                    "ips": [f"10.1.0.{ip_counter}/24"],
+                    "ips": [f"10.1.1.{ip_counter}/24"],
                     "mac": mac_manager.new_address(),
                 }
             ]
