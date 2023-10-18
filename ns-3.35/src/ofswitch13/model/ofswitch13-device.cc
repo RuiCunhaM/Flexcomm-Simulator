@@ -18,9 +18,19 @@
  * Author: Luciano Chaves <luciano@lrc.ic.unicamp.br>
  */
 
+#include <netinet/in.h>
 #include <ns3/object-vector.h>
+#include "ns3/node-energy-model.h"
 #include "ofswitch13-device.h"
 #include "ofswitch13-port.h"
+#include "openflow/openflow.h"
+
+extern "C" {
+#include "ofl.h"
+#include "openflow/flexcomm-ext.h"
+#include "oflib-exp/ofl-exp.h"
+#include "oflib-exp/ofl-exp-flexcomm.h"
+}
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT                \
@@ -658,6 +668,11 @@ OFSwitch13Device::DoDispose ()
   free (m_datapath->sw_desc);
   free (m_datapath->dp_desc);
   free (m_datapath->serial_num);
+
+  free (m_datapath->exp->stats);
+  free (m_datapath->exp->msg);
+  free (m_datapath->exp);
+
   free (m_datapath);
 
   OFSwitch13Device::UnregisterDatapath (m_dpId);
@@ -733,7 +748,35 @@ OFSwitch13Device::DatapathNew ()
   list_init (&dp->port_list);
   dp->ports_num = 0;
   dp->max_queues = NETDEV_MAX_QUEUES;
-  dp->exp = 0;
+
+  struct ofl_exp_stats *dp_exp_stats =
+      (struct ofl_exp_stats *) xmalloc (sizeof (struct ofl_exp_stats));
+
+  dp_exp_stats->req_pack = ofl_exp_stats_req_pack;
+  dp_exp_stats->req_unpack = ofl_exp_stats_req_unpack;
+  dp_exp_stats->req_free = ofl_exp_stats_req_free;
+  dp_exp_stats->req_to_string = ofl_exp_stats_req_to_string;
+  dp_exp_stats->reply_pack = ofl_exp_stats_reply_pack;
+  dp_exp_stats->reply_unpack = ofl_exp_stats_reply_unpack;
+  dp_exp_stats->reply_free = ofl_exp_stats_reply_free;
+  dp_exp_stats->reply_to_string = ofl_exp_stats_reply_to_string;
+
+  struct ofl_exp_msg *dp_exp_msg = (struct ofl_exp_msg *) xmalloc (sizeof (struct ofl_exp_msg));
+
+  dp_exp_msg->pack = ofl_exp_msg_pack;
+  dp_exp_msg->unpack = ofl_exp_msg_unpack;
+  dp_exp_msg->free = ofl_exp_msg_free;
+  dp_exp_msg->to_string = ofl_exp_msg_to_string;
+
+  struct ofl_exp *dp_exp = (struct ofl_exp *) xmalloc (sizeof (struct ofl_exp));
+
+  dp_exp->act = NULL;
+  dp_exp->inst = NULL;
+  dp_exp->match = NULL;
+  dp_exp->stats = dp_exp_stats;
+  dp_exp->msg = dp_exp_msg;
+
+  dp->exp = dp_exp;
 
   dp->config.flags = OFPC_FRAG_NORMAL; // IP fragments with no special handling
   dp->config.miss_send_len = OFP_DEFAULT_MISS_SEND_LEN; // 128 bytes
@@ -1061,7 +1104,50 @@ OFSwitch13Device::ReceiveFromController (Ptr<Packet> packet, Address from)
     }
 
   // Send the message to handler.
-  error = handle_control_msg (m_datapath, msg, &senderCtrl);
+  if (msg->type == OFPT_MULTIPART_REQUEST &&
+      ((struct ofl_msg_multipart_request_header *) msg)->type == OFPMP_EXPERIMENTER &&
+      ((struct ofl_msg_multipart_request_experimenter *) msg)->experimenter_id ==
+          FLEXCOMM_VENDOR_ID)
+    {
+      struct ofl_msg_multipart_request_flexcomm *header =
+          (struct ofl_msg_multipart_request_flexcomm *) msg;
+
+      switch (header->subtype)
+        {
+          case FC_GLOBAL_ENERGY: {
+            Ptr<Node> node = GetObject<Node> ();
+            Ptr<NodeEnergyModel> model = node->GetObject<NodeEnergyModel> ();
+
+            double consumption = model->GetCurrentPowerConsumption ();
+            double power_drawn = model->GetPowerDrawn ();
+
+            struct ofl_msg_multipart_reply_flexcomm_global reply = {
+                .header = {.header = {.header = {.header = {.type = OFPT_MULTIPART_REPLY},
+                                                 .type = OFPMP_EXPERIMENTER,
+                                                 .flags = 0x0000},
+                                      .experimenter_id = FLEXCOMM_VENDOR_ID},
+                           .subtype = FC_GLOBAL_ENERGY}};
+
+            memcpy (&reply.current_consumption, &consumption, sizeof (double));
+            memcpy (&reply.power_drawn, &power_drawn, sizeof (double));
+
+            dp_send_message (m_datapath, (struct ofl_msg_header *) &reply, &senderCtrl);
+            ofl_msg_free (msg, m_datapath->exp);
+
+            break;
+          }
+        case FC_PORT_ENERGY:
+          default: {
+            error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_TYPE);
+            break;
+          }
+        }
+    }
+  else
+    {
+      error = handle_control_msg (m_datapath, msg, &senderCtrl);
+    }
+
   if (error)
     {
       // It is assumed that if a handler returns with error, it did not use any

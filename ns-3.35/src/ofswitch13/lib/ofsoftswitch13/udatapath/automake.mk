@@ -31,7 +31,7 @@ udatapath_ofdatapath_SOURCES = \
 	udatapath/group_entry.c \
 	udatapath/group_entry.h \
 	udatapath/match_std.c \
-    udatapath/match_std.h \
+  udatapath/match_std.h \
 	udatapath/meter_entry.c \
 	udatapath/meter_entry.h \
 	udatapath/meter_table.c \
@@ -39,7 +39,7 @@ udatapath_ofdatapath_SOURCES = \
 	udatapath/packet.c \
 	udatapath/packet.h \
 	udatapath/packet_handle_std.c \
-    udatapath/packet_handle_std.h \
+  udatapath/packet_handle_std.h \
 	udatapath/pipeline.c \
 	udatapath/pipeline.h \
 	udatapath/udatapath.c
@@ -178,6 +178,7 @@ udatapath_libns3ofswitch13_a_LIBADD = \
 udatapath_libns3ofswitch13_a_LIBADD += \
 	oflib-exp/ofl-exp.o \
 	oflib-exp/ofl-exp-nicira.o \
+  oflib-exp/ofl-exp-flexcomm.o \
 	oflib-exp/ofl-exp-openflow.o
 
 udatapath_libns3ofswitch13_a_LIBADD += \

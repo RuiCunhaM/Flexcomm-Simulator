@@ -5,6 +5,8 @@ oflib_exp_liboflib_exp_a_SOURCES = \
 	oflib-exp/ofl-exp.h \
 	oflib-exp/ofl-exp-nicira.c \
 	oflib-exp/ofl-exp-nicira.h \
+  oflib-exp/ofl-exp-flexcomm.c \
+  oflib-exp/ofl-exp-flexcomm.h \
 	oflib-exp/ofl-exp-openflow.c \
 	oflib-exp/ofl-exp-openflow.h
 
