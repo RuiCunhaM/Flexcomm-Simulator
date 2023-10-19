@@ -99,7 +99,7 @@ lib_libopenflow_a_LIBADD = oflib/ofl-actions.o \
                            oflib/ofl-messages-print.o \
                            oflib/ofl-messages-unpack.o \
                            oflib/ofl-structs.o \
-			               oflib/ofl-structs-match.o \
+	                         oflib/ofl-structs-match.o \
                            oflib/ofl-structs-pack.o \
                            oflib/ofl-structs-print.o \
                            oflib/ofl-structs-unpack.o \
@@ -107,6 +107,7 @@ lib_libopenflow_a_LIBADD = oflib/ofl-actions.o \
                            oflib/ofl-print.o \
                            oflib-exp/ofl-exp.o \
                            oflib-exp/ofl-exp-nicira.o \
+                           oflib-exp/ofl-exp-flexcomm.o \
                            oflib-exp/ofl-exp-openflow.o
 
 

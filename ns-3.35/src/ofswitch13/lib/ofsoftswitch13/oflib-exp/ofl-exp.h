@@ -43,4 +43,24 @@ int ofl_exp_msg_free (struct ofl_msg_experimenter *msg);
 
 char *ofl_exp_msg_to_string (struct ofl_msg_experimenter *msg);
 
+int ofl_exp_stats_req_pack (struct ofl_msg_multipart_request_header *msg, uint8_t **buf,
+                            size_t *buf_len);
+
+ofl_err ofl_exp_stats_req_unpack (struct ofp_multipart_request *os, size_t *len,
+                                  struct ofl_msg_multipart_request_header **msg);
+
+int ofl_exp_stats_req_free (struct ofl_msg_multipart_request_header *msg);
+
+char *ofl_exp_stats_req_to_string (struct ofl_msg_multipart_request_header *msg);
+
+int ofl_exp_stats_reply_pack (struct ofl_msg_multipart_reply_header *msg, uint8_t **buf,
+                              size_t *buf_len);
+
+ofl_err ofl_exp_stats_reply_unpack (struct ofp_multipart_reply *os, size_t *len,
+                                    struct ofl_msg_multipart_reply_header **msg);
+
+int ofl_exp_stats_reply_free (struct ofl_msg_multipart_reply_header *msg);
+
+char *ofl_exp_stats_reply_to_string (struct ofl_msg_multipart_reply_header *msg);
+
 #endif /* OFL_EXP_H */
