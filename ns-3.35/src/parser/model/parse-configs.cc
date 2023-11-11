@@ -45,7 +45,7 @@ parseEcofenConfigs (toml::table ecofenConfigs, string outPath)
 
   if (ecofenConfigs["logFile"].value_or (false))
     consoLogger.NodeConsoAllLog (Time (ecofenConfigs["logInterval"].value_or ("5s")),
-                                 stopTime.Get (), SystemPath::Append (outPath, "ecofen-trace"));
+                                 stopTime.Get (), SystemPath::Append (outPath, "ecofen-trace.csv"));
 
   consoLogger.NodeConsoAll (Time (ecofenConfigs["interval"].value_or ("5s")), stopTime.Get ());
 }
@@ -61,7 +61,7 @@ parseSwitchStatsConfigs (toml::table switchConfigs, string outPath)
       SwitchStatsHelper statsHelper;
       statsHelper.InstallAll ();
 
-      SwitchStatsLogger statsLogger (SystemPath::Append (outPath, "switch-stats"));
+      SwitchStatsLogger statsLogger (SystemPath::Append (outPath, "switch-stats.csv"));
       statsLogger.LogStatsAll (Time (switchConfigs["interval"].value_or ("5s")), stopTime.Get ());
     }
 }
@@ -78,7 +78,8 @@ parseLinkStatsConfigs (toml::table linkConfigs, string outPath)
 
   if (linkConfigs["logFile"].value_or (false))
     statsLogger.ComputeStatsAllLog (Time (linkConfigs["logInterval"].value_or ("5s")),
-                                    stopTime.Get (), SystemPath::Append (outPath, "link-stats"));
+                                    stopTime.Get (),
+                                    SystemPath::Append (outPath, "link-stats.csv"));
 
   statsLogger.ComputeStatsAll (Time (linkConfigs["interval"].value_or ("5s")), stopTime.Get ());
 }

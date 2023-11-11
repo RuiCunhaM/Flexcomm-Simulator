@@ -74,8 +74,8 @@ SwitchStats::LogStats (Ptr<OutputStreamWrapper> streamWrapper)
 {
   std::ostream *stream = streamWrapper->GetStream ();
 
-  *stream << std::fixed << Simulator::Now ().GetSeconds () << " " << m_nodeName << " "
-          << m_device->GetCpuUsage () << " " << m_packets << " " << m_droppedPackets << " "
+  *stream << std::fixed << Simulator::Now ().GetSeconds () << ";" << m_nodeName << ";"
+          << m_device->GetCpuUsage () << ";" << m_packets << ";" << m_droppedPackets << ";"
           << m_bytes << "\n";
 
   // Restart counters

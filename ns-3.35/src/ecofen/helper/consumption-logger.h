@@ -52,7 +52,8 @@ public:
    * This function gets the power consumption of a node.
    */
   void NodeConso (Time interval, Time stop, Ptr<Node> node);
-  void NodeConsoLog (Time interval, Time stop, Ptr<Node> node, std::string path = "ecofen-trace");
+  void NodeConsoLog (Time interval, Time stop, Ptr<Node> node,
+                     std::string path = "ecofen-trace.csv");
 
   /**
    * \param c List of nodes we want to log the power consumption.
@@ -62,7 +63,8 @@ public:
    * This function gets the power consumption of a list of nodes.
    */
   void NodeConso (Time interval, Time stop, NodeContainer c);
-  void NodeConsoLog (Time interval, Time stop, NodeContainer c, std::string path = "ecofen-trace");
+  void NodeConsoLog (Time interval, Time stop, NodeContainer c,
+                     std::string path = "ecofen-trace.csv");
 
   /**
    * \param nodeName Name of node we want to log the power consumption.
@@ -73,7 +75,7 @@ public:
    */
   void NodeConso (Time interval, Time stop, std::string nodeName);
   void NodeConsoLog (Time interval, Time stop, std::string nodeName,
-                     std::string path = "ecofen-trace");
+                     std::string path = "ecofen-trace.csv");
 
   /**
    * \brief This function gets the power consumption of all nodes in simulation.
@@ -84,7 +86,7 @@ public:
    * This function gets the power consumption of all nodes in the simulation. 
    */
   void NodeConsoAll (Time interval, Time stop);
-  void NodeConsoAllLog (Time interval, Time stop, std::string path = "ecofen-trace");
+  void NodeConsoAllLog (Time interval, Time stop, std::string path = "ecofen-trace.csv");
 
 private:
   void CreateLogFile (std::string path);

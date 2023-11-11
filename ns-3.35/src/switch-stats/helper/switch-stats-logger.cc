@@ -30,7 +30,7 @@ NodeContainer SwitchStatsLogger::m_nodes = NodeContainer ();
 
 SwitchStatsLogger::SwitchStatsLogger ()
 {
-  SwitchStatsLogger ("switch-stats");
+  SwitchStatsLogger ("switch-stats.csv");
 }
 
 SwitchStatsLogger::SwitchStatsLogger (std::string path)

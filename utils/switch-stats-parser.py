@@ -1,147 +1,102 @@
 #!/usr/bin/env python3
 
 import matplotlib.pylab as plt
-import regex as re
 import argparse
+import csv
+
 from tabulate import tabulate
 from sortedcontainers import SortedSet
+from common import colors, markers
 
-colors = [
-    "gray",
-    "red",
-    "sienna",
-    "sandybrown",
-    "y",
-    "g",
-    "c",
-    "blue",
-    "purple",
-    "violet",
-    "pink",
-]
-markers = ["o", "v", "^", "<", ">", "s", "D", "h", "p", "X", "*"]
 
-# Define arguments
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "file", metavar="PATH/TO/FILE", type=argparse.FileType("r")
-)
-parser.add_argument("--plot", "-p", dest="drawPlot", action="store_true")
-parser.set_defaults(drawPlot=False)
-args = parser.parse_args()
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file", type=str)
+    parser.add_argument("--plot", "-p", dest="drawPlot", action="store_true")
+    parser.set_defaults(drawPlot=False)
+    return parser.parse_args()
 
-# Read file
-# FIXME: This is not ideal
-lines = args.file.readlines()
 
-x = SortedSet()
-cpuUsages = {}
-nPackets = {}
-nDroppedPackets = {}
-nBytes = {}
-for line in lines:
-    # time nodeName cpuUsage nPackets nDropped nBytes
-    match = re.match(
-        r"(\d+(.\d+)?) (\w+) (\d+(.\d+)?) (\d+) (\d+) (\d+)", line
+def report_values(cpuUsages, nPackets, nDroppedPackets, nBytes):
+    table = []
+    for switch in cpuUsages:
+        usages = cpuUsages[switch]
+        table.append([switch, max(usages), sum(usages) / len(usages)])
+    print("CPU Usage:")
+    print(
+        tabulate(
+            table,
+            headers=["Switch", "Max (%)", "Average (%)"],
+            tablefmt="pretty",
+        )
     )
-    if match is not None:
-        node = match.group(3)
-        time = float(match.group(1))
-        cpu = float(match.group(4))
-        packets = int(match.group(6))
-        droppedPackets = int(match.group(7))
-        bytes = int(match.group(8))
-        x.add(time)
+    print("")
 
-        if node not in cpuUsages:
-            cpuUsages[node] = [cpu]
-            nPackets[node] = [packets]
-            nDroppedPackets[node] = [droppedPackets]
-            nBytes[node] = [bytes]
-        else:
-            cpuUsages[node].append(cpu)
-            nPackets[node].append(packets)
-            nDroppedPackets[node].append(droppedPackets)
-            nBytes[node].append(bytes)
+    table = []
+    for switch in nPackets:
+        packets = nPackets[switch]
+        table.append(
+            [
+                switch,
+                max(packets),
+                sum(packets) / len(packets),
+                sum(packets),
+            ]
+        )
+    print("Packets processed:")
+    print(
+        tabulate(
+            table,
+            headers=["Switch", "Max", "Average", "Total"],
+            tablefmt="pretty",
+        )
+    )
+    print("")
 
-table = []
-for switch in cpuUsages:
-    usages = cpuUsages[switch]
-    table.append([switch, max(usages), sum(usages) / len(usages)])
-print("CPU Usage:")
-print(
-    tabulate(
-        table,
-        headers=["Switch", "Max (%)", "Average (%)"],
-        tablefmt="pretty",
+    table = []
+    for switch in nDroppedPackets:
+        packets = nDroppedPackets[switch]
+        table.append(
+            [
+                switch,
+                max(packets),
+                sum(packets) / len(packets),
+                sum(packets),
+            ]
+        )
+    print("Dropped Packets:")
+    print(
+        tabulate(
+            table,
+            headers=["Switch", "Max", "Average", "Total"],
+            tablefmt="pretty",
+        )
     )
-)
-print("")
+    print("")
 
-table = []
-for switch in nPackets:
-    packets = nPackets[switch]
-    table.append(
-        [
-            switch,
-            max(packets),
-            sum(packets) / len(packets),
-            sum(packets),
-        ]
+    table = []
+    for switch in nBytes:
+        bytes = nBytes[switch]
+        table.append(
+            [
+                switch,
+                max(bytes),
+                sum(bytes) / len(bytes),
+                sum(bytes),
+            ]
+        )
+    print("Bytes processed:")
+    print(
+        tabulate(
+            table,
+            headers=["Switch", "Max", "Average", "Total"],
+            tablefmt="pretty",
+        )
     )
-print("Packets processed:")
-print(
-    tabulate(
-        table,
-        headers=["Switch", "Max", "Average", "Total"],
-        tablefmt="pretty",
-    )
-)
-print("")
+    print("")
 
-table = []
-for switch in nDroppedPackets:
-    packets = nDroppedPackets[switch]
-    table.append(
-        [
-            switch,
-            max(packets),
-            sum(packets) / len(packets),
-            sum(packets),
-        ]
-    )
-print("Dropped Packets:")
-print(
-    tabulate(
-        table,
-        headers=["Switch", "Max", "Average", "Total"],
-        tablefmt="pretty",
-    )
-)
-print("")
 
-table = []
-for switch in nBytes:
-    bytes = nBytes[switch]
-    table.append(
-        [
-            switch,
-            max(bytes),
-            sum(bytes) / len(bytes),
-            sum(bytes),
-        ]
-    )
-print("Bytes processed:")
-print(
-    tabulate(
-        table,
-        headers=["Switch", "Max", "Average", "Total"],
-        tablefmt="pretty",
-    )
-)
-print("")
-
-if args.drawPlot:
+def draw_plot(x, cpuUsages, nPackets, nDroppedPackets, nBytes):
     # CpuUsage graph
     color_index = 0
     for node in cpuUsages:
@@ -223,3 +178,42 @@ if args.drawPlot:
     plt.xlabel("Time Interval (s)")
     plt.ylabel("Nº Bytes")
     plt.show()
+
+
+def read_file(file_path, drawPlot):
+    with open(file_path) as file:
+        data = csv.reader(file, delimiter=";")
+
+        x = SortedSet()
+        cpuUsages = {}
+        nPackets = {}
+        nDroppedPackets = {}
+        nBytes = {}
+        for row in data:
+            time = float(row[0])
+            node = row[1]
+            cpu = float(row[2])
+            packets = int(row[3])
+            droppedPackets = int(row[4])
+            bytes = int(row[5])
+            x.add(time)
+
+            if node not in cpuUsages:
+                cpuUsages[node] = [cpu]
+                nPackets[node] = [packets]
+                nDroppedPackets[node] = [droppedPackets]
+                nBytes[node] = [bytes]
+            else:
+                cpuUsages[node].append(cpu)
+                nPackets[node].append(packets)
+                nDroppedPackets[node].append(droppedPackets)
+                nBytes[node].append(bytes)
+
+        report_values(cpuUsages, nPackets, nDroppedPackets, nBytes)
+        if drawPlot:
+            draw_plot(x, cpuUsages, nPackets, nDroppedPackets, nBytes)
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    read_file(args.file, args.drawPlot)
