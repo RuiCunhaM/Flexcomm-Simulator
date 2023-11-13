@@ -76,16 +76,17 @@ parseBulkSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
   string protocol = protocol2factory (configs["protocol"].value_or ("TCP"));
-  uint64_t hostPort = getPort (host);
   uint64_t remotePort = getPort (remoteHost);
 
   BulkSendHelper bulkHelper =
-      BulkSendHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
+      BulkSendHelper (protocol, InetSocketAddress (remoteAddress, remotePort));
   bulkHelper.SetAttribute ("SendSize", UintegerValue (configs["sendSize"].value_or (512)));
   bulkHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
   ApplicationContainer apps = bulkHelper.Install (host);
 
-  apps.Add (installSinker (remoteHost, protocol, remotePort));
+  if (protocol == "ns3::TcpSocketFactory")
+    apps.Add (installSinker (remoteHost, protocol, remotePort));
+
   return apps;
 }
 
@@ -94,16 +95,17 @@ parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
   string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
-  uint64_t hostPort = getPort (host);
   uint64_t remotePort = getPort (remoteHost);
 
-  OnOffHelper onOffHelper = OnOffHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
+  OnOffHelper onOffHelper = OnOffHelper (protocol, InetSocketAddress (remoteAddress, remotePort));
   onOffHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (512)));
   onOffHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
   onOffHelper.SetConstantRate (DataRate (configs["dataRate"].value_or ("500kb/s")));
   ApplicationContainer apps = onOffHelper.Install (host);
 
-  apps.Add (installSinker (remoteHost, protocol, remotePort));
+  if (protocol == "ns3::TcpSocketFactory")
+    apps.Add (installSinker (remoteHost, protocol, remotePort));
+
   return apps;
 }
 
@@ -112,10 +114,9 @@ parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
   string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
-  uint64_t hostPort = getPort (host);
   uint64_t remotePort = getPort (remoteHost);
 
-  SinGenHelper sinHelper = SinGenHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
+  SinGenHelper sinHelper = SinGenHelper (protocol, InetSocketAddress (remoteAddress, remotePort));
   sinHelper.SetAttribute ("Const", StringValue (configs["const"].value_or ("3Mb/s")));
   sinHelper.SetAttribute ("A", StringValue (configs["a"].value_or ("1Mb/s")));
   sinHelper.SetAttribute ("B", DoubleValue (configs["b"].value_or (0.5)));
@@ -124,7 +125,9 @@ parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   sinHelper.SetAttribute ("Unit", StringValue (configs["unit"].value_or ("min")));
   ApplicationContainer apps = sinHelper.Install (host);
 
-  apps.Add (installSinker (remoteHost, protocol, remotePort));
+  if (protocol == "ns3::TcpSocketFactory")
+    apps.Add (installSinker (remoteHost, protocol, remotePort));
+
   return apps;
 }
 
@@ -133,10 +136,9 @@ parsePPBP (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
 {
   Ipv4Address remoteAddress = getAddress (remoteHost);
   string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
-  uint64_t hostPort = getPort (host);
   uint64_t remotePort = getPort (remoteHost);
 
-  PPBPHelper ppbpHelper = PPBPHelper (protocol, InetSocketAddress (remoteAddress, hostPort));
+  PPBPHelper ppbpHelper = PPBPHelper (protocol, InetSocketAddress (remoteAddress, remotePort));
   ppbpHelper.SetAttribute ("BurstIntensity",
                            StringValue (configs["burstIntensity"].value_or ("1Mb/s")));
   ppbpHelper.SetAttribute ("MeanBurstArrivals", StringValue (configs["meanBurstArrivals"].value_or (
@@ -148,7 +150,9 @@ parsePPBP (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   ppbpHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (1470)));
   ApplicationContainer apps = ppbpHelper.Install (host);
 
-  apps.Add (installSinker (remoteHost, protocol, remotePort));
+  if (protocol == "ns3::TcpSocketFactory")
+    apps.Add (installSinker (remoteHost, protocol, remotePort));
+
   return apps;
 }
 
