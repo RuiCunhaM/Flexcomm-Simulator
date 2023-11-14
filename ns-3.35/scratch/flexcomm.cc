@@ -85,9 +85,11 @@ main (int argc, char *argv[])
   scds = (endTime / 1000) % 60;
   uint64_t mins = ((endTime / (1000 * 60)) % 60);
   uint64_t hrs = ((endTime / (1000 * 60 * 60)) % 24);
+  uint64_t days = ((endTime / (1000 * 60 * 60 * 24)));
 
   std::cout << "Nº Events: " << Simulator::GetEventCount () << std::endl;
-  std::cout << "Execution Time: " << hrs << "h " << mins << "m " << scds << "s" << std::endl;
+  std::cout << "Execution Time: " << days << "d " << hrs << "h " << mins << "m " << scds << "s"
+            << std::endl;
   std::cout << "--------------------------------------------------------------" << std::endl;
 
   flowHelper.SerializeToXmlFile (SystemPath::Append (topo, "flow-monitor.xml"), true, true);
