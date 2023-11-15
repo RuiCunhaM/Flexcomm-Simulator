@@ -86,7 +86,6 @@ parseNodes (string topoName)
           node->SetAttribute ("CpuCapacity",
                               StringValue (configs["cpuCapacity"].value_or ("100Gbps")));
           parseEnergyModels (configs, node);
-          Topology::AddSwitch (node);
         }
       else if (!nodeType.compare ("host"))
         {

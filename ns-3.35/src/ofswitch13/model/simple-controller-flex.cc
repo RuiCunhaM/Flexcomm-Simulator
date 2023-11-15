@@ -72,13 +72,15 @@ void
 SimpleControllerFlex::UpdateWeights ()
 {
   Graph topo = Topology::GetGraph ();
+  IntegerWeightCalc weightCalc = Topology::GetDefaultWeightCalc ();
 
-  boost::graph_traits<Graph>::edge_iterator edgeIt, edgeEnd;
-  for (boost::tie (edgeIt, edgeEnd) = boost::edges (topo); edgeIt != edgeEnd; ++edgeIt)
+  auto bmap = get (edge_bundle, topo);
+
+  for (auto ed : make_iterator_range (edges (topo)))
     {
-      Edge ed = *edgeIt;
-      Ptr<Node> n1 = Topology::VertexToNode (ed.m_source);
-      Ptr<Node> n2 = Topology::VertexToNode (ed.m_target);
+      Edge &e = bmap[ed];
+      Ptr<Node> n1 = NodeList::GetNode (e.first);
+      Ptr<Node> n2 = NodeList::GetNode (e.second);
 
       if (n1->IsSwitch () && n2->IsSwitch ())
         {
@@ -86,7 +88,7 @@ SimpleControllerFlex::UpdateWeights ()
           float flex1 = EnergyAPI::GetFlexArray (Names::FindName (n1)).at (index);
           float flex2 = EnergyAPI::GetFlexArray (Names::FindName (n2)).at (index);
 
-          Topology::UpdateEdgeWeight (n1, n2, flex1 + flex2);
+          weightCalc.UpdateEdgeWeight (e, flex1 + flex2);
         }
     }
 }

@@ -26,15 +26,44 @@
 #include "ns3/core-module.h"
 #include "ns3/node.h"
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/named_function_params.hpp>
+#include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/property_map/transform_value_property_map.hpp>
 #include "ns3/channel.h"
 
 using namespace boost;
 
 namespace ns3 {
 
-typedef adjacency_list<vecS, vecS, undirectedS, Ptr<Node>, property<edge_weight_t, int>> Graph;
-typedef graph_traits<Graph>::vertex_descriptor Vertex;
-typedef graph_traits<Graph>::edge_descriptor Edge;
+using Edge = std::pair<uint32_t, uint32_t>;
+using Graph = adjacency_list<vecS, vecS, undirectedS, no_property, Edge>;
+using Vertex = graph_traits<Graph>::vertex_descriptor;
+
+// weights have to define operator+ and operator<
+template <class Weight>
+class WeightCalc
+{
+public:
+  virtual Weight GetInitialWeight () const = 0;
+  virtual Weight GetNonViableWeight () const = 0;
+  virtual Weight GetWeight (Edge &) const = 0;
+};
+
+class IntegerWeightCalc : public WeightCalc<int>
+{
+private:
+  unordered_map<Edge, int> m_weights;
+
+public:
+  IntegerWeightCalc ();
+  ~IntegerWeightCalc ();
+
+  int GetInitialWeight () const override;
+  int GetNonViableWeight () const override;
+  int GetWeight (Edge &) const override;
+
+  void UpdateEdgeWeight (Edge &, int);
+};
 
 class Topology : public Object
 {
@@ -43,53 +72,233 @@ public:
   Topology ();
   ~Topology ();
 
-  static void AddSwitch (Ptr<Node> sw);
   static void AddHost (Ptr<Node> host, Ipv4Address ip);
   static void AddLink (Ptr<Node> n1, Ptr<Node> n2, Ptr<Channel> channel);
 
-  static std::vector<Ptr<Node>> DijkstraShortestPath (Ptr<Node> src, Ptr<Node> dst);
-  static std::vector<Ptr<Node>> DijkstraShortestPath (Ptr<Node> src, Ipv4Address dst);
-  static std::vector<Ptr<Node>> DijkstraShortestPath (Ipv4Address src, Ptr<Node> dst);
-  static std::vector<Ptr<Node>> DijkstraShortestPath (Ipv4Address src, Ipv4Address dst);
-  static std::vector<Ptr<Node>> DijkstraShortestPath (std::string src, std::string dst);
-  static std::vector<Ptr<Node>> DijkstraShortestPaths (Ptr<Node> src);
-  static std::vector<Ptr<Node>> DijkstraShortestPaths (Ipv4Address src);
-  static std::vector<Ptr<Node>> DijkstraShortestPaths (std::string src);
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPath (Ptr<Node> src, Ptr<Node> dst,
+                        WeightCalc<Weight> &weight_calc = m_default_calc);
 
-  static std::vector<std::pair<std::vector<Ptr<Node>>, int>> DijkstraShortestPaths (Ptr<Node> src,
-                                                                                    Ptr<Node> dst);
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPath (Ptr<Node> src, Ipv4Address dst,
+                        WeightCalc<Weight> &weight_calc = m_default_calc);
 
-  static void UpdateEdgeWeight (Ptr<Node> n1, Ptr<Node> n2, int newWeight);
-  static int GetEdgeWeight (Ptr<Node> n1, Ptr<Node> n2);
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPath (Ipv4Address src, Ptr<Node> dst,
+                        WeightCalc<Weight> &weight_calc = m_default_calc);
+
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPath (Ipv4Address src, Ipv4Address dst,
+                        WeightCalc<Weight> &weight_calc = m_default_calc);
+
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPath (std::string src, std::string dst,
+                        WeightCalc<Weight> &weight_calc = m_default_calc);
+
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPaths (Ptr<Node> src, WeightCalc<Weight> &weight_calc = m_default_calc);
+
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPaths (Ipv4Address src, WeightCalc<Weight> &weight_calc = m_default_calc);
+
+  template <class Weight = int>
+  static std::vector<Ptr<Node>>
+  DijkstraShortestPaths (std::string src, WeightCalc<Weight> &weight_calc = m_default_calc);
+
+  template <class Weight = int>
+  static std::vector<std::pair<std::vector<Ptr<Node>>, Weight>>
+  DijkstraShortestPaths (Ptr<Node> src, Ptr<Node> dst,
+                         WeightCalc<Weight> &weight_calc = m_default_calc);
 
   static Graph GetGraph ();
+  static IntegerWeightCalc &GetDefaultWeightCalc ();
 
   static Ptr<Node> VertexToNode (Vertex vd);
   static std::vector<Ptr<Node>> VertexToNode (std::vector<Vertex> path);
-
-  static Vertex NodeToVertex (Ptr<Node> node);
 
   static Ptr<Channel> GetChannel (Ptr<Node> n1, Ptr<Node> n2);
 
 private:
   static Graph m_graph;
+  static IntegerWeightCalc m_default_calc;
 
-  // NOTE: Perhaps we can simplify this using vertex/edge properties
-  static std::map<Ptr<Node>, Vertex> m_vertexes;
-  static std::map<Vertex, Ptr<Node>> m_nodes;
-  static std::map<Ipv4Address, Vertex> m_ip_to_vertex;
-  static std::map<Vertex, Ipv4Address> m_vertex_to_ip;
+  static std::map<Ipv4Address, Ptr<Node>> m_ip_to_node;
+  static std::map<Ptr<Node>, Ipv4Address> m_node_to_ip;
   static std::map<Edge, Ptr<Channel>> m_channels;
 
-  static std::vector<Vertex> DijkstraShortestPathsInternal (Vertex src);
-  static std::vector<Vertex> DijkstraShortestPathInternal (Vertex src, Vertex dst);
-  static void UpdateEdgeWeight (Edge ed, int newWeight);
-  static int GetEdgeWeight (Edge ed);
+  template <class Weight>
+  static std::vector<Vertex> DijkstraShortestPathsInternal (Vertex src,
+                                                            WeightCalc<Weight> &weight_calc);
+
+  template <class Weight>
+  static std::vector<Vertex> DijkstraShortestPathInternal (Vertex src, Vertex dst,
+                                                           WeightCalc<Weight> &weight_calc);
 
   static Ptr<Channel> GetChannel (Edge e);
-
-  static Vertex AddNode (Ptr<Node> node);
 };
+
+} // namespace ns3
+
+/********************************************************************
+ *  Implementation of the templates declared above.
+ ********************************************************************/
+
+namespace ns3 {
+
+template <class Weight>
+std::vector<Vertex>
+Topology::DijkstraShortestPathsInternal (Vertex src, WeightCalc<Weight> &weight_calc)
+{
+  std::vector<Vertex> predecessors (num_vertices (m_graph));
+  dijkstra_shortest_paths (
+      m_graph, src,
+      predecessor_map (&predecessors[0])
+          .weight_map (make_transform_value_property_map (
+              [&weight_calc] (Edge &e) -> Weight { return weight_calc.GetWeight (e); },
+              get (edge_bundle, m_graph)))
+          .distance_zero (weight_calc.GetInitialWeight ())
+          .distance_inf (weight_calc.GetNonViableWeight ()));
+  return predecessors;
+}
+
+template <class Weight>
+std::vector<Vertex>
+Topology::DijkstraShortestPathInternal (Vertex src, Vertex dst, WeightCalc<Weight> &weight_calc)
+{
+  std::vector<Vertex> predecessors = DijkstraShortestPathsInternal<Weight> (src, weight_calc);
+  std::vector<Vertex> path;
+  Vertex currentVertex = dst;
+
+  while (currentVertex != src)
+    {
+      path.push_back (currentVertex);
+      currentVertex = predecessors[currentVertex];
+    }
+  path.push_back (src);
+  std::reverse (path.begin (), path.end ());
+
+  return path;
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPath (Ptr<Node> src, Ptr<Node> dst, WeightCalc<Weight> &weight_calc)
+{
+  Vertex source = vertex (src->GetId (), m_graph);
+  Vertex target = vertex (dst->GetId (), m_graph);
+  return VertexToNode (DijkstraShortestPathInternal<Weight> (source, target, weight_calc));
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPath (Ptr<Node> src, Ipv4Address dst, WeightCalc<Weight> &weight_calc)
+{
+  return DijkstraShortestPath<Weight> (src, m_ip_to_node[dst], weight_calc);
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPath (Ipv4Address src, Ptr<Node> dst, WeightCalc<Weight> &weight_calc)
+{
+  return DijkstraShortestPath<Weight> (m_ip_to_node[src], dst, weight_calc);
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPath (Ipv4Address src, Ipv4Address dst, WeightCalc<Weight> &weight_calc)
+{
+  return DijkstraShortestPath<Weight> (m_ip_to_node[src], m_ip_to_node[dst], weight_calc);
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPath (std::string src, std::string dst, WeightCalc<Weight> &weight_calc)
+{
+  Ptr<Node> srcNode = Names::Find<Node> (src);
+  Ptr<Node> dstNode = Names::Find<Node> (dst);
+  return DijkstraShortestPath<Weight> (srcNode, dstNode, weight_calc);
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPaths (Ptr<Node> src, WeightCalc<Weight> &weight_calc)
+{
+  Vertex src_vertex = vertex (src->GetId (), m_graph);
+  return VertexToNode (DijkstraShortestPathsInternal<Weight> (src_vertex, weight_calc));
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPaths (Ipv4Address src, WeightCalc<Weight> &weight_calc)
+{
+  return DijkstraShortestPaths<Weight> (m_ip_to_node[src], weight_calc);
+}
+
+template <class Weight>
+inline std::vector<Ptr<Node>>
+Topology::DijkstraShortestPaths (std::string src, WeightCalc<Weight> &weight_calc)
+{
+  Ptr<Node> source = Names::Find<Node> (src);
+  return DijkstraShortestPaths<Weight> (source, weight_calc);
+}
+
+// NOTE: Code partially generated by ChatGPT
+template <class Weight>
+inline std::vector<std::pair<std::vector<Ptr<Node>>, Weight>>
+Topology::DijkstraShortestPaths (Ptr<Node> src, Ptr<Node> dst, WeightCalc<Weight> &weight_calc)
+{
+  std::vector<Vertex> predecessors (num_vertices (m_graph));
+  std::vector<Weight> distances (num_vertices (m_graph));
+  Vertex source = vertex (src->GetId (), m_graph);
+  Vertex target = vertex (dst->GetId (), m_graph);
+
+  // add distance map
+  dijkstra_shortest_paths (
+      m_graph, source,
+      predecessor_map (&predecessors[0])
+          .weight_map (make_transform_value_property_map (
+              [&weight_calc] (Edge &e) -> Weight { return weight_calc.GetWeight (e); },
+              get (edge_bundle, m_graph)))
+          .distance_zero (weight_calc.GetInitialWeight ())
+          .distance_inf (weight_calc.GetNonViableWeight ())
+          .distance_map (&distances[0]));
+
+  // Create a vector to store the paths and their distances
+  std::vector<std::pair<std::vector<Ptr<Node>>, Weight>> paths;
+
+  // Loop through all vertices and store the path and distance from the source
+  for (Vertex v = 0; v < num_vertices (m_graph); ++v)
+    {
+      if (v == source || v == target)
+        continue;
+
+      std::vector<Ptr<Node>> path;
+      for (Vertex u = v; u != source; u = predecessors[u])
+        path.push_back (VertexToNode (u));
+
+      path.push_back (VertexToNode (source));
+      std::reverse (path.begin (), path.end ());
+      path.push_back (VertexToNode (target));
+
+      paths.emplace_back (std::move (path), distances[v].get ());
+    }
+
+  // Sort the paths by distance in ascending order
+  std::sort (paths.begin (), paths.end (),
+             [] (const auto &lhs, const auto &rhs) { return lhs.second < rhs.second; });
+
+  // Now, the 'paths' vector contains all paths between 'source' and 'target'
+  // sorted by their distances in ascending order.
+  // Each entry in the 'paths' vector is a pair (path, distance).
+  return paths;
+}
 
 } // namespace ns3
 
