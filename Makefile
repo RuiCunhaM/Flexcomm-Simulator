@@ -23,6 +23,8 @@ perf: create_outpu_folder
 run_debug: create_outpu_folder
 	./ns-3.35/waf -t ns-3.35 --run $(OPTIONS) --gdb 
 
+configure: optimize
+
 optimize:
 	CXXFLAGS=$(CXXFLAGS) ./ns-3.35/waf -t ns-3.35 -d optimized configure --disable-python --disable-gtk --enable-modules=$(MODULES)
 
