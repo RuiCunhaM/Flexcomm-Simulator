@@ -141,6 +141,7 @@ xasprintf (const char *format, ...)
   return s;
 }
 
+#ifndef HAVE_STRLCPY
 void
 strlcpy (char *dst, const char *src, size_t size)
 {
@@ -152,6 +153,7 @@ strlcpy (char *dst, const char *src, size_t size)
       dst[n_copy] = '\0';
     }
 }
+#endif
 
 void
 ofp_fatal (int err_no, const char *format, ...)
