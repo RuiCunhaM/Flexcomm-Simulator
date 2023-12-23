@@ -25,7 +25,6 @@
 #include "ns3/v4ping-helper.h"
 #include "ns3/internet-module.h"
 #include "ns3/applications-module.h"
-#include "boost/algorithm/string.hpp"
 
 namespace ns3 {
 
@@ -84,8 +83,7 @@ parseBulkSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   bulkHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
   ApplicationContainer apps = bulkHelper.Install (host);
 
-  if (protocol == "ns3::TcpSocketFactory")
-    apps.Add (installSinker (remoteHost, protocol, remotePort));
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
 
   return apps;
 }
@@ -103,8 +101,7 @@ parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   onOffHelper.SetConstantRate (DataRate (configs["dataRate"].value_or ("500kb/s")));
   ApplicationContainer apps = onOffHelper.Install (host);
 
-  if (protocol == "ns3::TcpSocketFactory")
-    apps.Add (installSinker (remoteHost, protocol, remotePort));
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
 
   return apps;
 }
@@ -125,8 +122,7 @@ parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   sinHelper.SetAttribute ("Unit", StringValue (configs["unit"].value_or ("min")));
   ApplicationContainer apps = sinHelper.Install (host);
 
-  if (protocol == "ns3::TcpSocketFactory")
-    apps.Add (installSinker (remoteHost, protocol, remotePort));
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
 
   return apps;
 }
@@ -150,8 +146,7 @@ parsePPBP (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   ppbpHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (1470)));
   ApplicationContainer apps = ppbpHelper.Install (host);
 
-  if (protocol == "ns3::TcpSocketFactory")
-    apps.Add (installSinker (remoteHost, protocol, remotePort));
+  apps.Add (installSinker (remoteHost, protocol, remotePort));
 
   return apps;
 }
