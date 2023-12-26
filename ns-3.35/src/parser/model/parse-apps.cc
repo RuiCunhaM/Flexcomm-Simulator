@@ -151,6 +151,28 @@ parsePPBP (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   return apps;
 }
 
+ApplicationContainer
+parseHttpServer (toml::table configs, Ptr<Node> host)
+{
+  uint16_t port = configs["port"].value_or (80);
+
+  HttpServerHelper httpServer (port);
+  ApplicationContainer apps = httpServer.Install (host);
+
+  return apps;
+}
+
+ApplicationContainer
+parseHttpClient (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
+{
+  uint16_t port = configs["port"].value_or (80);
+
+  HttpClientHelper httpClient (getAddress (remoteHost), port);
+  ApplicationContainer apps = httpClient.Install (host);
+
+  return apps;
+}
+
 void
 parseApps (std::string topoName)
 {
@@ -174,7 +196,7 @@ parseApps (std::string topoName)
       std::string appType = configs["type"].ref<std::string> ();
 
       Ptr<Node> host = Names::Find<Node> (configs["host"].ref<string> ());
-      Ptr<Node> remoteHost = Names::Find<Node> (configs["remote"].ref<string> ());
+      Ptr<Node> remoteHost = Names::Find<Node> (configs["remote"].value_or (""));
 
       ApplicationContainer apps;
       if (!appType.compare ("v4ping"))
@@ -187,6 +209,10 @@ parseApps (std::string topoName)
         apps = parseSinSend (configs, host, remoteHost);
       else if (!appType.compare ("PPBP"))
         apps = parsePPBP (configs, host, remoteHost);
+      else if (!appType.compare ("httpServer"))
+        apps = parseHttpServer (configs, host);
+      else if (!appType.compare ("httpClient"))
+        apps = parseHttpClient (configs, host, remoteHost);
       else
         NS_ABORT_MSG ("Unknown " << appType << " application");
 
