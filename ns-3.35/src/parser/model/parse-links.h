@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-void parseLinks (std::string topoName, std::string outPath);
+void parseLinks (std::string topoName, std::string outPath, std::string linkFailuresFile);
 
 } // namespace ns3
 

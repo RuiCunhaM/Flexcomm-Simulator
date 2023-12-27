@@ -8,7 +8,8 @@ CHECKSUM=false
 OUTPUTS=outputs
 ESTIFILE=estimate.json
 FLEXFILE=flex.json
-OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM) --estifile=$(ESTIFILE) --flexfile=$(FLEXFILE)" --cwd=../$(OUTPUTS)
+LINKFAILURES=NONE
+OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM) --estifile=$(ESTIFILE) --flexfile=$(FLEXFILE) --linkfailures=$(LINKFAILURES)" --cwd=../$(OUTPUTS)
 CXXFLAGS="-Wall"
 
 all:

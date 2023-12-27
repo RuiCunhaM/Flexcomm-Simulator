@@ -739,4 +739,16 @@ PointToPointEthernetNetDevice::GetMtu (void) const
   return m_mtu;
 }
 
+void
+PointToPointEthernetNetDevice::SetLinkDown ()
+{
+  m_linkUp = false;
+}
+
+void
+PointToPointEthernetNetDevice::SetLinkUp ()
+{
+  m_linkUp = true;
+}
+
 } // namespace ns3

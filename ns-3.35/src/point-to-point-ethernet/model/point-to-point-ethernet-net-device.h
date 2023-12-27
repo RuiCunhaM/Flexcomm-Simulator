@@ -19,7 +19,6 @@
 #ifndef POINT_TO_POINT_ETHERNET_NET_DEVICE_H
 #define POINT_TO_POINT_ETHERNET_NET_DEVICE_H
 
-#include <cstring>
 #include "ns3/address.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
@@ -200,6 +199,9 @@ public:
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
+
+  void SetLinkDown ();
+  void SetLinkUp ();
 
 protected:
   /**

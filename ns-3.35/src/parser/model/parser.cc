@@ -36,7 +36,7 @@ std::map<std::string, Ptr<NodeEnergyHelper>> Parser::m_templates =
     std::map<std::string, Ptr<NodeEnergyHelper>> ();
 
 void
-Parser::ParseTopology (string topoName, string estiFile, string flexFile)
+Parser::ParseTopology (string topoName, string estiFile, string flexFile, string linkFailuresFile)
 {
   string outPath = topoName;
   string topoPath = SystemPath::Append ("../topologies", topoName);
@@ -46,7 +46,7 @@ Parser::ParseTopology (string topoName, string estiFile, string flexFile)
   parseEnergy (topoPath, estiFile, flexFile);
   parseTemplates (topoPath);
   parseNodes (topoPath);
-  parseLinks (topoPath, outPath);
+  parseLinks (topoPath, outPath, linkFailuresFile);
   parseApps (topoPath);
   parseConfigs (topoPath, outPath);
 }

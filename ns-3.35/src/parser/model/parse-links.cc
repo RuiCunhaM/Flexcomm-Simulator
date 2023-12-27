@@ -21,7 +21,7 @@
  */
 
 #include "parse-links.h"
-#include "parser.h"
+#include "ns3/point-to-point-ethernet-channel.h"
 #include "toml.hpp"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/point-to-point-ethernet-helper.h"
@@ -127,7 +127,49 @@ installController (std::string outPath)
 }
 
 void
-parseLinks (string topoName, string outPath)
+parseLinkFailures (string topoName, string linkFailuresFile)
+{
+  if (!linkFailuresFile.compare ("NONE"))
+    return;
+
+  string failures = SystemPath::Append (topoName, linkFailuresFile);
+
+  if (!SystemPath::Exists (failures))
+    NS_ABORT_MSG ("Link Failures file not found " << failures);
+
+  ifstream infile (failures);
+  string link, state, time;
+
+  while (infile >> time >> link >> state)
+    {
+      Ptr<PointToPointEthernetChannel> channel = Names::Find<PointToPointEthernetChannel> (link);
+
+      if (!channel)
+        NS_ABORT_MSG ("Unknown link when parsing link-failures: " << link);
+
+      NetDeviceContainer devices = channel->GetDevices ();
+      Time t = Time (time);
+
+      // NOTE: Perhaps we should use a toggle?
+      if (!state.compare ("down"))
+        {
+          Simulator::Schedule (t, &PointToPointEthernetNetDevice::SetLinkDown,
+                               DynamicCast<PointToPointEthernetNetDevice> (devices.Get (0)));
+          Simulator::Schedule (t, &PointToPointEthernetNetDevice::SetLinkDown,
+                               DynamicCast<PointToPointEthernetNetDevice> (devices.Get (1)));
+        }
+      else
+        {
+          Simulator::Schedule (t, &PointToPointEthernetNetDevice::SetLinkUp,
+                               DynamicCast<PointToPointEthernetNetDevice> (devices.Get (0)));
+          Simulator::Schedule (t, &PointToPointEthernetNetDevice::SetLinkUp,
+                               DynamicCast<PointToPointEthernetNetDevice> (devices.Get (1)));
+        }
+    }
+}
+
+void
+parseLinks (string topoName, string outPath, string linkFailuresFile)
 {
   string linksFile = SystemPath::Append (topoName, "links.toml");
 
@@ -145,6 +187,7 @@ parseLinks (string topoName, string outPath)
 
   installLinks (tbl, outPath);
   installController (outPath);
+  parseLinkFailures (topoName, linkFailuresFile);
 }
 
 } // namespace ns3

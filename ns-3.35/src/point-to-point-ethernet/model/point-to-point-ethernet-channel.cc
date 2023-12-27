@@ -126,6 +126,15 @@ PointToPointEthernetChannel::GetDevice (std::size_t i) const
   return GetPointToPointEthernetDevice (i);
 }
 
+NetDeviceContainer
+PointToPointEthernetChannel::GetDevices () const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  NetDeviceContainer r = NetDeviceContainer (m_link[0].m_src);
+  r.Add (m_link[1].m_src);
+  return r;
+}
+
 Time
 PointToPointEthernetChannel::GetDelay (void) const
 {

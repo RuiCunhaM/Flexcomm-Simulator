@@ -19,16 +19,16 @@
 #ifndef POINT_TO_POINT_ETHERNET_CHANNEL_H
 #define POINT_TO_POINT_ETHERNET_CHANNEL_H
 
-#include <list>
 #include "ns3/channel.h"
 #include "ns3/ptr.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 #include "ns3/traced-callback.h"
+#include "ns3/point-to-point-ethernet-net-device.h"
+#include "ns3/net-device-container.h"
 
 namespace ns3 {
 
-class PointToPointEthernetNetDevice;
 class Packet;
 
 /**
@@ -100,6 +100,7 @@ public:
    * \returns Ptr to NetDevice requested
    */
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
+  virtual NetDeviceContainer GetDevices () const;
 
   void UpdateUsage (void);
   DataRate GetDataRate (void);
