@@ -37,6 +37,7 @@ main (int argc, char *argv[])
   std::string ctrl;
   std::string estiFile;
   std::string flexFile;
+  std::string linkFailuresFile;
   bool checksum;
 
   CommandLine cmd;
@@ -45,6 +46,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("checksum", "Calculate checksums", checksum);
   cmd.AddValue ("estifile", "Estimate file", estiFile);
   cmd.AddValue ("flexfile", "Flexibility file", flexFile);
+  cmd.AddValue ("linkfailures", "Link Failures file", linkFailuresFile);
   cmd.Parse (argc, argv);
 
   if (ctrl == "External")
@@ -60,7 +62,7 @@ main (int argc, char *argv[])
   uint64_t endTime;
   clock.Start ();
 
-  Parser::ParseTopology (topo, estiFile, flexFile);
+  Parser::ParseTopology (topo, estiFile, flexFile, linkFailuresFile);
 
   endTime = clock.End ();
   uint64_t milli = endTime % 1000;

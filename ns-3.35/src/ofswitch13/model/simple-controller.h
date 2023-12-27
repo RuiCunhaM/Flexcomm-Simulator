@@ -35,6 +35,9 @@ public:
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
+  ofl_err HandlePortStatus (struct ofl_msg_port_status *msg, Ptr<const RemoteSwitch> swtch,
+                            uint32_t xid);
+
 protected:
   void HandshakeSuccessful (Ptr<const RemoteSwitch> sw);
   void ApplyRouting (uint64_t src);

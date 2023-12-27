@@ -21,12 +21,8 @@
  */
 
 #include <cstdint>
-#include <cstdlib>
-
 #include "simple-controller.h"
-
 #include "ns3/log.h"
-#include "ns3/parser.h"
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/network-module.h"
@@ -34,6 +30,9 @@
 #include "ns3/topology-module.h"
 
 NS_LOG_COMPONENT_DEFINE ("SimpleController");
+
+#define PORT_DOWN 1
+#define PORT_UP 4
 
 namespace ns3 {
 
@@ -104,6 +103,43 @@ SimpleController::HandshakeSuccessful (Ptr<const RemoteSwitch> sw)
   DpctlExecute (swDpId, "set-config miss=128");
 
   ApplyRouting (swDpId);
+}
+
+ofl_err
+SimpleController::HandlePortStatus (struct ofl_msg_port_status *msg, Ptr<const RemoteSwitch> swtch,
+                                    uint32_t xid)
+{
+  NS_LOG_FUNCTION (this << swtch << xid);
+
+  enum ofp_port_reason reason = msg->reason;
+  struct ofl_port port = *msg->desc;
+
+  uint64_t swDpId = swtch->GetDpId ();
+  uint32_t switchId = DpId2Id (swDpId);
+  Ptr<Node> sw = NodeContainer::GetGlobal ().Get (switchId);
+
+  if (reason == OFPPR_MODIFY)
+    {
+      // FIXME: port.state is a bitmap. This needs to be properly checked
+      switch (port.state)
+        {
+        case PORT_DOWN:
+          std::cout << Names::FindName (sw) << " port nº" << port.port_no << " DOWN" << std::endl;
+          break;
+        case PORT_UP:
+          std::cout << Names::FindName (sw) << " port nº" << port.port_no << " UP" << std::endl;
+          break;
+        default:
+          NS_LOG_DEBUG ("Unknow Port State received");
+        }
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Other Port Status received: " << reason);
+    }
+
+  // TODO: There is no free handler for port status messages?
+  return 0;
 }
 
 } // namespace ns3
