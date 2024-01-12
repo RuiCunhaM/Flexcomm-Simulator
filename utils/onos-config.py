@@ -88,6 +88,7 @@ def gen_config(topology):
 
     # *********** Parse nodes ***********
 
+    devices = {}
     ports = {}
     links = {}
 
@@ -108,6 +109,13 @@ def gen_config(topology):
             switches_ports[node] = 0
             deviceId = "of:{:016x}".format(switches_counter)
             switches[node] = deviceId
+            devices[deviceId] = {
+                "annotations": {
+                    "entries": {
+                        "emsId": node
+                    }
+                }
+            }
         else:
             print("Unknown Node type")
             exit(1)
@@ -159,6 +167,7 @@ def gen_config(topology):
             ip_counter += 1
 
     data = {
+        "devices": devices,
         "ports": ports,
         "links": links,
         "apps": {
