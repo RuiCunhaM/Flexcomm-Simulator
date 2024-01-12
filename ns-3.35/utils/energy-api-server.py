@@ -43,7 +43,7 @@ def get_flex():
     if id not in FLEX:
         abort(404)
 
-    return jsonify(id, FLEX[id])
+    return jsonify({id: FLEX[id]})
 
 
 @app.route("/estimate", methods=["GET"])
@@ -57,7 +57,7 @@ def get_estimate():
     if id not in ESTIMATE:
         abort(404)
 
-    return jsonify(id, ESTIMATE[id])
+    return jsonify({id: ESTIMATE[id]})
 
 
 def load_data():
