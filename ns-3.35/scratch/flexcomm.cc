@@ -21,6 +21,7 @@
  */
 
 #include "ns3/core-module.h"
+#include "ns3/energy-api.h"
 #include "ns3/parser-module.h"
 #include "ns3/flow-monitor-module.h"
 #include "ns3/system-wall-clock-ms.h"
@@ -53,6 +54,7 @@ main (int argc, char *argv[])
     {
       GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
       checksum = true; // Override checksum option
+      EnergyAPI::StartExternalServer (topo);
     }
 
   GlobalValue::Bind ("ControllerType", StringValue (ctrl));
