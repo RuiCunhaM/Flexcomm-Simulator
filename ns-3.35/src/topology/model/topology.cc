@@ -21,6 +21,7 @@
  */
 
 #include "topology.h"
+#include "ns3/mac48-address.h"
 #include "ns3/node-list.h"
 
 namespace ns3 {
@@ -71,7 +72,7 @@ Graph Topology::m_graph{};
 IntegerWeightCalc Topology::m_default_calc{};
 
 std::map<Ipv4Address, Ptr<Node>> Topology::m_ip_to_node{};
-std::map<Ptr<Node>, Ipv4Address> Topology::m_node_to_ip{};
+std::map<Mac48Address, Ptr<Node>> Topology::m_mac_to_node{};
 std::map<Edge, Ptr<Channel>> Topology::m_channels{};
 
 TypeId
@@ -90,18 +91,19 @@ Topology::~Topology ()
 }
 
 void
-Topology::AddHost (Ptr<Node> host, Ipv4Address ip)
+Topology::AddNodeIpAddress (Ptr<Node> node, Ipv4Address ip)
 {
-  m_ip_to_node[ip] = host;
-  m_node_to_ip[host] = ip;
+  m_ip_to_node[ip] = node;
 }
 
 void
-Topology::AddLink (Ptr<Node> n1, Ptr<Node> n2, Ptr<Channel> channel)
+Topology::AddEdge (Ptr<Node> n1, Ptr<Node> n2, Ptr<Channel> channel)
 {
   Edge e (n1->GetId (), n2->GetId ());
   add_edge (e.first, e.second, e, m_graph);
   m_channels[e] = channel;
+  m_mac_to_node[Mac48Address::ConvertFrom (channel->GetDevice (0)->GetAddress ())] = n1;
+  m_mac_to_node[Mac48Address::ConvertFrom (channel->GetDevice (1)->GetAddress ())] = n2;
 }
 
 std::vector<Ptr<Node>>

@@ -21,7 +21,7 @@
  */
 
 #include "parse-links.h"
-#include "parser.h"
+#include "ns3/topology.h"
 #include "toml.hpp"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/point-to-point-ethernet-helper.h"
@@ -62,16 +62,16 @@ installLinks (toml::table tbl, string outPath)
       if (n0->IsHost ())
         {
           Ipv4InterfaceContainer ips = address.Assign (p2pDevices.Get (0));
-          Topology::AddHost (n0, ips.GetAddress (0));
+          Topology::AddNodeIpAddress (n0, ips.GetAddress (0));
         }
 
       if (n1->IsHost ())
         {
           Ipv4InterfaceContainer ips = address.Assign (p2pDevices.Get (1));
-          Topology::AddHost (n1, ips.GetAddress (0));
+          Topology::AddNodeIpAddress (n1, ips.GetAddress (0));
         }
 
-      Topology::AddLink (n0, n1, channel);
+      Topology::AddEdge (n0, n1, channel);
     }
 }
 
