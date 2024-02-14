@@ -24,7 +24,6 @@
 #define TOPOLOGY_H
 
 #include "ns3/core-module.h"
-#include "ns3/mac48-address.h"
 #include "ns3/node.h"
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/named_function_params.hpp>
@@ -98,21 +97,6 @@ public:
 
   template <class Weight = int>
   static std::vector<Ptr<Node>>
-  DijkstraShortestPath (Ptr<Node> src, Mac48Address dst,
-                        WeightCalc<Weight> &weight_calc = m_default_calc);
-
-  template <class Weight = int>
-  static std::vector<Ptr<Node>>
-  DijkstraShortestPath (Mac48Address src, Ptr<Node> dst,
-                        WeightCalc<Weight> &weight_calc = m_default_calc);
-
-  template <class Weight = int>
-  static std::vector<Ptr<Node>>
-  DijkstraShortestPath (Mac48Address src, Mac48Address dst,
-                        WeightCalc<Weight> &weight_calc = m_default_calc);
-
-  template <class Weight = int>
-  static std::vector<Ptr<Node>>
   DijkstraShortestPath (std::string src, std::string dst,
                         WeightCalc<Weight> &weight_calc = m_default_calc);
 
@@ -146,7 +130,6 @@ private:
   static IntegerWeightCalc m_default_calc;
 
   static std::map<Ipv4Address, Ptr<Node>> m_ip_to_node;
-  static std::map<Mac48Address, Ptr<Node>> m_mac_to_node;
   static std::map<Edge, Ptr<Channel>> m_channels;
 
   template <class Weight>
@@ -231,27 +214,6 @@ inline std::vector<Ptr<Node>>
 Topology::DijkstraShortestPath (Ipv4Address src, Ipv4Address dst, WeightCalc<Weight> &weight_calc)
 {
   return DijkstraShortestPath<Weight> (m_ip_to_node[src], m_ip_to_node[dst], weight_calc);
-}
-
-template <class Weight>
-inline std::vector<Ptr<Node>>
-Topology::DijkstraShortestPath (Ptr<Node> src, Mac48Address dst, WeightCalc<Weight> &weight_calc)
-{
-  return DijkstraShortestPath<Weight> (src, m_mac_to_node[dst], weight_calc);
-}
-
-template <class Weight>
-inline std::vector<Ptr<Node>>
-Topology::DijkstraShortestPath (Mac48Address src, Ptr<Node> dst, WeightCalc<Weight> &weight_calc)
-{
-  return DijkstraShortestPath<Weight> (m_mac_to_node[src], dst, weight_calc);
-}
-
-template <class Weight>
-inline std::vector<Ptr<Node>>
-Topology::DijkstraShortestPath (Mac48Address src, Mac48Address dst, WeightCalc<Weight> &weight_calc)
-{
-  return DijkstraShortestPath<Weight> (m_mac_to_node[src], m_mac_to_node[dst], weight_calc);
 }
 
 template <class Weight>
