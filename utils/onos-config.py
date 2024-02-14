@@ -110,15 +110,8 @@ def gen_config(topology):
             deviceId = "of:{:016x}".format(switches_counter)
             switches[node] = deviceId
             devices[deviceId] = {
-                "basic": {
-                    "allowed": True,
-                    "name": node
-                },
-                "annotations": {
-                    "entries": {
-                        "emsId": node
-                    }
-                }
+                "basic": {"allowed": True, "name": node},
+                "annotations": {"entries": {"emsId": node}},
             }
         else:
             print("Unknown Node type")
@@ -145,10 +138,11 @@ def gen_config(topology):
                     "delay": delay,
                     "durable": True,
                     "metric": 1,
-                    "type": "DIRECT"
+                    "type": "DIRECT",
                 }
             }
         elif edge0 in switches:
+            mac_manager.new_address()
             switches_ports[edge0] += 1
             hostId = f"{mac_manager.new_address()}/-1"
             location = f"{switches[edge0]}/{switches_ports[edge0]}"
@@ -157,13 +151,11 @@ def gen_config(topology):
                     "allowed": True,
                     "ips": [f"10.1.1.{ip_counter}"],
                     "locations": [location],
-                    "name": edge1
+                    "name": edge1,
                 }
             }
             ip_counter += 1
-            mac_manager.new_address()
         else:  # edge1 in switches
-            mac_manager.new_address()
             switches_ports[edge1] += 1
             hostId = f"{mac_manager.new_address()}/-1"
             location = f"{switches[edge1]}/{switches_ports[edge1]}"
@@ -172,18 +164,17 @@ def gen_config(topology):
                     "allowed": True,
                     "ips": [f"10.1.1.{ip_counter}"],
                     "locations": [location],
-                    "name": edge0
+                    "name": edge0,
                 }
             }
             ip_counter += 1
+            mac_manager.new_address()
 
     data = {
         "devices": devices,
         "links": links,
         "hosts": hosts,
-        "apps": {
-            "org.onosproject.core": {"core": {"linkDiscoveryMode": "STRICT"}}
-        },
+        "apps": {"org.onosproject.core": {"core": {"linkDiscoveryMode": "STRICT"}}},
     }
 
     with open(f"topologies/{topology}/switches_config.json", "w") as out_file:
