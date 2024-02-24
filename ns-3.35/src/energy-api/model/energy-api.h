@@ -43,7 +43,7 @@ public:
   static void AddFlexArray (string id, vector<float> arr);
   static void AddEstimateArray (string id, vector<float> arr);
 
-  static void StartExternalServer (string topo);
+  static void StartExternalServer (string topoName, string estiFile, string flexFile);
   static void StopExternalServer ();
 
 private:
