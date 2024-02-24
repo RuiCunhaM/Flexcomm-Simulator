@@ -54,7 +54,7 @@ main (int argc, char *argv[])
     {
       GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
       checksum = true; // Override checksum option
-      EnergyAPI::StartExternalServer (topo);
+      EnergyAPI::StartExternalServer (topo, estiFile, flexFile);
     }
 
   GlobalValue::Bind ("ControllerType", StringValue (ctrl));

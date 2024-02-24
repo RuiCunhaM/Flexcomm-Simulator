@@ -78,7 +78,7 @@ EnergyAPI::AddEstimateArray (string id, vector<float> arr)
 }
 
 void
-EnergyAPI::StartExternalServer (string topo)
+EnergyAPI::StartExternalServer (string topoName, string estiFile, string flexFile)
 {
   if (m_pid != 0)
     NS_ABORT_MSG ("External EnergyAPI server already running");
@@ -87,7 +87,7 @@ EnergyAPI::StartExternalServer (string topo)
   NS_ABORT_MSG_IF (pid == -1, "EnergyAPI: fork() failed");
   if (pid == 0)
     {
-      std::string outPath = SystemPath::Append (topo, "energyAPI.out");
+      std::string outPath = SystemPath::Append (topoName, "energyAPI.out");
       int outfd = open (outPath.c_str (), O_WRONLY | O_CREAT, 0666);
       close (STDOUT_FILENO);
       close (STDERR_FILENO);
@@ -96,13 +96,21 @@ EnergyAPI::StartExternalServer (string topo)
 
       list<string> paths = ns3::SystemPath::Split (ns3::SystemPath::FindSelfDirectory ());
       paths.erase (std::prev (paths.end (), 2), paths.end ());
-      paths.insert (paths.end (), {"utils", "energy-api-server.py"});
-      std::string executable = ns3::SystemPath::Join (paths.begin (), paths.end ());
 
-      list<string> argsPath = {"..", "topologies", topo};
-      std::string args = SystemPath::Join (argsPath.begin (), argsPath.end ());
+      list<string> executablePaths = {"utils", "energy-api-server.py"};
+      std::copy (paths.rbegin (), paths.rend (), std::front_inserter (executablePaths));
+      std::string executable =
+          ns3::SystemPath::Join (executablePaths.begin (), executablePaths.end ());
 
-      int st = execl (executable.c_str (), executable.c_str (), args.c_str (), NULL);
+      paths.erase (std::prev (paths.end ()), paths.end ());
+      list<string> topoPaths = {"topologies", topoName};
+      std::copy (paths.rbegin (), paths.rend (), std::front_inserter (topoPaths));
+      std::string topo = ns3::SystemPath::Join (topoPaths.begin (), topoPaths.end ());
+      string esti = SystemPath::Append (topo, estiFile);
+      string flex = SystemPath::Append (topo, flexFile);
+
+      int st = execl (executable.c_str (), executable.c_str (), "-e", esti.c_str (), "-f",
+                      flex.c_str (), NULL);
       NS_ABORT_MSG ("EnergyAPI: execl failed with status " << st);
     }
   else

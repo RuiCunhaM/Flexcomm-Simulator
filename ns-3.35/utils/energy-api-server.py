@@ -23,8 +23,7 @@
 
 from flask import Flask, jsonify, request, abort
 import json
-import sys
-import os.path as path
+import argparse
 
 FLEX = {}
 ESTIMATE = {}
@@ -60,26 +59,26 @@ def get_estimate():
     return jsonify({id: ESTIMATE[id]})
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--flexibility", type=str, required=True)
+    parser.add_argument("-e", "--estimate", type=str, required=True)
+
+    return parser.parse_args()
+
+
 def load_data():
-    if len(sys.argv) < 2:
-        print("Missing topology path")
-        exit(1)
-    topo_path = sys.argv[1]
-    if not path.exists(topo_path):
-        print(f"Path not found {topo_path}")
-        exit(1)
+    args = parse_args()
 
     global FLEX, ESTIMATE
 
-    flex_path = f"{topo_path}/flex.json"
-    if path.isfile(flex_path):
-        with open(flex_path) as flexFile:
+    try:
+        with open(args.flexibility) as flexFile, open(args.estimate) as estimateFile:
             FLEX = json.load(flexFile)
-
-    esti_path = f"{topo_path}/estimate.json"
-    if path.isfile(esti_path):
-        with open(esti_path) as estimateFile:
             ESTIMATE = json.load(estimateFile)
+    except OSError as e:
+        print(e.strerror, e.filename)
+        exit(1)
 
 
 if __name__ == "__main__":
