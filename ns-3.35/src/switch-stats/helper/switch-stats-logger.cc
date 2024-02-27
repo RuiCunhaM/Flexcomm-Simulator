@@ -69,6 +69,9 @@ SwitchStatsLogger::LogStats (Time interval, Time stop, NodeContainer c)
         m_nodes.Add (*i);
     }
 
+  std::ostream *stream = m_streamWrapper->GetStream ();
+  *stream << "Time;NodeName;CPU_Usage;NrProccessedPackets;NrDroppedPackets;ProccessedBytes\n";
+
   Time i = Seconds (0.0);
   while (i <= stop)
     {
