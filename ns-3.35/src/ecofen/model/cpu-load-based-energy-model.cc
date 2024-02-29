@@ -24,62 +24,81 @@
 #include "ns3/node-energy-model.h"
 #include "ns3/ofswitch13-device.h"
 
-namespace ns3 {
-
-NS_OBJECT_ENSURE_REGISTERED (CpuLoadBasedEnergyModel);
-
-TypeId
-CpuLoadBasedEnergyModel::GetTypeId (void)
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::CpuLoadBasedEnergyModel")
-                          .SetParent<NodeEnergyModel> ()
-                          .AddConstructor<CpuLoadBasedEnergyModel> ();
-  return tid;
-}
 
-CpuLoadBasedEnergyModel::CpuLoadBasedEnergyModel ()
-{
-  m_percentages = {0.0, 1.0};
-  m_values = {100.0, 200.0};
-}
+  NS_OBJECT_ENSURE_REGISTERED(CpuLoadBasedEnergyModel);
 
-CpuLoadBasedEnergyModel::~CpuLoadBasedEnergyModel ()
-{
-}
+  TypeId
+  CpuLoadBasedEnergyModel::GetTypeId(void)
+  {
+    static TypeId tid = TypeId("ns3::CpuLoadBasedEnergyModel")
+                            .SetParent<NodeEnergyModel>()
+                            .AddConstructor<CpuLoadBasedEnergyModel>();
+    return tid;
+  }
 
-double
-CpuLoadBasedEnergyModel::GetPowerConsumption ()
-{
-  Ptr<OFSwitch13Device> device = m_node->GetObject<OFSwitch13Device> ();
-  double cpuUsage = device->GetCpuUsage ();
+  CpuLoadBasedEnergyModel::CpuLoadBasedEnergyModel()
+  {
+    m_percentages = {0.0, 1.0};
+    m_values = {100.0, 200.0};
+  }
 
-  int i = 0;
-  for (double percent : m_percentages)
+  CpuLoadBasedEnergyModel::~CpuLoadBasedEnergyModel()
+  {
+  }
+
+  double
+  CpuLoadBasedEnergyModel::GetPowerConsumption()
+  {
+    Ptr<OFSwitch13Device> device = m_node->GetObject<OFSwitch13Device>();
+    double cpuUsage = device->GetCpuUsage();
+
+    int i = 0;
+    for (double percent : m_percentages)
     {
-      if (cpuUsage <= percent)
+      if (cpuUsage == percent) // prevent interpolation when cpuUsage is exactly a known percentage
+        return m_values[i];
+
+      if (cpuUsage < percent)
         break;
       i++;
     }
 
-  if (i == 0)
-    return m_values[0];
+    if (i == 0)
+      return m_values[0];
 
-  // Linear interpolation
-  return m_values[i - 1] +
-         (cpuUsage - m_percentages[i - 1]) *
-             ((m_values[i] - m_values[i - 1]) / (m_percentages[i] - m_percentages[i - 1]));
-}
+    if (i >= m_values.size()) // cpuUsage is greater than the last known percentage
+      return m_values.back(); // return the last known value
 
-void
-CpuLoadBasedEnergyModel::SetUsageValues (std::map<double, double> values)
-{
-  m_percentages.clear ();
-  m_values.clear ();
-  for (const auto &pair : values)
+    // Linear interpolation
+    return m_values[i - 1] +
+           (cpuUsage - m_percentages[i - 1]) *
+               ((m_values[i] - m_values[i - 1]) / (m_percentages[i] - m_percentages[i - 1]));
+  }
+
+  double
+  CpuLoadBasedEnergyModel::GetMaxPowerConsumption()
+  {
+    return m_values.back();
+  }
+
+  double
+  CpuLoadBasedEnergyModel::GetMinPowerConsumption()
+  {
+    return m_values.front();
+  }
+
+  void
+  CpuLoadBasedEnergyModel::SetUsageValues(std::map<double, double> values)
+  {
+    m_percentages.clear();
+    m_values.clear();
+    for (const auto &pair : values)
     {
-      m_percentages.push_back (pair.first);
-      m_values.push_back (pair.second);
+      m_percentages.push_back(pair.first);
+      m_values.push_back(pair.second);
     }
-}
+  }
 
 } // namespace ns3

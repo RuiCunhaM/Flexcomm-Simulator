@@ -23,41 +23,46 @@
 #include "cpu-load-based-discrete-energy-model.h"
 #include "ns3/ofswitch13-device.h"
 
-namespace ns3 {
-
-NS_OBJECT_ENSURE_REGISTERED (CpuLoadBasedDiscreteEnergyModel);
-
-TypeId
-CpuLoadBasedDiscreteEnergyModel::GetTypeId (void)
+namespace ns3
 {
-  static TypeId tid = TypeId ("ns3::CpuLoadBasedDiscreteEnergyModel")
-                          .SetParent<CpuLoadBasedEnergyModel> ()
-                          .AddConstructor<CpuLoadBasedDiscreteEnergyModel> ();
-  return tid;
-}
 
-CpuLoadBasedDiscreteEnergyModel::CpuLoadBasedDiscreteEnergyModel ()
-{
-}
+  NS_OBJECT_ENSURE_REGISTERED(CpuLoadBasedDiscreteEnergyModel);
 
-CpuLoadBasedDiscreteEnergyModel::~CpuLoadBasedDiscreteEnergyModel ()
-{
-}
+  TypeId
+  CpuLoadBasedDiscreteEnergyModel::GetTypeId(void)
+  {
+    static TypeId tid = TypeId("ns3::CpuLoadBasedDiscreteEnergyModel")
+                            .SetParent<CpuLoadBasedEnergyModel>()
+                            .AddConstructor<CpuLoadBasedDiscreteEnergyModel>();
+    return tid;
+  }
 
-double
-CpuLoadBasedDiscreteEnergyModel::GetPowerConsumption ()
-{
-  Ptr<OFSwitch13Device> device = m_node->GetObject<OFSwitch13Device> ();
-  double cpuUsage = device->GetCpuUsage ();
+  CpuLoadBasedDiscreteEnergyModel::CpuLoadBasedDiscreteEnergyModel()
+  {
+  }
 
-  int i = 0;
-  for (double percent : m_percentages)
+  CpuLoadBasedDiscreteEnergyModel::~CpuLoadBasedDiscreteEnergyModel()
+  {
+  }
+
+  double
+  CpuLoadBasedDiscreteEnergyModel::GetPowerConsumption()
+  {
+    Ptr<OFSwitch13Device> device = m_node->GetObject<OFSwitch13Device>();
+    double cpuUsage = device->GetCpuUsage();
+
+    int i = 0;
+    for (double percent : m_percentages)
     {
       if (cpuUsage <= percent)
         break;
       i++;
     }
-  return m_values[i];
-}
+
+    if (i >= m_values.size()) // cpuUsage is greater than the last percentage
+      return m_values.back(); // return the last known value
+
+    return m_values[i];
+  }
 
 } // namespace ns3
