@@ -59,7 +59,7 @@ namespace ns3
       i++;
     }
 
-    if (i >= m_values.size()) // cpuUsage is greater than the last percentage
+    if (i >= int(m_values.size())) // cpuUsage is greater than the last percentage
       return m_values.back(); // return the last known value
 
     return m_values[i];
