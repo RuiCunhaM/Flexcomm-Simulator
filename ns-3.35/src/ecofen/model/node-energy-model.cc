@@ -153,8 +153,6 @@ NodeEnergyModel::UpdateEnergy (Ptr<Node> node)
 void
 NodeEnergyModel::LogTotalPowerConsumption (Ptr<Node> node, Ptr<OutputStreamWrapper> streamWrapper)
 {
-  UpdateEnergy (node);
-
   std::string nodeName = Names::FindName (node);
 
   std::ostream *stream = streamWrapper->GetStream ();
