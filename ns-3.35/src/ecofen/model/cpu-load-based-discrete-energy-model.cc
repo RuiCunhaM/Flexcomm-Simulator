@@ -57,6 +57,10 @@ CpuLoadBasedDiscreteEnergyModel::GetPowerConsumption ()
         break;
       i++;
     }
+
+  if (i >= int (m_values.size ())) // cpuUsage is greater than the last percentage
+    return m_values.back (); // return the last known value
+
   return m_values[i];
 }
 

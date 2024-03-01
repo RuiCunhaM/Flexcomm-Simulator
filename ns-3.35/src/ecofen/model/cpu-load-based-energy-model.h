@@ -36,6 +36,8 @@ public:
   virtual ~CpuLoadBasedEnergyModel ();
 
   double GetPowerConsumption (void);
+  double GetMaxPowerConsumption ();
+  double GetMinPowerConsumption ();
   void SetUsageValues (std::map<double, double> values);
 
 protected:

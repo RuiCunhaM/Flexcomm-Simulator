@@ -50,3 +50,7 @@ create_outpu_folder:
 .PHONY: clean
 clean:
 	rm -rf $(OUTPUTS) perf.data
+
+.PHONY: clean_force
+clean_force: clean
+	./ns-3.35/waf -t ns-3.35 clean

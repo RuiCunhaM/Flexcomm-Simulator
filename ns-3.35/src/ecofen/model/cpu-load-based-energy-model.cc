@@ -64,10 +64,25 @@ CpuLoadBasedEnergyModel::GetPowerConsumption ()
   if (i == 0)
     return m_values[0];
 
+  if (i >= int (m_values.size ())) // cpuUsage is greater than the last known percentage
+    return m_values.back (); // return the last known value
+
   // Linear interpolation
   return m_values[i - 1] +
          (cpuUsage - m_percentages[i - 1]) *
              ((m_values[i] - m_values[i - 1]) / (m_percentages[i] - m_percentages[i - 1]));
+}
+
+double
+CpuLoadBasedEnergyModel::GetMaxPowerConsumption ()
+{
+  return m_values.back ();
+}
+
+double
+CpuLoadBasedEnergyModel::GetMinPowerConsumption ()
+{
+  return m_values.front ();
 }
 
 void

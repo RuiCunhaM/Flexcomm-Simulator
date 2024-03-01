@@ -105,6 +105,9 @@ ConsumptionLogger::NodeConsoLog (Time interval, Time stop, NodeContainer c, std:
         m_nodesLog.Add (*i);
     }
 
+  std::ostream *stream = m_streamWrapper->GetStream ();
+  *stream << "Time;NodeName;Consumption\n";
+  
   Time i = Seconds (0.0);
   while (i <= stop)
     {
