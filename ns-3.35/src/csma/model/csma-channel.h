@@ -352,7 +352,7 @@ private:
   WireState m_state;
 
   Time m_lastTime;
-  uint32_t m_bytesTransmitted;
+  uint64_t m_bytesTransmitted;
 };
 
 } // namespace ns3
