@@ -153,7 +153,7 @@ private:
   static const std::size_t N_DEVICES = 2;
 
   Time m_lastTime;
-  uint32_t m_bytesTransmitted;
+  uint64_t m_bytesTransmitted;
 
   Time m_delay; //!< Propagation delay
   std::size_t m_nDevices; //!< Devices of this channel

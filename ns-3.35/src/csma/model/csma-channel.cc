@@ -346,9 +346,9 @@ CsmaChannel::UpdateUsage (void)
   if (delta.GetSeconds () > 0)
     {
       m_lastTime = Simulator::Now ();
-      uint32_t bytes = m_bytesTransmitted * 8;
+      uint64_t bits = m_bytesTransmitted * 8;
       m_bytesTransmitted = 0;
-      m_usage = (bytes / delta.GetSeconds ()) / m_bps.GetBitRate ();
+      m_usage = (bits / delta.GetSeconds ()) / m_bps.GetBitRate ();
     }
 }
 
