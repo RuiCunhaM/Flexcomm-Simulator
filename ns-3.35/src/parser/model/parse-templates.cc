@@ -66,6 +66,22 @@ parseChassisEnergyModel (toml::table chassis)
           CreateObject<CpuLoadBasedDiscreteEnergyHelper> ();
       return parseLoadBasedModel (chassis, helper);
     }
+  else if (!chassisModel.compare ("enabledPorts"))
+    {
+      Ptr<EnabledPortsEnergyHelper> helper = CreateObject<EnabledPortsEnergyHelper> ();
+      helper->SetIdleConsumption (chassis["idleConso"].value_or (0.0));
+
+      toml::array &dataRates = *chassis.get_as<toml::array> ("dataRates");
+      toml::array &consumptions = *chassis.get_as<toml::array> ("consumptions");
+      map<uint64_t, double> values = map<uint64_t, double> ();
+
+      for (size_t i = 0; i < dataRates.size (); i++)
+        values[DataRate (dataRates.at (i).ref<string> ()).GetBitRate ()] =
+            consumptions.at (i).ref<double> ();
+
+      helper->SetPortsConsumptions (values);
+      return helper;
+    }
   else
     {
       NS_ABORT_MSG ("Unknown " << chassisModel << " chassis model");

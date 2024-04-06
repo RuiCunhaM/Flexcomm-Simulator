@@ -18,6 +18,7 @@ def build(bld):
         'model/on-off-node.cc',
         'model/cpu-load-based-energy-model.cc',
         'model/cpu-load-based-discrete-energy-model.cc',
+        'model/enabled-ports-energy-model.cc',
 
         # Uncomment these lines to compile these helper source files.
         'helper/node-energy-helper.cc',
@@ -31,6 +32,7 @@ def build(bld):
         'helper/on-off-node-helper.cc',
         'helper/cpu-load-based-energy-helper.cc',
         'helper/cpu-load-based-discrete-energy-helper.cc',
+        'helper/enabled-ports-energy-helper.cc',
         ]
 
     # Create the module's test library.
@@ -62,6 +64,7 @@ def build(bld):
         'model/agenda.h',
         'model/cpu-load-based-energy-model.h',
         'model/cpu-load-based-discrete-energy-model.h',
+        'model/enabled-ports-energy-model.h',
 
         # Uncomment these lines to install these helper header files.
         'helper/node-energy-helper.h',
@@ -76,6 +79,7 @@ def build(bld):
         'helper/agenda-helper.h',
         'helper/cpu-load-based-energy-helper.h',
         'helper/cpu-load-based-discrete-energy-helper.h',
+        'helper/enabled-ports-energy-helper.h',
         ]
 
     # Uncomment these lines if this module needs a library such as the
