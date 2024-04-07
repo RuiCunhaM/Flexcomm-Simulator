@@ -88,6 +88,31 @@ parseChassisEnergyModel (toml::table chassis)
     }
 }
 
+Ptr<NetdeviceEnergyHelper>
+parseInterfaceEnergyModel (toml::table interface)
+{
+  string interfaceModel = interface["model"].ref<string> ();
+
+  if (!interfaceModel.compare ("dataRate"))
+    {
+      Ptr<DataRateNetdeviceEnergyHelper> helper = CreateObject<DataRateNetdeviceEnergyHelper> ();
+      helper->SetUnit (DataRate (interface["unit"].ref<string> ()).GetBitRate ());
+
+      toml::array &dataRates = *interface.get_as<toml::array> ("dataRates");
+      toml::array &consumptions = *interface.get_as<toml::array> ("consumptions");
+      map<uint64_t, double> values = map<uint64_t, double> ();
+
+      for (size_t i = 0; i < dataRates.size (); i++)
+        values[DataRate (dataRates.at (i).ref<string> ()).GetBitRate ()] =
+            consumptions.at (i).ref<double> ();
+
+      helper->SetConsumptionValues (values);
+      return helper;
+    }
+  else
+    NS_ABORT_MSG ("Unknown " << interfaceModel << " interface model");
+}
+
 void
 parseChassisTemplates (toml::table tbl)
 {
@@ -98,7 +123,22 @@ parseChassisTemplates (toml::table tbl)
       for (auto pair : chassis)
         {
           toml::table configs = *pair.second.as_table ();
-          Parser::m_templates[pair.first.data ()] = parseChassisEnergyModel (configs);
+          Parser::m_chassisTemplates[pair.first.data ()] = parseChassisEnergyModel (configs);
+        }
+    }
+}
+
+void
+parseInterfacesTemplates (toml::table tbl)
+{
+  if (tbl.contains ("interfaces"))
+    {
+      toml::table interfaces = *tbl["interfaces"].as_table ();
+
+      for (auto pair : interfaces)
+        {
+          toml::table configs = *pair.second.as_table ();
+          Parser::m_interfaceTemplates[pair.first.data ()] = parseInterfaceEnergyModel (configs);
         }
     }
 }
@@ -114,6 +154,7 @@ parseTemplates (std::string topoName)
     {
       tbl = toml::parse_file (TEMPLATES_FILE_DEFAULT);
       parseChassisTemplates (tbl);
+      parseInterfacesTemplates (tbl);
     }
   catch (const toml::parse_error &err)
     {
@@ -125,6 +166,7 @@ parseTemplates (std::string topoName)
     {
       tbl = toml::parse_file (SystemPath::Append (topoName, "energy-templates.toml"));
       parseChassisTemplates (tbl);
+      parseInterfacesTemplates (tbl);
     }
   catch (const toml::parse_error &err)
     {

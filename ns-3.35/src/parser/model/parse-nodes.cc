@@ -39,17 +39,30 @@ parseEnergyModels (toml::table configs, Ptr<Node> sw)
   if (!configs.contains ("chassis"))
     return;
 
+  // Parse chassis model
   toml::table chassis = *configs["chassis"].as_table ();
   Ptr<NodeEnergyHelper> model = NULL;
 
   if (chassis.contains ("template"))
-    model = Parser::m_templates[chassis["template"].ref<std::string> ()];
+    model = Parser::m_chassisTemplates[chassis["template"].ref<std::string> ()];
   else
     model = parseChassisEnergyModel (chassis);
 
   model->Install (sw);
 
-  // TODO: Add interface models
+  if (!configs.contains ("interfaces"))
+    return;
+
+  // Parse interface model
+  toml::table interfaces = *configs["interfaces"].as_table ();
+  Ptr<NetdeviceEnergyHelper> interfaceModel = NULL;
+
+  if (interfaces.contains ("template"))
+    interfaceModel = Parser::m_interfaceTemplates[interfaces["template"].ref<std::string> ()];
+  else
+    interfaceModel = parseInterfaceEnergyModel (interfaces);
+
+  Parser::m_interfaceEnergyModels[sw] = interfaceModel;
 }
 
 void

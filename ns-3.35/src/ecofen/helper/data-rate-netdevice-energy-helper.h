@@ -2,7 +2,7 @@
 /*
  * The GPLv2 License (GPLv2)
  *
- * Copyright (c) 2023 Rui Pedro C. Monteiro
+ * Copyright (c) 2024 Rui Pedro C. Monteiro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,30 +15,38 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http: //www.gnu.org/licenses/>.
  *
  * Author: Rui Pedro C. Monteiro <rui.p.monteiro@inesctec.pt>
  */
-#ifndef PARSER_H
-#define PARSER_H
 
-#include "ns3/core-module.h"
-#include "ns3/netdevice-energy-helper.h"
-#include "ns3/node-energy-helper.h"
+#ifndef DATA_RATE_NETDEVICE_ENERGY_HELPER_H
+#define DATA_RATE_NETDEVICE_ENERGY_HELPER_H
+
+#include "netdevice-energy-helper.h"
+#include "ns3/net-device.h"
+#include "ns3/object-factory.h"
 
 namespace ns3 {
 
-class Parser
+class DataRateNetdeviceEnergyHelper : public NetdeviceEnergyHelper
 {
 public:
-  static void ParseTopology (std::string topoName, std::string estiFile, std::string flexFile,
-                             std::string linkFailuresFile);
+  DataRateNetdeviceEnergyHelper ();
+  ~DataRateNetdeviceEnergyHelper ();
 
-  static std::map<std::string, Ptr<NodeEnergyHelper>> m_chassisTemplates;
-  static std::map<std::string, Ptr<NetdeviceEnergyHelper>> m_interfaceTemplates;
-  static std::map<Ptr<Node>, Ptr<NetdeviceEnergyHelper>> m_interfaceEnergyModels;
+  void SetUnit (uint64_t bps);
+  void SetConsumptionValues (std::map<uint64_t, double> values);
+
+private:
+  virtual Ptr<NetdeviceEnergyModel> DoInstall (Ptr<NetDevice> netdevice) const;
+
+private:
+  ObjectFactory m_dataRateNetdeviceEnergyModel;
+  uint64_t m_unit;
+  std::map<uint64_t, double> m_values;
 };
 
 } // namespace ns3
 
-#endif /* PARSER_H */
+#endif /* DATA_RATE_NETDEVICE_ENERGY_HELPER_H */

@@ -30,6 +30,8 @@
 namespace ns3 {
 
 Ptr<NodeEnergyHelper> parseChassisEnergyModel (toml::table chassis);
+Ptr<NetdeviceEnergyHelper> parseInterfaceEnergyModel (toml::table interface);
+
 void parseTemplates (std::string topoName);
 
 } // namespace ns3

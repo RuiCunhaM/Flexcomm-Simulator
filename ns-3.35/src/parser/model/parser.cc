@@ -32,8 +32,14 @@ namespace ns3 {
 
 using namespace std;
 
-std::map<std::string, Ptr<NodeEnergyHelper>> Parser::m_templates =
+std::map<std::string, Ptr<NodeEnergyHelper>> Parser::m_chassisTemplates =
     std::map<std::string, Ptr<NodeEnergyHelper>> ();
+
+std::map<std::string, Ptr<NetdeviceEnergyHelper>> Parser::m_interfaceTemplates =
+    std::map<std::string, Ptr<NetdeviceEnergyHelper>> ();
+
+std::map<Ptr<Node>, Ptr<NetdeviceEnergyHelper>> Parser::m_interfaceEnergyModels =
+    std::map<Ptr<Node>, Ptr<NetdeviceEnergyHelper>> ();
 
 void
 Parser::ParseTopology (string topoName, string estiFile, string flexFile, string linkFailuresFile)

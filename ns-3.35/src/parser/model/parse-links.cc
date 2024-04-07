@@ -28,6 +28,7 @@
 #include "ns3/ofswitch13-module.h"
 #include "ns3/topology-module.h"
 #include "ns3/tap-bridge-module.h"
+#include "parser.h"
 
 namespace ns3 {
 
@@ -188,6 +189,11 @@ parseLinks (string topoName, string outPath, string linkFailuresFile)
   installLinks (tbl, outPath);
   installController (outPath);
   parseLinkFailures (topoName, linkFailuresFile);
+
+  for (auto pair : Parser::m_interfaceEnergyModels)
+    {
+      pair.second->Install (pair.first);
+    }
 }
 
 } // namespace ns3
