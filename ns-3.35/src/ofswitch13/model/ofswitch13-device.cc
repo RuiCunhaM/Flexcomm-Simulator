@@ -1111,105 +1111,7 @@ OFSwitch13Device::ReceiveFromController (Ptr<Packet> packet, Address from)
       ((struct ofl_msg_multipart_request_experimenter *) msg)->experimenter_id ==
           FLEXCOMM_VENDOR_ID)
     {
-      struct ofl_msg_multipart_request_flexcomm *header =
-          (struct ofl_msg_multipart_request_flexcomm *) msg;
-
-      switch (header->subtype)
-        {
-          case FC_GLOBAL_ENERGY: {
-            struct ofl_msg_multipart_reply_flexcomm_global reply = {
-                .header = {.header = {.header = {.header = {.type = OFPT_MULTIPART_REPLY},
-                                                 .type = OFPMP_EXPERIMENTER,
-                                                 .flags = 0x0000},
-                                      .experimenter_id = FLEXCOMM_VENDOR_ID},
-                           .subtype = FC_GLOBAL_ENERGY},
-                .current_consumption = 0,
-                .power_drawn = 0};
-
-            Ptr<Node> node = GetObject<Node> ();
-            Ptr<NodeEnergyModel> model = node->GetObject<NodeEnergyModel> ();
-
-            if (model != NULL)
-              {
-                double consumption = model->GetTotalPowerConsumption (node);
-                memcpy (&reply.current_consumption, &consumption, sizeof (double));
-                double power_drawn = model->GetPowerDrawn ();
-                memcpy (&reply.power_drawn, &power_drawn, sizeof (double));
-              }
-
-            dp_send_message (m_datapath, (struct ofl_msg_header *) &reply, &senderCtrl);
-            ofl_msg_free (msg, m_datapath->exp);
-
-            break;
-          }
-          case FC_PORT_ENERGY: {
-            struct ofl_msg_multipart_request_flexcomm_port *request =
-                (struct ofl_msg_multipart_request_flexcomm_port *) msg;
-
-            struct ofl_msg_multipart_reply_flexcomm_port reply = {
-                .header = {.header = {.header = {.header = {.type = OFPT_MULTIPART_REPLY},
-                                                 .type = OFPMP_EXPERIMENTER,
-                                                 .flags = 0x0000},
-                                      .experimenter_id = FLEXCOMM_VENDOR_ID},
-                           .subtype = FC_PORT_ENERGY},
-
-                .stats_num = 0,
-                .stats = NULL};
-
-            if (request->port_no == OFPP_ANY)
-              {
-                size_t i = 0;
-
-                reply.stats = (struct ofl_flexcomm_port_stats **) xmalloc (
-                    sizeof (struct ofl_flexcomm_port_stats *) * GetNSwitchPorts ());
-
-                for (uint32_t portNo = 1; portNo <= GetNSwitchPorts (); portNo++)
-                  {
-                    Ptr<NetdeviceEnergyModel> model = GetSwitchPort (request->port_no)
-                                                          ->GetPortDevice ()
-                                                          ->GetObject<NetdeviceEnergyModel> ();
-                    if (model != NULL)
-                      {
-                        reply.stats_num++;
-                        reply.stats[i]->port_no = portNo;
-                        reply.stats[i]->port_no = request->port_no;
-                        double consumption = model->GetPowerConsumption ();
-                        memcpy (&reply.stats[i]->current_consumption, &consumption,
-                                sizeof (double));
-                        double power_drawn = model->GetPowerDrawn ();
-                        memcpy (&reply.stats[i]->power_drawn, &power_drawn, sizeof (double));
-                        i++;
-                      }
-                  }
-              }
-            else
-              {
-                Ptr<NetdeviceEnergyModel> model = GetSwitchPort (request->port_no)
-                                                      ->GetPortDevice ()
-                                                      ->GetObject<NetdeviceEnergyModel> ();
-                if (model != NULL)
-                  {
-                    reply.stats_num = 1;
-                    reply.stats = (struct ofl_flexcomm_port_stats **) xmalloc (
-                        sizeof (struct ofl_flexcomm_port_stats *));
-                    reply.stats[0]->port_no = request->port_no;
-                    double consumption = model->GetPowerConsumption ();
-                    memcpy (&reply.stats[0]->current_consumption, &consumption, sizeof (double));
-                    double power_drawn = model->GetPowerDrawn ();
-                    memcpy (&reply.stats[0]->power_drawn, &power_drawn, sizeof (double));
-                  }
-              }
-
-            dp_send_message (m_datapath, (struct ofl_msg_header *) &reply, &senderCtrl);
-            ofl_msg_free (msg, m_datapath->exp);
-
-            break;
-          }
-          default: {
-            error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
-            break;
-          }
-        }
+      error = HandleFlexcommMsg (msg, &senderCtrl);
     }
   else
     {
@@ -1228,6 +1130,112 @@ OFSwitch13Device::ReceiveFromController (Ptr<Packet> packet, Address from)
 
   // If we got here, let's free the buffer.
   ofpbuf_delete (buffer);
+}
+
+ofl_err
+OFSwitch13Device::HandleFlexcommMsg (struct ofl_msg_header *msg, const struct sender *sender)
+{
+  ofl_err error;
+  struct ofl_msg_multipart_request_flexcomm *header =
+      (struct ofl_msg_multipart_request_flexcomm *) msg;
+  struct ofl_msg_header *reply;
+
+  switch (header->subtype)
+    {
+      case FC_GLOBAL_ENERGY: {
+        struct ofl_msg_multipart_reply_flexcomm_global global_reply = {
+            .header = {.header = {.header = {.header = {.type = OFPT_MULTIPART_REPLY},
+                                             .type = OFPMP_EXPERIMENTER,
+                                             .flags = 0x0000},
+                                  .experimenter_id = FLEXCOMM_VENDOR_ID},
+                       .subtype = FC_GLOBAL_ENERGY},
+            .current_consumption = 0,
+            .power_drawn = 0};
+
+        Ptr<Node> node = GetObject<Node> ();
+        Ptr<NodeEnergyModel> model = node->GetObject<NodeEnergyModel> ();
+
+        if (model != NULL)
+          {
+            double consumption = model->GetTotalPowerConsumption (node);
+            memcpy (&global_reply.current_consumption, &consumption, sizeof (double));
+            double power_drawn = model->GetPowerDrawn ();
+            memcpy (&global_reply.power_drawn, &power_drawn, sizeof (double));
+          }
+
+        reply = (struct ofl_msg_header *) &global_reply;
+
+        break;
+      }
+      case FC_PORT_ENERGY: {
+        struct ofl_msg_multipart_request_flexcomm_port *request =
+            (struct ofl_msg_multipart_request_flexcomm_port *) msg;
+
+        struct ofl_msg_multipart_reply_flexcomm_port port_reply = {
+            .header = {.header = {.header = {.header = {.type = OFPT_MULTIPART_REPLY},
+                                             .type = OFPMP_EXPERIMENTER,
+                                             .flags = 0x0000},
+                                  .experimenter_id = FLEXCOMM_VENDOR_ID},
+                       .subtype = FC_PORT_ENERGY},
+            .stats_num = 0,
+            .stats = NULL};
+
+        if (request->port_no == OFPP_ANY)
+          {
+            size_t i = 0;
+            port_reply.stats = (struct ofl_flexcomm_port_stats **) xmalloc (
+                sizeof (struct ofl_flexcomm_port_stats *) * GetNSwitchPorts ());
+
+            for (uint32_t portNo = 1; portNo <= GetNSwitchPorts (); portNo++)
+              {
+                Ptr<NetdeviceEnergyModel> model = GetSwitchPort (request->port_no)
+                                                      ->GetPortDevice ()
+                                                      ->GetObject<NetdeviceEnergyModel> ();
+                if (model != NULL)
+                  {
+                    port_reply.stats_num++;
+                    port_reply.stats[i]->port_no = portNo;
+                    port_reply.stats[i]->port_no = request->port_no;
+                    double consumption = model->GetPowerConsumption ();
+                    memcpy (&port_reply.stats[i]->current_consumption, &consumption,
+                            sizeof (double));
+                    double power_drawn = model->GetPowerDrawn ();
+                    memcpy (&port_reply.stats[i]->power_drawn, &power_drawn, sizeof (double));
+                    i++;
+                  }
+              }
+          }
+        else
+          {
+            Ptr<NetdeviceEnergyModel> model = GetSwitchPort (request->port_no)
+                                                  ->GetPortDevice ()
+                                                  ->GetObject<NetdeviceEnergyModel> ();
+            if (model != NULL)
+              {
+                port_reply.stats_num = 1;
+                port_reply.stats = (struct ofl_flexcomm_port_stats **) xmalloc (
+                    sizeof (struct ofl_flexcomm_port_stats *));
+                port_reply.stats[0]->port_no = request->port_no;
+                double consumption = model->GetPowerConsumption ();
+                memcpy (&port_reply.stats[0]->current_consumption, &consumption, sizeof (double));
+                double power_drawn = model->GetPowerDrawn ();
+                memcpy (&port_reply.stats[0]->power_drawn, &power_drawn, sizeof (double));
+              }
+          }
+
+        reply = (struct ofl_msg_header *) &port_reply;
+
+        break;
+      }
+      default: {
+        return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
+      }
+    }
+
+  dp_send_message (m_datapath, reply, sender);
+  ofl_msg_free (msg, m_datapath->exp);
+
+  return 0;
 }
 
 int

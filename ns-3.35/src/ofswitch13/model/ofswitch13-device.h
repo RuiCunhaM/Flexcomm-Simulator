@@ -449,6 +449,8 @@ private:
    */
   void ReceiveFromController (Ptr<Packet> packet, Address from);
 
+  ofl_err HandleFlexcommMsg (struct ofl_msg_header *msg, const struct sender *sender);
+
   /**
    * Create an OpenFlow error message and send it back to the sender
    * controller. This function is used only when an error occurred while
