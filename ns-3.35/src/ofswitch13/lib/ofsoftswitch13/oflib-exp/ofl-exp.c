@@ -177,8 +177,6 @@ ofl_exp_stats_req_unpack (struct ofp_multipart_request *os, size_t *len,
 
   exp = (struct ofp_experimenter_multipart_header *) os->body;
 
-  *len -= sizeof (struct ofp_experimenter_multipart_header);
-
   switch (ntohl (exp->experimenter))
     {
       case (FLEXCOMM_VENDOR_ID): {
@@ -283,8 +281,6 @@ ofl_exp_stats_reply_unpack (struct ofp_multipart_reply *os, size_t *len,
     }
 
   exp = (struct ofp_experimenter_multipart_header *) os->body;
-
-  *len -= sizeof (struct ofp_experimenter_multipart_header);
 
   switch (ntohl (exp->experimenter))
     {
