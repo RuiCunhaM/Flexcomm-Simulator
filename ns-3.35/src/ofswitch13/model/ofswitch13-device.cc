@@ -1188,9 +1188,8 @@ OFSwitch13Device::HandleFlexcommMsg (struct ofl_msg_header *msg, const struct se
 
             for (uint32_t portNo = 1; portNo <= GetNSwitchPorts (); portNo++)
               {
-                Ptr<NetdeviceEnergyModel> model = GetSwitchPort (request->port_no)
-                                                      ->GetPortDevice ()
-                                                      ->GetObject<NetdeviceEnergyModel> ();
+                Ptr<NetdeviceEnergyModel> model =
+                    GetSwitchPort (portNo)->GetPortDevice ()->GetObject<NetdeviceEnergyModel> ();
                 if (model != NULL)
                   {
                     port_reply.stats_num++;
