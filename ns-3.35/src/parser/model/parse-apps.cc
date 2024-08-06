@@ -77,10 +77,15 @@ parseBulkSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   string protocol = protocol2factory (configs["protocol"].value_or ("TCP"));
   uint64_t remotePort = getPort (remoteHost);
 
+  DoubleValue scale;
+  GlobalValue::GetValueByName ("ScaleFactor", scale);
+
   BulkSendHelper bulkHelper =
       BulkSendHelper (protocol, InetSocketAddress (remoteAddress, remotePort));
-  bulkHelper.SetAttribute ("SendSize", UintegerValue (configs["sendSize"].value_or (512)));
-  bulkHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
+  bulkHelper.SetAttribute ("SendSize",
+                           UintegerValue (configs["sendSize"].value_or (512) * scale.Get ()));
+  bulkHelper.SetAttribute ("MaxBytes",
+                           UintegerValue (configs["maxBytes"].value_or (0) * scale.Get ()));
   ApplicationContainer apps = bulkHelper.Install (host);
 
   apps.Add (installSinker (remoteHost, protocol, remotePort));
@@ -95,10 +100,16 @@ parseConstSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
   uint64_t remotePort = getPort (remoteHost);
 
+  DoubleValue scale;
+  GlobalValue::GetValueByName ("ScaleFactor", scale);
+
   OnOffHelper onOffHelper = OnOffHelper (protocol, InetSocketAddress (remoteAddress, remotePort));
-  onOffHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (512)));
-  onOffHelper.SetAttribute ("MaxBytes", UintegerValue (configs["maxBytes"].value_or (0)));
-  onOffHelper.SetConstantRate (DataRate (configs["dataRate"].value_or ("500kb/s")));
+  onOffHelper.SetAttribute ("PacketSize",
+                            UintegerValue (configs["packetSize"].value_or (512) * scale.Get ()));
+  onOffHelper.SetAttribute ("MaxBytes",
+                            UintegerValue (configs["maxBytes"].value_or (0) * scale.Get ()));
+  DataRate dr = DataRate (configs["dataRate"].value_or ("500kb/s"));
+  onOffHelper.SetConstantRate (DataRate (dr.GetBitRate () * scale.Get ()));
   ApplicationContainer apps = onOffHelper.Install (host);
 
   apps.Add (installSinker (remoteHost, protocol, remotePort));
@@ -113,12 +124,18 @@ parseSinSend (toml::table configs, Ptr<Node> host, Ptr<Node> remoteHost)
   string protocol = protocol2factory (configs["protocol"].value_or ("UDP"));
   uint64_t remotePort = getPort (remoteHost);
 
+  DoubleValue scale;
+  GlobalValue::GetValueByName ("ScaleFactor", scale);
+
   SinGenHelper sinHelper = SinGenHelper (protocol, InetSocketAddress (remoteAddress, remotePort));
-  sinHelper.SetAttribute ("Const", StringValue (configs["const"].value_or ("3Mb/s")));
-  sinHelper.SetAttribute ("A", StringValue (configs["a"].value_or ("1Mb/s")));
-  sinHelper.SetAttribute ("B", DoubleValue (configs["b"].value_or (0.5)));
-  sinHelper.SetAttribute ("C", DoubleValue (configs["c"].value_or (0.0)));
-  sinHelper.SetAttribute ("PacketSize", UintegerValue (configs["packetSize"].value_or (1024)));
+  DataRate ct = DataRate (configs["const"].value_or ("3Mb/s"));
+  sinHelper.SetAttribute ("Const", DataRateValue (DataRate (ct.GetBitRate () * scale.Get ())));
+  DataRate a = DataRate (configs["a"].value_or ("1Mb/s"));
+  sinHelper.SetAttribute ("A", DataRateValue (DataRate (a.GetBitRate () * scale.Get ())));
+  sinHelper.SetAttribute ("B", DoubleValue (configs["b"].value_or (0.5) * scale.Get ()));
+  sinHelper.SetAttribute ("C", DoubleValue (configs["c"].value_or (0.0) * scale.Get ()));
+  sinHelper.SetAttribute ("PacketSize",
+                          UintegerValue (configs["packetSize"].value_or (1024) * scale.Get ()));
   sinHelper.SetAttribute ("Unit", StringValue (configs["unit"].value_or ("min")));
   ApplicationContainer apps = sinHelper.Install (host);
 

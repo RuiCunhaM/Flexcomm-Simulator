@@ -40,6 +40,9 @@ installLinks (toml::table tbl, string outPath)
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
 
+  DoubleValue scale;
+  GlobalValue::GetValueByName ("ScaleFactor", scale);
+
   for (auto pair : tbl)
     {
       toml::table configs = *pair.second.as_table ();
@@ -50,8 +53,9 @@ installLinks (toml::table tbl, string outPath)
 
       PointToPointEthernetHelper p2pHelper;
       p2pHelper.SetChannelAttribute ("Delay", StringValue (configs["delay"].value_or ("1ns")));
+      DataRate dr = DataRate (configs["dataRate"].value_or ("1000Gbps"));
       p2pHelper.SetDeviceAttribute ("DataRate",
-                                    StringValue (configs["dataRate"].value_or ("1000Gbps")));
+                                    DataRateValue (DataRate (dr.GetBitRate () * scale.Get ())));
 
       NetDeviceContainer p2pDevices = p2pHelper.Install (NodeContainer (n0, n1));
       Ptr<Channel> channel = p2pDevices.Get (0)->GetChannel ();
@@ -119,6 +123,7 @@ installController (std::string outPath)
         {
           switchPorts.Add ((*n)->GetDevice (i));
         }
+      // NOTE: The scale factor is already considered when parsing the node
       of13Helper->SetDeviceAttribute ("CpuCapacity", DataRateValue ((*n)->GetCpuCapacity ()));
       of13Helper->InstallSwitch (*n, switchPorts);
       of13Helper->SetDeviceAttribute ("CpuCapacity", StringValue ("100Gbps"));

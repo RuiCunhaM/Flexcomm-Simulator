@@ -40,6 +40,7 @@ main (int argc, char *argv[])
   std::string flexFile;
   std::string linkFailuresFile;
   bool checksum;
+  double scale;
 
   CommandLine cmd;
   cmd.AddValue ("topo", "Topology to load", topo);
@@ -48,6 +49,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("estifile", "Estimate file", estiFile);
   cmd.AddValue ("flexfile", "Flexibility file", flexFile);
   cmd.AddValue ("linkfailures", "Link Failures file", linkFailuresFile);
+  cmd.AddValue ("scale", "Scale factor", scale);
   cmd.Parse (argc, argv);
 
   if (ctrl == "External")
@@ -59,6 +61,7 @@ main (int argc, char *argv[])
 
   GlobalValue::Bind ("ControllerType", StringValue (ctrl));
   GlobalValue::Bind ("ChecksumEnabled", BooleanValue (checksum));
+  GlobalValue::Bind ("ScaleFactor", DoubleValue (scale));
 
   SystemWallClockMs clock;
   uint64_t endTime;

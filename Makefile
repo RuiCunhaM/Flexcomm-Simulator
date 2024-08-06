@@ -9,7 +9,8 @@ OUTPUTS=outputs
 ESTIFILE=estimate.json
 FLEXFILE=flex.json
 LINKFAILURES=NONE
-OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM) --estifile=$(ESTIFILE) --flexfile=$(FLEXFILE) --linkfailures=$(LINKFAILURES)" --cwd=../$(OUTPUTS)
+SCALE=1
+OPTIONS="flexcomm --topo=$(TOPO) --ctrl=$(CONTROLLER) --checksum=$(CHECKSUM) --estifile=$(ESTIFILE) --flexfile=$(FLEXFILE) --linkfailures=$(LINKFAILURES) --scale=$(SCALE)" --cwd=../$(OUTPUTS)
 CXXFLAGS="-Wall"
 
 .PHONY: all

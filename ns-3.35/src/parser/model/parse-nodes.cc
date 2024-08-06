@@ -82,6 +82,9 @@ parseNodes (string topoName)
       NS_ABORT_MSG ("Error parsing nodes.toml" << err.description ());
     }
 
+  DoubleValue scale;
+  GlobalValue::GetValueByName ("ScaleFactor", scale);
+
   InternetStackHelper stackHelper;
   for (auto pair : tbl)
     {
@@ -96,8 +99,9 @@ parseNodes (string topoName)
       if (!nodeType.compare ("switch"))
         {
           node->SetAttribute ("NodeType", StringValue ("Switch"));
+          DataRate dr = DataRate (configs["cpuCapacity"].value_or ("100Gbps"));
           node->SetAttribute ("CpuCapacity",
-                              StringValue (configs["cpuCapacity"].value_or ("100Gbps")));
+                              DataRateValue (DataRate (dr.GetBitRate () * scale.Get ())));
           parseEnergyModels (configs, node);
           Topology::AddSwitch (node);
         }

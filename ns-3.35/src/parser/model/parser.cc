@@ -41,6 +41,9 @@ std::map<std::string, Ptr<NetdeviceEnergyHelper>> Parser::m_interfaceTemplates =
 std::map<Ptr<Node>, Ptr<NetdeviceEnergyHelper>> Parser::m_interfaceEnergyModels =
     std::map<Ptr<Node>, Ptr<NetdeviceEnergyHelper>> ();
 
+static GlobalValue g_ScaleFactor = GlobalValue ("ScaleFactor", "The scale factor",
+                                                DoubleValue (1.0), MakeDoubleChecker<double> ());
+
 void
 Parser::ParseTopology (string topoName, string estiFile, string flexFile, string linkFailuresFile)
 {
