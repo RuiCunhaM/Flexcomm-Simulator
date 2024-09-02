@@ -20,6 +20,8 @@
 
 #include "ns3/abort.h"
 #include "ns3/log.h"
+#include "ns3/netdevice-energy-model.h"
+#include "ns3/node-energy-model.h"
 #include "ns3/simulator.h"
 #include "ns3/queue.h"
 #include "ns3/config.h"
@@ -46,7 +48,19 @@ ConsumptionLogger::NodeConso (Time interval, Time stop, Ptr<Node> node)
   Ptr<NodeEnergyModel> noem = node->GetObject<NodeEnergyModel> ();
 
   if (noem)
-    noem->GetConso (interval, stop, node);
+    {
+      noem->GetConso (interval, stop, node);
+    }
+
+  for (uint32_t i = 0; i < node->GetNDevices (); i++)
+    {
+      Ptr<NetdeviceEnergyModel> ndem = node->GetDevice (i)->GetObject<NetdeviceEnergyModel> ();
+
+      if (ndem)
+        {
+          ndem->GetConso (interval, stop);
+        }
+    }
 }
 
 void
@@ -64,7 +78,20 @@ void
 ConsumptionLogger::UpdateEnergy ()
 {
   for (NodeContainer::Iterator i = m_nodes.Begin (); i != m_nodes.End (); ++i)
-    (*i)->GetObject<NodeEnergyModel> ()->UpdateEnergy (*i);
+    {
+      (*i)->GetObject<NodeEnergyModel> ()->UpdateEnergy (*i);
+
+      for (uint32_t index = 0; index < ((*i)->GetNDevices ()); index++)
+        {
+          Ptr<NetdeviceEnergyModel> ndem =
+              (*i)->GetDevice (index)->GetObject<NetdeviceEnergyModel> ();
+
+          if (ndem)
+            {
+              ndem->UpdateEnergy ();
+            }
+        }
+    }
 }
 
 void
@@ -107,7 +134,7 @@ ConsumptionLogger::NodeConsoLog (Time interval, Time stop, NodeContainer c, std:
 
   std::ostream *stream = m_streamWrapper->GetStream ();
   *stream << "Time;NodeName;Consumption\n";
-  
+
   Time i = Seconds (0.0);
   while (i <= stop)
     {

@@ -62,7 +62,7 @@ ofl_exp_flexcomm_stats_req_pack (struct ofl_msg_multipart_request_experimenter *
           }
           default: {
             OFL_LOG_WARN (LOG_MODULE, "Trying to pack unknown FlexComm stat type.");
-            return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+            return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
           }
         }
 
@@ -77,7 +77,7 @@ ofl_exp_flexcomm_stats_req_pack (struct ofl_msg_multipart_request_experimenter *
   else
     {
       OFL_LOG_WARN (LOG_MODULE, "Trying to pack non-FlexComm Multipart Experimenter request.");
-      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
     }
 }
 
@@ -110,7 +110,7 @@ ofl_exp_flexcomm_stats_req_unpack_port (struct ofp_experimenter_multipart_header
     {
       OFL_LOG_WARN (LOG_MODULE, "Received FlexComm port stats request has invalid port (%u).",
                     ntohl (sm->port_no));
-      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
+      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_PORT);
     }
 
   *len -= sizeof (struct ofp_flexcomm_port_energy_request);
@@ -142,7 +142,7 @@ ofl_exp_flexcomm_stats_req_unpack (struct ofp_experimenter_multipart_header *exp
           }
           default: {
             OFL_LOG_WARN (LOG_MODULE, "Trying to unpack unknown FlexComm stat type.");
-            error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+            error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
           }
         }
       if (error)
@@ -156,7 +156,7 @@ ofl_exp_flexcomm_stats_req_unpack (struct ofp_experimenter_multipart_header *exp
   else
     {
       OFL_LOG_WARN (LOG_MODULE, "Trying to unpack non-FlexComm Multipart Experimenter request.");
-      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
     }
 }
 
@@ -381,7 +381,7 @@ ofl_exp_flexcomm_stats_reply_unpack_port (struct ofp_experimenter_multipart_head
                         ntohl (stat->port_no));
           OFL_UTILS_FREE_ARR (dm->stats, i);
           free (dm);
-          return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_LEN);
+          return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_PORT);
         }
       *len -= sizeof (struct ofp_flexcomm_port);
 
@@ -418,7 +418,7 @@ ofl_exp_flexcomm_stats_reply_unpack (struct ofp_experimenter_multipart_header *e
           }
           default: {
             OFL_LOG_WARN (LOG_MODULE, "Trying to unpack unknown FlexComm stat type.");
-            error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+            error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXP_TYPE);
           }
         }
       if (error)
@@ -432,7 +432,7 @@ ofl_exp_flexcomm_stats_reply_unpack (struct ofp_experimenter_multipart_header *e
   else
     {
       OFL_LOG_WARN (LOG_MODULE, "Trying to unpack non-FlexComm Multipart Experimenter reply.");
-      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+      return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
     }
 }
 

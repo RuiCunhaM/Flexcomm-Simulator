@@ -19,6 +19,8 @@
  */
 
 #include "netdevice-energy-model.h"
+#include "ns3/net-device.h"
+#include "ns3/nstime.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
@@ -56,11 +58,8 @@ NetdeviceEnergyModel::GetTypeId (void)
 //TODO ajouter une fonction pour initialiser le device à un autre état
 
 NetdeviceEnergyModel::NetdeviceEnergyModel ()
+    : m_netdeviceState (1), m_netdeviceOnState (1), m_netdeviceOffState (0), m_powerDrawn (0)
 {
-  // Default values
-  m_netdeviceState = 1;
-  m_netdeviceOnState = 1;
-  m_netdeviceOffState = 0;
 }
 
 NetdeviceEnergyModel::~NetdeviceEnergyModel ()
@@ -122,9 +121,41 @@ NetdeviceEnergyModel::GetPowerConsumption (void)
   return 0.0;
 }
 
+double
+NetdeviceEnergyModel::GetPowerDrawn (void)
+{
+  return m_powerDrawn / 3600;
+}
+
+double
+NetdeviceEnergyModel::GetCurrentPowerConsumption (void)
+{
+  return m_lastConso;
+}
+
+void
+NetdeviceEnergyModel::GetConso (Time interval, Time stop)
+{
+  Time i = Seconds (0.0);
+  while (i <= stop)
+    {
+      Simulator::Schedule (i, &NetdeviceEnergyModel::UpdateEnergy, this);
+      i += interval;
+    }
+}
+
 void
 NetdeviceEnergyModel::UpdateState (uint32_t state, double energy, Time duration)
 {
+}
+
+void
+NetdeviceEnergyModel::UpdateEnergy (void)
+{
+  Time t_now = Simulator::Now ();
+  m_lastConso = GetPowerConsumption ();
+  m_powerDrawn += m_lastConso * (t_now - m_lastUpdate).GetSeconds ();
+  m_lastUpdate = t_now;
 }
 
 } // namespace ns3

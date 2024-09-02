@@ -155,7 +155,7 @@ ofl_exp_stats_req_pack (struct ofl_msg_multipart_request_header *msg, uint8_t **
       default: {
         OFL_LOG_WARN (LOG_MODULE, "Trying to pack unknown MULTIPART EXPERIMENTER request (%u).",
                       multipart_exp->experimenter_id);
-        return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+        return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
       }
     }
 }
@@ -177,8 +177,6 @@ ofl_exp_stats_req_unpack (struct ofp_multipart_request *os, size_t *len,
 
   exp = (struct ofp_experimenter_multipart_header *) os->body;
 
-  *len -= sizeof (struct ofp_experimenter_multipart_header);
-
   switch (ntohl (exp->experimenter))
     {
       case (FLEXCOMM_VENDOR_ID): {
@@ -188,7 +186,7 @@ ofl_exp_stats_req_unpack (struct ofp_multipart_request *os, size_t *len,
       default: {
         OFL_LOG_WARN (LOG_MODULE, "Trying to unpack unknown MULTIPART EXPERIMENTER request (%u).",
                       htonl (exp->experimenter));
-        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
       }
     }
 
@@ -217,7 +215,7 @@ ofl_exp_stats_req_free (struct ofl_msg_multipart_request_header *msg)
       default: {
         OFL_LOG_WARN (LOG_MODULE, "Trying to free unknown MULTIPART EXPERIMENTER request (%u).",
                       multipart_exp->experimenter_id);
-        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
       }
     }
   free (msg);
@@ -262,7 +260,7 @@ ofl_exp_stats_reply_pack (struct ofl_msg_multipart_reply_header *msg, uint8_t **
       default: {
         OFL_LOG_WARN (LOG_MODULE, "Trying to pack unknown MULTIPART EXPERIMENTER reply (%u).",
                       multipart_exp->experimenter_id);
-        return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+        return ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
       }
     }
 }
@@ -284,8 +282,6 @@ ofl_exp_stats_reply_unpack (struct ofp_multipart_reply *os, size_t *len,
 
   exp = (struct ofp_experimenter_multipart_header *) os->body;
 
-  *len -= sizeof (struct ofp_experimenter_multipart_header);
-
   switch (ntohl (exp->experimenter))
     {
       case (FLEXCOMM_VENDOR_ID): {
@@ -295,7 +291,7 @@ ofl_exp_stats_reply_unpack (struct ofp_multipart_reply *os, size_t *len,
       default: {
         OFL_LOG_WARN (LOG_MODULE, "Trying to unpack unknown MULTIPART EXPERIMENTER reply (%u).",
                       htonl (exp->experimenter));
-        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
       }
     }
 
@@ -324,7 +320,7 @@ ofl_exp_stats_reply_free (struct ofl_msg_multipart_reply_header *msg)
       default: {
         OFL_LOG_WARN (LOG_MODULE, "Trying to free unknown MULTIPART EXPERIMENTER reply (%u).",
                       multipart_exp->experimenter_id);
-        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_MULTIPART);
+        error = ofl_error (OFPET_BAD_REQUEST, OFPBRC_BAD_EXPERIMENTER);
       }
     }
   free (msg);

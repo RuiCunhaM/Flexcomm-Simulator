@@ -120,6 +120,10 @@ public:
    * To implement in each child class.
    */
   virtual double GetPowerConsumption (void);
+  double GetPowerDrawn (void);
+  double GetCurrentPowerConsumption (void);
+
+  void GetConso (Time interval, Time stop);
 
   /**
    * Update the net device state when there is a switch.
@@ -132,10 +136,16 @@ public:
    */
   virtual void UpdateState (uint32_t state, double energy, Time duration);
 
+  void UpdateEnergy (void);
+
 private:
   uint32_t m_netdeviceState; // State for this net device
   uint32_t m_netdeviceOnState; // Current On state for this net device
   uint32_t m_netdeviceOffState; // Current Off state for this net device
+
+  double m_powerDrawn;
+  double m_lastConso;
+  Time m_lastUpdate;
 
   /**
    * Pointer to netdevice containing this NetdeviceEnergyModel. Used by helper class
