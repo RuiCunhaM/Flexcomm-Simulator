@@ -89,7 +89,7 @@ def gen_config(topology):
     # *********** Parse nodes ***********
 
     devices = {}
-    ports = {}
+    hosts = {}
     links = {}
 
     switches = {}
@@ -110,11 +110,8 @@ def gen_config(topology):
             deviceId = "of:{:016x}".format(switches_counter)
             switches[node] = deviceId
             devices[deviceId] = {
-                "annotations": {
-                    "entries": {
-                        "emsId": node
-                    }
-                }
+                "basic": {"allowed": True, "name": node},
+                "annotations": {"entries": {"emsId": node}},
             }
         else:
             print("Unknown Node type")
@@ -125,6 +122,7 @@ def gen_config(topology):
     for link in dict(sorted(links_file.items(), key=lambda x: x[0])):
         edge0, edge1 = links_file[link].pop("edges")
         data_rate = links_file[link].pop("dataRate", "1000Gbps")
+        delay = links_file[link].pop("delay", 0)
 
         if edge0 in switches and edge1 in switches:
             mac_manager.new_address()
@@ -134,45 +132,49 @@ def gen_config(topology):
             link1 = f"{switches[edge0]}/{switches_ports[edge0]}-{switches[edge1]}/{switches_ports[edge1]}"
             links[link1] = {
                 "basic": {
+                    "allowed": True,
                     "bidirectional": True,
                     "bandwidth": to_Mpbs(data_rate),
+                    "delay": delay,
+                    "durable": True,
+                    "metric": 1,
                     "type": "DIRECT",
                 }
             }
         elif edge0 in switches:
+            mac_manager.new_address()
             switches_ports[edge0] += 1
-            port = f"{switches[edge0]}/{switches_ports[edge0]}"
-            ports[port] = {}
-            ports[port]["interfaces"] = [
-                {
-                    "name": f"eth{switches_ports[edge0]}",
-                    "ips": [f"10.1.1.{ip_counter}/24"],
-                    "mac": mac_manager.new_address(),
+            hostId = f"{mac_manager.new_address()}/-1"
+            location = f"{switches[edge0]}/{switches_ports[edge0]}"
+            hosts[hostId] = {
+                "basic": {
+                    "allowed": True,
+                    "ips": [f"10.1.1.{ip_counter}"],
+                    "locations": [location],
+                    "name": edge1,
                 }
-            ]
+            }
             ip_counter += 1
-            mac_manager.new_address()
         else:  # edge1 in switches
-            mac_manager.new_address()
             switches_ports[edge1] += 1
-            port = f"{switches[edge1]}/{switches_ports[edge1]}"
-            ports[port] = {}
-            ports[port]["interfaces"] = [
-                {
-                    "name": f"eth{switches_ports[edge1]}",
-                    "ips": [f"10.1.1.{ip_counter}/24"],
-                    "mac": mac_manager.new_address(),
+            hostId = f"{mac_manager.new_address()}/-1"
+            location = f"{switches[edge1]}/{switches_ports[edge1]}"
+            hosts[hostId] = {
+                "basic": {
+                    "allowed": True,
+                    "ips": [f"10.1.1.{ip_counter}"],
+                    "locations": [location],
+                    "name": edge0,
                 }
-            ]
+            }
             ip_counter += 1
+            mac_manager.new_address()
 
     data = {
         "devices": devices,
-        "ports": ports,
         "links": links,
-        "apps": {
-            "org.onosproject.core": {"core": {"linkDiscoveryMode": "STRICT"}}
-        },
+        "hosts": hosts,
+        "apps": {"org.onosproject.core": {"core": {"linkDiscoveryMode": "STRICT"}}},
     }
 
     with open(f"topologies/{topology}/switches_config.json", "w") as out_file:
